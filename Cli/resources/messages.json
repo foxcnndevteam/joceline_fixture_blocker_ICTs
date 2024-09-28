@@ -1,0 +1,5 @@
+{
+    "error": {
+        "confNotFound": "\n[bold red]Error:[/bold red] No se encontró un archivo de configuración, intenta reinstalando el programa.\n"
+    }
+}

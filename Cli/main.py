@@ -1,20 +1,14 @@
 import typer
-from Utils.loadConfig import loadConfig
-
-loadConfig()
+from Utils.ConfLoader import ConfLoader
+from Db.DbManager import DbManager
 
 app = typer.Typer()
+db = DbManager()
+conf = ConfLoader()
 
 @app.command()
 def savetestinfo():
-    print("Something...")
-
-@app.command()
-def goodbye(name: str, formal: bool = False):
-    if formal:
-        print(f"Goodbye Ms. {name}. Have a good day.")
-    else:
-        print(f"Bye {name}!")
-
+    print("Saving test info")
+    
 if __name__ == "__main__":
     app()
