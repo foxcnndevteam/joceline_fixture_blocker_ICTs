@@ -1,4 +1,7 @@
 import os
 import sys
 
-BASE_DIR = os.path.dirname(os.path.abspath(sys.executable))
+if getattr(sys, 'frozen', False):
+    BASE_DIR = os.path.dirname(os.path.abspath(sys.executable))
+elif __file__:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
