@@ -3,3 +3,7 @@ dist/
 build/
 **/jfblocker.db
 **/main.spec
+.version_history/
+jfblocker.conf.json
+fixtureInfo.json
+/resources

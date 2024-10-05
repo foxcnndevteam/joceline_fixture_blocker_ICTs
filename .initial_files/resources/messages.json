@@ -1,0 +1,11 @@
+{
+    "error": {
+        "confNotFound": "\n[bold red]Error:[/bold red] No se encontró un archivo de configuración, intenta reinstalando el programa.\n"
+    },
+    "fixture": {
+        "fixBlocked": "Equipo bloqueado",
+        "blocked": "Favor de avisar a un Técnico/Ingeniero para su revisión",
+        "failsLimitReached": "Límite de fallas alcanzado (failsLimitReached)",
+        "stepsLimitReached": "Límite de steps alcanzado, cambiar la Transboard V2 (stepsLimitReached)"
+    }
+}
