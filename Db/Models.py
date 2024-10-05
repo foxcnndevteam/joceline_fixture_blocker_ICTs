@@ -1,10 +1,27 @@
+import os
+from env import BASE_DIR
 from peewee import *
 
-db = SqliteDatabase('people.db')
+dbPath = os.path.join(BASE_DIR, "jocelinefb.db")
+db = SqliteDatabase(dbPath)
 
-class Person(Model):
-    name = CharField()
-    birthday = DateField()
+class Fixture(Model):
+    fixture_id = TextField(unique=True)
+    fail_count = IntegerField()
+    steps_count = IntegerField()
+    online = BooleanField()
 
     class Meta:
-        database = db # This model uses the "people.db" database.
+        database = db
+
+class User(Model):
+    id = AutoField()
+    username = TextField()
+    password = TextField()
+    role = TextField()
+
+    class Meta:
+        database = db
+
+db.connect()
+db.create_tables([Fixture, User], safe=True)
