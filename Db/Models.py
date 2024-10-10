@@ -9,6 +9,7 @@ class Fixture(Model):
     fixture_id = TextField(unique=True)
     fail_count = IntegerField()
     steps_count = IntegerField()
+    pass_count= IntegerField()
     online = BooleanField()
 
     class Meta:

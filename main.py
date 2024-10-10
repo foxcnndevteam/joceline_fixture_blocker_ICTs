@@ -80,8 +80,10 @@ def pctu(pass_count_to_unlock: int):
         cm.setPassCountToUnlock(pass_count_to_unlock)
         print("The pass count to unlock fixture when steps fail where set")
 
-if __name__ == "__main__":
-    ppid = os.getppid() 
+@app.command()
+def testprogram():
+    ppid = os.getppid()
     print(psutil.Process(ppid).name())
 
+if __name__ == "__main__":
     app()

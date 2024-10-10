@@ -14,7 +14,7 @@ class ConfigManager:
                 confFile = json.loads(file.read())
             sfcPath = confFile["sfcPath"]
 
-            self.config = Config(configId = 0, max_fail_count = 2, max_steps_count = 500, pctu_steps_lock = 3, sfc_path = sfcPath)
+            self.config = Config(configId = 0, max_fail_count = 2, max_steps_count = 500, pctu_steps_lock = 4, sfc_path = sfcPath)
             self.config.save()
         except peewee.IntegrityError:
             self.config = Config().select().where(Config.configId == 0).get()
@@ -27,6 +27,12 @@ class ConfigManager:
     
     def getMaxFailCount(self):
         return self.config.max_fail_count
+    
+    def getMaxStepsCount(self):
+        return self.config.max_steps_count
+    
+    def getPCTU(self):
+        return self.config.pctu_steps_lock
     
     
     # --- Setters --- #
