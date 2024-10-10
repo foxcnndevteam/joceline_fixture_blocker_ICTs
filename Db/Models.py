@@ -16,12 +16,21 @@ class Fixture(Model):
 
 class User(Model):
     id = AutoField()
-    username = TextField()
+    username = TextField(unique=True)
     password = TextField()
-    role = TextField()
+
+    class Meta:
+        database = db
+
+class Config(Model):
+    configId = IntegerField(unique=True)
+    max_fail_count = IntegerField()
+    max_steps_count = IntegerField()
+    pctu_steps_lock = IntegerField()
+    sfc_path = TextField()
 
     class Meta:
         database = db
 
 db.connect()
-db.create_tables([Fixture, User], safe=True)
+db.create_tables([Fixture, User, Config], safe=True)

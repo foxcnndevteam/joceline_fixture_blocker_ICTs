@@ -1,23 +1,23 @@
 import peewee
-import os
-import json
+from Manager.ConfigManager import ConfigManager
 from Db.Models import Fixture
+from Views.BlockedWindow import BlockedWindow
 from env import BASE_DIR
 
 class FixtureManager:
 
-    confFileName = "joceline.conf.json"
-
     def __init__(self):
-
         try:
             self.fixture = Fixture(fixture_id="HR001", fail_count=0, steps_count=0, online=True)
             self.fixture.save()
         except peewee.IntegrityError:
             self.fixture = Fixture().select().where(Fixture.fixture_id == "HR001").get()
 
-        with open(os.path.join(BASE_DIR, self.confFileName), 'r') as file:
-            self.maxFailCount = json.loads(file)["maxFailCount"]
+        cm = ConfigManager()
+
+        self.maxFailCount = cm.getMaxFailCount()
+        self.sfcPath = cm.getSFCPath()
+
 
     # --- Setters --- #
 
@@ -36,10 +36,15 @@ class FixtureManager:
     def resetStepsCount(self):
         self.setSteps(0)
 
+
     # --- Getters --- #
 
     def isOnline(self):
         return self.fixture.online
+    
+    def getFailCount(self):
+        return self.fixture.fail_count
+    
     
     # --- Utils --- #
 
@@ -59,31 +64,50 @@ class FixtureManager:
         if isPass:
             self.resetFailCount()
 
+
     # --- Listeners --- #
 
     def onTestSave(self, result: str, isFlowFBT: bool, params):
         self.incrementFixtureSteps()
 
-        if self.isOnline() and isFlowFBT:
-            self.executeSFC()
-            self.resetFailCountIfPass(result == "PASS")
+        if isFlowFBT:
+            if self.isOnline():
+                self.executeSFC(params)
+                self.resetFailCountIfPass(result == "PASS")
+                print("Result uploaded to SFC")
 
-        elif self.isOnline():
-            print("SFC SKIPPED")
+            else:
+                if result == "PASS":
+                    self.setOnline(True)
+                    print("Fixture unlocked")
+                else:
+                    print("Fixture status is locked")
+            
+            if result == "FAIL":
+                self.incrementFixtureFails()
 
-        elif not self.isOnline():
-            self.setOnline(result == "PASS")
+                if self.isMaxFailsReached():
+                    self.setOnline(False)
+                    window = BlockedWindow("failsLimitReached")
+                    window.open()
+                    print("Max fail count reached")
 
-        if result == "FAIL":
-            self.incrementFixtureFails()
+        else:
+            print("The MB is not FBT")
+
 
     # -- Verifiers --- #
 
-    # TODO
-    def verifyMaxFailsReached():
-        pass
+    def isMaxFailsReached(self):
+        if self.getFailCount() >= self.maxFailCount:
+            return True
+        
+        return False
+    
 
     # --- SFC --- #
 
-    def executeSFC(self):
-        print("sfc executed")
+    def executeSFC(self, params):
+        # params.insert(0, self.sfcPath)
+        # subprocess.run(params)
+        pass

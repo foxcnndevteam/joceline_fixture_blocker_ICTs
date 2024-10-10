@@ -1,7 +1,7 @@
+import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QSizePolicy
 from PyQt5.QtCore import Qt
 from Utils.MessageLoader import getMessages
-import sys
 
 class BlockedWindow:
 

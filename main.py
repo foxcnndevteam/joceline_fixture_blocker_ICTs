@@ -1,62 +1,87 @@
 import typer
-from Utils.FixtureManager import FixtureManager
-
-# from Utils.ConfLoader import ConfLoader
-# from Db.FixtureManager import FixtureManager
+import os
+import psutil
+from Manager.FixtureManager import FixtureManager
+from Manager.UserManager import UserManager
+from Manager.ConfigManager import ConfigManager
+from typing import List
 
 app = typer.Typer(add_completion=False)
-fm = FixtureManager()
-# conf = ConfLoader()
 
-@app.command()
-def savetestresult(result: str, isflowfbt: str):
+config = typer.Typer()
+reset = typer.Typer()
+set = typer.Typer()
+test = typer.Typer()
+
+set.add_typer(config, name="config")
+
+app.add_typer(reset, name="reset")
+app.add_typer(set, name="set")
+app.add_typer(test, name="test")
+
+fm = FixtureManager()
+um = UserManager()
+cm = ConfigManager()
+
+@test.command()
+def saveresult(result: str, isflowfbt: str, sfcparams: List[str] = typer.Argument(None)):
     isflowfbt = isflowfbt.lower() in ("true")
 
-    fm.onTestSave(result, isflowfbt, 0)
-# def savetestresult(result: str, serialnumber: str, operatorid: str, fixtureid: str, location: str, errorcode: str, log: str, passchksn: str):
-#     fm.incrementStepsCount()
+    fm.onTestSave(result, isflowfbt, sfcparams)
 
-#     if result == "FAIL" and passchksn == "true":
-#         fm.incrementFailCount()
-
-#     if fm.chkFixStatus(conf) == "online":
-#         if result == "PASS":
-#             fm.restartFailCount()
-#         if passchksn == "true":
-#             fm.executeSFC(conf, ["u", serialnumber, operatorid, fixtureid, location, errorcode, log])
-#         else:
-#             print("Upload SFC Skipped")
-#     elif fm.chkFixStatus(conf) == "offline" and result == "PASS" and not fm.shouldChangeBoard():
-#         fm.restartFailCount()
-#         print("Fixture is unlocked")
-#     else:
-#         fm.blockFixture()
+@test.command()
+def chksn(sfcparams: List[str] = typer.Argument(None)):
+    if fm.isOnline():
+        fm.executeSFC(sfcparams)
+    else:
+        print("Test is running in offline mode --- PASS")
 
 @app.command()
-def chksn(serialnumber: str, operatorid: str, fixtureid: str, location: str):
-    pass
-#     if fm.chkFixStatus(conf) == "offline":
-#         print("Test is running in offline mode --- PASS")
-#     else:
-#         fm.executeSFC(conf, ["c", serialnumber, operatorid, fixtureid, location])
+def createsuperuser(username: str, password: str):
+    um.createSuperUser(username, password)
 
-# @app.command()
-# def restartfailcount():
-#     fm.restartFailCount()
+@reset.command()
+def failcount():
+    if um.authUser() == "PASS":
+        fm.resetFailCount()
+        print("Fail count has been reset")
 
-# @app.command()
-# def restartstepscount():
-#     fm.restartStepsCount()
+@reset.command()
+def stepscount():
+    if um.authUser() == "PASS":
+        fm.resetStepsCount()
+        print("Steps count has been reset")
 
-# @app.command()
-# def setsteps(steps: int):
-#     fm.setSteps(steps)
+
+@set.command()
+def stepscount(steps: int):
+    if um.authUser() == "PASS":
+        fm.setSteps(steps)
+        print("The steps where set")
+
+
+# --- Config Commands --- #
+
+@config.command()
+def maxfailcount(maxfailcount: int):
+    if um.authUser() == "PASS":
+        cm.setMaxFailCount(maxfailcount)
+        print("The max fail count where set")
+
+@config.command()
+def maxstepscount(maxstepscount: int):
+    if um.authUser() == "PASS":
+        cm.setMaxFailCount(maxstepscount)
+        print("The max steps count where set")
+
+@config.command()
+def pctu(pass_count_to_unlock: int):
+    if um.authUser() == "PASS":
+        cm.setPassCountToUnlock(pass_count_to_unlock)
+        print("The pass count to unlock fixture when steps fail where set")
 
 if __name__ == "__main__":
+    ppid = os.getppid() 
+    print(psutil.Process(ppid).name())
+
     app()
-
-
-# import sys
-# manager = FixtureManager()
-
-# manager.resetStepsCount()
