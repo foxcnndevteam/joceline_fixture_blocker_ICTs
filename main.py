@@ -26,10 +26,10 @@ um = UserManager()
 cm = ConfigManager()
 
 @test.command()
-def saveresult(result: str, isflowfbt: str, sfcparams: List[str] = typer.Argument(None)):
+def saveresult(result: str, isflowfbt: str, serial: str, failreason: str, fixtureid: str, sfcparams: List[str] = typer.Argument(None)):
     isflowfbt = isflowfbt.lower() in ("true")
 
-    fm.onTestSave(result, isflowfbt, sfcparams)
+    fm.onTestSave(result, isflowfbt, serial, failreason, fixtureid, sfcparams)
 
 @test.command()
 def chksn(sfcparams: List[str] = typer.Argument(None)):

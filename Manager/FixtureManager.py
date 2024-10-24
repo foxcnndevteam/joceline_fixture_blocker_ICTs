@@ -2,8 +2,11 @@ import peewee
 import subprocess
 from Manager.ConfigManager import ConfigManager
 from Db.Models import Fixture
+from Db.Models import TestInfo
 from Views.BlockedWindow import BlockedWindow
+from Views.RetestWindow import RetestWindow
 from env import BASE_DIR
+from rich import print
 
 class FixtureManager:
 
@@ -90,7 +93,7 @@ class FixtureManager:
 
     # --- Listeners --- #
 
-    def onTestSave(self, result: str, isFlowFBT: bool, params):
+    def onTestSave(self, result: str, isFlowFBT: bool, serial: str, fail_reason: str, fixture_id: str, params):
         self.incrementFixtureSteps()
 
         if self.getStepsCount() >= self.maxStepsCount:
@@ -120,13 +123,21 @@ class FixtureManager:
         else:
             self.resetPassCount()
 
-
-
         if isFlowFBT:
             if self.isOnline():
-                self.executeSFC(params)
+                self.saveTestInfo(result, serial, fail_reason, fixture_id)
+
+                if result == "FAIL" and self.shouldUploadResult(serial):
+                    self.executeSFC(params)
+                    print("Result uploaded to SFC")
+                elif result == "PASS":
+                    self.executeSFC(params)
+                    print("Result uploaded to SFC")
+                else:
+                    retestWindow = RetestWindow()
+                    retestWindow.open()
+
                 self.resetFailCountIfPass(result == "PASS")
-                print("Result uploaded to SFC")
 
             else:
                 if result == "PASS":
@@ -141,8 +152,8 @@ class FixtureManager:
 
                 if self.isMaxFailsReached():
                     self.setOnline(False)
-                    window = BlockedWindow("failsLimitReached")
-                    window.open()
+                    blockWindow = BlockedWindow("failsLimitReached")
+                    blockWindow.open()
                     print("Max fail count reached")
 
         else:
@@ -163,3 +174,20 @@ class FixtureManager:
     def executeSFC(self, params):
         params.insert(0, self.sfcPath)
         subprocess.run(params)
+
+    def saveTestInfo(self, result, serial, fail_reason, fixture_id):
+        if result == "PASS":
+            TestInfo.delete().where(TestInfo.serial == serial).execute()
+        else:
+            testInfo = TestInfo(serial = serial, fail_reason = fail_reason, fixture_id = fixture_id)
+            testInfo.save()
+
+    def shouldUploadResult(self, serial):
+        fails = list(TestInfo.select().where(TestInfo.serial == serial))
+
+        for fail in fails:
+            for fail2nd in fails:
+                if fail.fixture_id != fail2nd.fixture_id and fail.fail_reason == fail2nd.fail_reason:
+                    return True
+                
+        return False
