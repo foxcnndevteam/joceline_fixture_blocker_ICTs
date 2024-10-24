@@ -11,6 +11,7 @@ app = typer.Typer(add_completion=False)
 config = typer.Typer()
 reset = typer.Typer()
 set = typer.Typer()
+get = typer.Typer()
 test = typer.Typer()
 
 set.add_typer(config, name="config")
@@ -18,6 +19,7 @@ set.add_typer(config, name="config")
 app.add_typer(reset, name="reset")
 app.add_typer(set, name="set")
 app.add_typer(test, name="test")
+app.add_typer(get, name="get")
 
 fm = FixtureManager()
 um = UserManager()
@@ -52,6 +54,7 @@ def stepscount():
         fm.resetStepsCount()
         print("Steps count has been reset")
 
+# --- Set commands --- #
 
 @set.command()
 def stepscount(steps: int):
@@ -59,6 +62,21 @@ def stepscount(steps: int):
         fm.setSteps(steps)
         print("The steps where set")
 
+@set.command()
+def failcount(failcount):
+    if um.authUser() == "PASS":
+        fm.setFailCount(failcount)
+        print("The fail count where set")
+
+# --- Get commands --- #
+
+@get.command()
+def stepscount():
+    print("Steps count: " + str(fm.getStepsCount()))
+
+@get.command()
+def failcount():
+    print("Fails count: " + str(fm.getFailCount()))
 
 # --- Config Commands --- #
 
@@ -79,6 +97,8 @@ def pctu(pass_count_to_unlock: int):
     if um.authUser() == "PASS":
         cm.setPassCountToUnlock(pass_count_to_unlock)
         print("The pass count to unlock fixture when steps fail where set")
+
+# --- test debug command ---#
 
 @app.command()
 def testprogram():

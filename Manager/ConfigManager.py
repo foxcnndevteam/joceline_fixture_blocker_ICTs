@@ -9,15 +9,17 @@ class ConfigManager:
     confFileName = "jocelinefb.conf.json"
 
     def __init__(self):
+        with open(os.path.join(BASE_DIR, self.confFileName), 'r') as file:
+            confFile = json.loads(file.read())
+        sfcPath = confFile["sfcPath"]
+        
         try:
-            with open(os.path.join(BASE_DIR, self.confFileName), 'r') as file:
-                confFile = json.loads(file.read())
-            sfcPath = confFile["sfcPath"]
-
             self.config = Config(configId = 0, max_fail_count = 2, max_steps_count = 500, pctu_steps_lock = 4, sfc_path = sfcPath)
             self.config.save()
         except peewee.IntegrityError:
             self.config = Config().select().where(Config.configId == 0).get()
+            self.config.sfc_path = sfcPath
+            self.config.save()
 
 
     # --- Getters --- #
