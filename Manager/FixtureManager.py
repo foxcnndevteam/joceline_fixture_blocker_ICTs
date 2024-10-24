@@ -40,13 +40,15 @@ class FixtureManager:
         self.fixture.pass_count = pass_count
         self.fixture.save()
 
-    def resetFailCount(self):
-        self.fixture.fail_count = 0
+    def setFailCount(self, fail_count):
+        self.fixture.fail_count = fail_count
         self.fixture.save()
 
+    def resetFailCount(self):
+        self.setFailCount(0)
+
     def resetPassCount(self):
-        self.fixture.pass_count = 0
-        self.fixture.save()
+        self.setPassCount(0)
 
     def resetStepsCount(self):
         self.setSteps(0)
@@ -129,6 +131,7 @@ class FixtureManager:
             else:
                 if result == "PASS":
                     self.setOnline(True)
+                    self.resetFailCount()
                     print("Fixture unlocked")
                 else:
                     print("Fixture status is locked")
