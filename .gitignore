@@ -3,8 +3,8 @@
 **/main.spec
 
 dist/
-resources/
 build/
+venv/
 .version_history/
 .initial_files/
 
