@@ -17,7 +17,6 @@ test = typer.Typer()
 set.add_typer(config, name="config")
 
 app.add_typer(reset, name="reset")
-
 app.add_typer(set, name="set")
 app.add_typer(test, name="test")
 app.add_typer(get, name="get")
