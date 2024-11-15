@@ -1,11 +1,12 @@
 {
     "sfc": {
 
-        "__mode_desc": "Altern between upload SFC modes. MODE - '0' = Program will return True or False",
-        "mode": 0,
+        "__mode_desc": "Altern between upload SFC modes.",
+        "__default_mode_desc": "MODE - '0' = Program will read a log to return (True or False) if must be failed.",
+        "sfc_mode": 0,
 
         "__binaryPath_desc": "MODE - '1' = Program execute binary file to upload SFC.",
-        "binaryPath": "path/to/binary",
+        "binaryPath": "C:\\Users\\nesto\\source\\repos\\joceline_fixture_blocker\\dist\\SFC.bat",
 
         "__apiUrl_desc": "MODE - '2' = Program upload SFC using API url.",
         "apiUrl": "api.ip/api"

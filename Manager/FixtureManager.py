@@ -24,6 +24,7 @@ class FixtureManager:
         self.maxStepsCount = cm.getMaxStepsCount()
         self.pctu = cm.getPCTU()
         self.sfcPath = cm.getSFCPath()
+        self.sfc_mode = cm.getSFCMode()
 
     def vacio(self):
         pass
@@ -93,71 +94,38 @@ class FixtureManager:
 
     # --- Listeners --- #
 
-    def onTestSave(self, result: str, isFlowFBT: bool, serial: str, fail_reason: str, fixture_id: str, params):
-        self.incrementFixtureSteps()
+    def onTestSave(self, result: str, serial: str, fail_reason: str, fixture_id: str, params):
+        if self.isOnline():
+            self.saveTestInfo(result, serial, fail_reason, fixture_id)
 
-        if self.getStepsCount() >= self.maxStepsCount:
-            self.setOnline(False)
-
-            if self.getPassCount() == 0:
-                window = BlockedWindow("stepsLimitReached")
-                window.open()
-                print("Max steps count reached")
-                self.setPassCount(1)
-                return
-
-            if result == "PASS":
-                self.incrementFixturePass()
-            elif result == "FAIL":
-                self.setPassCount(1)
-
-            if self.getPassCount() >= (self.pctu + 1):
-                self.resetStepsCount()
-                self.resetPassCount()
-                self.setOnline(True)
-                print("Fixture unlocked")
+            if result == "FAIL" and self.shouldUploadResult(serial):
+                self.executeSFC(params)
+                print("Result uploaded to SFC")
+            elif result == "PASS":
+                self.executeSFC(params)
+                print("Result uploaded to SFC")
             else:
-                print("Pass number: " + str(self.getPassCount() - 1))
-            
-            return
-        else:
-            self.resetPassCount()
-
-        if isFlowFBT:
-            if self.isOnline():
-                self.saveTestInfo(result, serial, fail_reason, fixture_id)
-
-                if result == "FAIL" and self.shouldUploadResult(serial):
-                    self.executeSFC(params)
-                    print("Result uploaded to SFC")
-                elif result == "PASS":
-                    self.executeSFC(params)
-                    print("Result uploaded to SFC")
-                else:
-                    retestWindow = RetestWindow()
-                    retestWindow.open()
+                retestWindow = RetestWindow()
+                retestWindow.open()
 
                 self.resetFailCountIfPass(result == "PASS")
 
-            else:
-                if result == "PASS":
-                    self.setOnline(True)
-                    self.resetFailCount()
-                    print("Fixture unlocked")
-                else:
-                    print("Fixture status is locked")
-            
-            if result == "FAIL":
-                self.incrementFixtureFails()
-
-                if self.isMaxFailsReached():
-                    self.setOnline(False)
-                    blockWindow = BlockedWindow("failsLimitReached")
-                    blockWindow.open()
-                    print("Max fail count reached")
-
         else:
-            print("The MB is not FBT")
+            if result == "PASS":
+                self.setOnline(True)
+                self.resetFailCount()
+                print("Fixture unlocked")
+            else:
+                print("Fixture status is locked")
+            
+        if result == "FAIL":
+            self.incrementFixtureFails()
+
+            if self.isMaxFailsReached():
+                self.setOnline(False)
+                blockWindow = BlockedWindow("failsLimitReached")
+                blockWindow.open()
+                print("Max fail count reached")
 
 
     # -- Verifiers --- #

@@ -11,6 +11,11 @@ class ConfigManager:
     def __init__(self):
         with open(os.path.join(BASE_DIR, self.confFileName), 'r') as file:
             confFile = json.loads(file.read())
+
+        sfc_mode = confFile["sfc"]["sfc_mode"]
+        binaryPath = confFile["sfc"]["binaryPath"]
+        apiUrl = confFile["sfc"]["apiUrl"]
+
         sfcPath = confFile["sfcPath"]
         
         try:
@@ -18,6 +23,11 @@ class ConfigManager:
             self.config.save()
         except peewee.IntegrityError:
             self.config = Config().select().where(Config.configId == 0).get()
+
+            self.config.sfc_mode = sfc_mode
+            self.config.binaryPath = binaryPath
+            self.config.apiUrl = apiUrl
+
             self.config.sfc_path = sfcPath
             self.config.save()
 
@@ -26,6 +36,15 @@ class ConfigManager:
 
     def getSFCPath(self):
         return self.config.sfc_path
+    
+    def getSFCMode(self):
+        return self.config.sfc_mode
+    
+    def getBinaryPath(self):
+        return self.config.binaryPath
+    
+    def getApiUrl(self):
+        return self.config.apiUrl
     
     def getMaxFailCount(self):
         return self.config.max_fail_count
