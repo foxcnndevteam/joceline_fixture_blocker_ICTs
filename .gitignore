@@ -13,3 +13,4 @@ jocelinefb.db
 jfblocker.conf.json
 JocelineFB.spec
 joceline_fixture_blocker.code-workspace
+**/externDb.db
