@@ -14,3 +14,7 @@ jfblocker.conf.json
 JocelineFB.spec
 joceline_fixture_blocker.code-workspace
 **/externDb.db
+last_result.log
+retest_result.txt
+test.py
+test.txt

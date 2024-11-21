@@ -68,12 +68,15 @@ class BlockedWindow:
         layout.setAlignment(button, Qt.AlignmentFlag.AlignHCenter)
 
         self.window.setLayout(layout)
-
+        self.window.setWindowFlags(Qt.Window | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
         self.window.showFullScreen()
 
     def onJoinPassword(self):
         if self.input_text.text() == "R!ser2":
-            self.app.closeAllWindows()
+            try:
+                self.app.closeAllWindows()
+            except:
+                print("Hubo un error")
 
     def open(self):
         self.app.exec()

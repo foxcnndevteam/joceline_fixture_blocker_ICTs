@@ -1,6 +1,7 @@
 import typer
 import os
 import psutil
+import sys
 from Manager.FixtureManager import FixtureManager
 from Manager.UserManager import UserManager
 from Manager.ConfigManager import ConfigManager
@@ -26,10 +27,8 @@ um = UserManager()
 cm = ConfigManager()
 
 @test.command()
-def saveresult(result: str, isflowfbt: str, serial: str, failreason: str, fixtureid: str, sfcparams: List[str] = typer.Argument(None)):
-    isflowfbt = isflowfbt.lower() in ("true")
-
-    fm.onTestSave(result, isflowfbt, serial, failreason, fixtureid, sfcparams)
+def saveresult(result: str, serial: str, fixtureid: str, failstatus: int):
+    fm.onTestSave(result, serial, fixtureid, failstatus)
 
 @test.command()
 def chksn(sfcparams: List[str] = typer.Argument(None)):
@@ -106,4 +105,5 @@ def testprogram():
     print(psutil.Process(ppid).name())
 
 if __name__ == "__main__":
-        app()
+    sys.exit(0 if app() == 1 else 0)
+    # app()

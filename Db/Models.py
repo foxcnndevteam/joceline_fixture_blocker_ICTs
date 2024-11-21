@@ -30,9 +30,9 @@ class Config(Model):
     max_steps_count = IntegerField()
     pctu_steps_lock = IntegerField()
     sfc_path = TextField()
-    binaryPath = TextField()
-    apiUrl = TextField()
-    sfc_mode = IntegerField()
+    #binary_path = TextField()
+    #api_url = TextField()
+    #sfc_mode = IntegerField()
 
     class Meta:
         database = localDB

@@ -12,21 +12,30 @@ class ConfigManager:
         with open(os.path.join(BASE_DIR, self.confFileName), 'r') as file:
             confFile = json.loads(file.read())
 
-        sfc_mode = confFile["sfc"]["sfc_mode"]
-        binaryPath = confFile["sfc"]["binaryPath"]
-        apiUrl = confFile["sfc"]["apiUrl"]
+        #sfc_mode = confFile["sfc"]["sfc_mode"]
+        #binary_path = confFile["sfc"]["binaryPath"]
+        #api_url = confFile["sfc"]["apiUrl"]
 
         sfcPath = confFile["sfcPath"]
         
         try:
-            self.config = Config(configId = 0, max_fail_count = 2, max_steps_count = 500, pctu_steps_lock = 4, sfc_path = sfcPath)
+            self.config = Config(
+                                    configId = 0, 
+                                    max_fail_count = 2, 
+                                    max_steps_count = 500, 
+                                    pctu_steps_lock = 4, 
+                                    sfc_path = sfcPath
+                                    #binary_path = binary_path,
+                                    #api_url = api_url,
+                                    #sfc_mode = sfc_mode
+                                )
             self.config.save()
         except peewee.IntegrityError:
             self.config = Config().select().where(Config.configId == 0).get()
 
-            self.config.sfc_mode = sfc_mode
-            self.config.binaryPath = binaryPath
-            self.config.apiUrl = apiUrl
+            #self.config.sfc_mode = sfc_mode
+            #self.config.binary_path = binary_path
+            #self.config.api_url = api_url
 
             self.config.sfc_path = sfcPath
             self.config.save()

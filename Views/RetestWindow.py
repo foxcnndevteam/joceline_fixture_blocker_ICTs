@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLay
 from PyQt5.QtCore import Qt, QSize
 from Utils.MessageLoader import getMessages
 
+import PyQt5
+
 class RetestWindow:
 
     def __init__(self):
@@ -48,7 +50,7 @@ class RetestWindow:
         layout.setAlignment(button, Qt.AlignmentFlag.AlignHCenter)
 
         self.window.setLayout(layout)
-
+        self.window.setWindowFlags(Qt.Window | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
         self.window.showFullScreen()
 
     def onJoinPassword(self):

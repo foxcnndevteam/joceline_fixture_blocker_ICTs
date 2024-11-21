@@ -1,5 +1,7 @@
 import peewee
 import subprocess
+import os
+import re
 from Manager.ConfigManager import ConfigManager
 from Db.Models import Fixture
 from Db.Models import TestInfo
@@ -14,7 +16,6 @@ class FixtureManager:
         try:
             self.fixture = Fixture(fixture_id="HR001", fail_count=0, steps_count=0, pass_count=0, online=True)
             self.fixture.save()
-            print("debug")
         except peewee.IntegrityError:
             self.fixture = Fixture().select().where(Fixture.fixture_id == "HR001").get()
 
@@ -24,7 +25,8 @@ class FixtureManager:
         self.maxStepsCount = cm.getMaxStepsCount()
         self.pctu = cm.getPCTU()
         self.sfcPath = cm.getSFCPath()
-        self.sfc_mode = cm.getSFCMode()
+        #self.sfc_mode = cm.getSFCMode()
+
 
     def vacio(self):
         pass
@@ -91,34 +93,61 @@ class FixtureManager:
         if isPass:
             self.resetFailCount()
 
+    def extractFailedParts(self):
+        failed_parts = []
+        with open(os.path.join(BASE_DIR, "last_result.log"), 'r') as file:
+            for line in file:
+                matches = re.findall(r"(\S+?) HAS FAILED", line)
+                if matches:
+                    failed_parts.extend(matches)
+        return failed_parts
+    
+    def saveRetestResultInPath(self, result: str):
+        with open(os.path.join(BASE_DIR, "retest_result.txt"), "w") as f:
+            f.write(result)
+
 
     # --- Listeners --- #
 
-    def onTestSave(self, result: str, serial: str, fail_reason: str, fixture_id: str, params):
-        if self.isOnline():
-            self.saveTestInfo(result, serial, fail_reason, fixture_id)
-
-            if result == "FAIL" and self.shouldUploadResult(serial):
-                self.executeSFC(params)
-                print("Result uploaded to SFC")
-            elif result == "PASS":
-                self.executeSFC(params)
-                print("Result uploaded to SFC")
-            else:
-                retestWindow = RetestWindow()
-                retestWindow.open()
-
-                self.resetFailCountIfPass(result == "PASS")
-
+    def onTestSave(self, result: str, serial: str, fixture_id: str, fail_status: int):
+        
+        if fail_status == 1010:
+            partsFailed = self.extractFailedParts()
         else:
-            if result == "PASS":
-                self.setOnline(True)
-                self.resetFailCount()
-                print("Fixture unlocked")
+            partsFailed = ["OTF"]
+
+        for partFailed in partsFailed:
+
+            if self.isOnline():
+                self.saveTestInfo(result, serial, partFailed, fixture_id)
+
+                self.resetFailCountIfPass(result == "PASS" or result == "PASSED")
+
+                if partFailed == "OTF" or ((result == "FAIL" or result == "FAILED") and self.shouldUploadResult(serial)):
+                    self.saveRetestResultInPath("False")
+                    print("Result uploaded to SFC")
+                    break
+                elif result == "PASS" or result == "PASSED":
+                    self.saveRetestResultInPath("False")
+                    print("Result uploaded to SFC")
+                    break
+                else:
+                    retestWindow = RetestWindow()
+                    retestWindow.open()
+                    self.saveRetestResultInPath("True")
+                    break
+
             else:
-                print("Fixture status is locked")
+                if result == "PASS" or result == "PASSED":
+                    self.setOnline(True)
+                    self.resetFailCount()
+                    print("Fixture unlocked")
+                    break
+                else:
+                    print("Fixture status is locked")
+                    break
             
-        if result == "FAIL":
+        if result == "FAIL" or result == "FAILED":
             self.incrementFixtureFails()
 
             if self.isMaxFailsReached():
