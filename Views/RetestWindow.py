@@ -55,6 +55,7 @@ class RetestWindow:
 
     def onJoinPassword(self):
         self.app.closeAllWindows()
+        # self.app.quit()
 
     def open(self):
         self.app.exec()

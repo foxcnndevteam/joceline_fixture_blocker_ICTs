@@ -5,8 +5,6 @@ import re
 from Manager.ConfigManager import ConfigManager
 from Db.Models import Fixture
 from Db.Models import TestInfo
-from Views.BlockedWindow import BlockedWindow
-from Views.RetestWindow import RetestWindow
 from env import BASE_DIR
 from rich import print
 
@@ -132,8 +130,7 @@ class FixtureManager:
                     print("Result uploaded to SFC")
                     break
                 else:
-                    retestWindow = RetestWindow()
-                    retestWindow.open()
+                    subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'retestView'])
                     self.saveRetestResultInPath("True")
                     break
 
@@ -152,8 +149,7 @@ class FixtureManager:
 
             if self.isMaxFailsReached():
                 self.setOnline(False)
-                blockWindow = BlockedWindow("failsLimitReached")
-                blockWindow.open()
+                subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'blockedView'])
                 print("Max fail count reached")
 
 

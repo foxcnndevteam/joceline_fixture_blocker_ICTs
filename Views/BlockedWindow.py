@@ -73,10 +73,8 @@ class BlockedWindow:
 
     def onJoinPassword(self):
         if self.input_text.text() == "R!ser2":
-            try:
-                self.app.closeAllWindows()
-            except:
-                print("Hubo un error")
+            self.app.closeAllWindows()
+            self.app.quit()
 
     def open(self):
         self.app.exec()
