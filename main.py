@@ -46,6 +46,10 @@ def chksn(sfcparams: List[str] = typer.Argument(None)):
 def createsuperuser(username: str, password: str):
     um.createSuperUser(username, password)
 
+@app.command()
+def savefixtureonline():
+    fm.saveOnlineResultInPath()
+
 @reset.command()
 def failcount():
     if um.authUser() == "PASS":

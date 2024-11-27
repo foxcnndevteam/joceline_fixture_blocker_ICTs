@@ -104,6 +104,10 @@ class FixtureManager:
         with open(os.path.join(BASE_DIR, "retest_result.txt"), "w") as f:
             f.write(result)
 
+    def saveOnlineResultInPath(self):
+        with open(os.path.join(BASE_DIR, "online_result.txt"), "w") as f:
+            f.write(str(self.isOnline()))
+
 
     # --- Listeners --- #
 
