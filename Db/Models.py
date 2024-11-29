@@ -9,8 +9,6 @@ localDB = SqliteDatabase(localDBPath)
 class Fixture(Model):
     fixture_id = TextField(unique=True)
     fail_count = IntegerField()
-    steps_count = IntegerField()
-    pass_count= IntegerField()
     online = BooleanField()
 
     class Meta:
@@ -27,12 +25,7 @@ class User(Model):
 class Config(Model):
     configId = IntegerField(unique=True)
     max_fail_count = IntegerField()
-    max_steps_count = IntegerField()
-    pctu_steps_lock = IntegerField()
-    sfc_path = TextField()
-    #binary_path = TextField()
-    #api_url = TextField()
-    #sfc_mode = IntegerField()
+    block_pass = TextField()
 
     class Meta:
         database = localDB

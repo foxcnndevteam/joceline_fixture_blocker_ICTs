@@ -8,7 +8,7 @@ def getMessages():
         messagesPath = os.path.join(BASE_DIR, "resources", "messages.json")
     except FileNotFoundError:
         print("[bold red]Error:[/bold red] No se encontró el archivo messages.json, intenta reinstalando el programa.")
-        exit()
+        exit(1)
         
     file = open(messagesPath, "r", encoding="utf-8")
 

@@ -1,6 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QSizePolicy
 from PyQt5.QtCore import Qt
+from Manager.ConfigManager import ConfigManager
 from Utils.MessageLoader import getMessages
 
 class BlockedWindow:
@@ -72,7 +73,9 @@ class BlockedWindow:
         self.window.showFullScreen()
 
     def onJoinPassword(self):
-        if self.input_text.text() == "R!ser2":
+        cm = ConfigManager()
+
+        if self.input_text.text() == cm.getBlockPassword():
             self.app.closeAllWindows()
             self.app.quit()
 

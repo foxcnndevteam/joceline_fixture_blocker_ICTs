@@ -7,6 +7,7 @@ from Db.Models import Fixture
 from Db.Models import TestInfo
 from env import BASE_DIR
 from rich import print
+from Utils.LogParser import extractFailedPartsByStatus
 
 class FixtureManager:
 
@@ -20,11 +21,6 @@ class FixtureManager:
         cm = ConfigManager()
 
         self.maxFailCount = cm.getMaxFailCount()
-        self.maxStepsCount = cm.getMaxStepsCount()
-        self.pctu = cm.getPCTU()
-        self.sfcPath = cm.getSFCPath()
-        #self.sfc_mode = cm.getSFCMode()
-
 
     def vacio(self):
         pass
@@ -36,26 +32,12 @@ class FixtureManager:
         self.fixture.online = isOnline
         self.fixture.save()
 
-    def setSteps(self, steps: int):
-        self.fixture.steps_count = steps
-        self.fixture.save()
-
-    def setPassCount(self, pass_count):
-        self.fixture.pass_count = pass_count
-        self.fixture.save()
-
     def setFailCount(self, fail_count):
         self.fixture.fail_count = fail_count
         self.fixture.save()
 
     def resetFailCount(self):
         self.setFailCount(0)
-
-    def resetPassCount(self):
-        self.setPassCount(0)
-
-    def resetStepsCount(self):
-        self.setSteps(0)
 
 
     # --- Getters --- #
@@ -66,12 +48,6 @@ class FixtureManager:
     def getFailCount(self):
         return self.fixture.fail_count
     
-    def getStepsCount(self):
-        return self.fixture.steps_count
-    
-    def getPassCount(self):
-        return self.fixture.pass_count
-    
     
     # --- Utils --- #
 
@@ -79,26 +55,9 @@ class FixtureManager:
         self.fixture.fail_count += 1
         self.fixture.save()
 
-    def incrementFixtureSteps(self):
-        self.fixture.steps_count += 1
-        self.fixture.save()
-
-    def incrementFixturePass(self):
-        self.fixture.pass_count += 1
-        self.fixture.save()
-
     def resetFailCountIfPass(self, isPass: bool):
         if isPass:
             self.resetFailCount()
-
-    def extractFailedParts(self):
-        failed_parts = []
-        with open(os.path.join(BASE_DIR, "last_result.log"), 'r') as file:
-            for line in file:
-                matches = re.findall(r"(\S+?) HAS FAILED", line)
-                if matches:
-                    failed_parts.extend(matches)
-        return failed_parts
     
     def saveRetestResultInPath(self, result: str):
         with open(os.path.join(BASE_DIR, "retest_result.txt"), "w") as f:
@@ -113,11 +72,9 @@ class FixtureManager:
 
     def onTestSave(self, result: str, serial: str, fixture_id: str, fail_status: int):
         
-        if fail_status == 1010:
-            partsFailed = self.extractFailedParts()
-        else:
-            partsFailed = ["OTF"]
+        partsFailed = extractFailedPartsByStatus(fail_status)
 
+        i = 1
         for partFailed in partsFailed:
 
             if self.isOnline():
@@ -133,10 +90,9 @@ class FixtureManager:
                     self.saveRetestResultInPath("False")
                     print("Result uploaded to SFC")
                     break
-                else:
+                elif i >= len(partsFailed):
                     subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'retestView'])
                     self.saveRetestResultInPath("True")
-                    break
 
             else:
                 if result == "PASS" or result == "PASSED":
@@ -147,6 +103,8 @@ class FixtureManager:
                 else:
                     print("Fixture status is locked")
                     break
+            
+            i += 1
             
         if result == "FAIL" or result == "FAILED":
             self.incrementFixtureFails()
@@ -167,10 +125,6 @@ class FixtureManager:
     
 
     # --- SFC --- #
-
-    def executeSFC(self, params):
-        params.insert(0, self.sfcPath)
-        subprocess.run(params)
 
     def saveTestInfo(self, result, serial, fail_reason, fixture_id):
         if result == "PASS":
