@@ -3,68 +3,26 @@ import re
 from env import BASE_DIR
 
 def extractFailedPartsInLog(fail_status: int):
+    failed_parts = []
 
-    error_code = Utils.getFailCode()
-    print(error_code)
+    parts_by_hf = DevicesFinder.byHasFailed()
+    parts_by_hf = [f"{fail_status}-{part}" for part in parts_by_hf]
 
-    if (
-        (error_code == "Pre_shorts") or
-        (error_code == "Setup power supply") or
-        (error_code == "Boundary scan powered shorts") or
-        (error_code == "Boundary scan interconnect") or
-        (error_code == "Boundary scan connect") or
-        (error_code == "Digital incircuit") or
-        (error_code == "Analog functional") or
-        (error_code == "Function")
-    ):
-        failed_parts = DevicesFinder.byHasFailed()
-        failed_parts = [f"{fail_status}-{part}" for part in failed_parts]
-        return failed_parts
-    
-    elif error_code == "Shorts":
-        failed_parts = DevicesFinder.byOpenShort()
-        failed_parts = [f"{fail_status}-{part}" for part in failed_parts]
-        return failed_parts
-    
-    elif error_code == "Testjet":
-        # #Option 1: Only with Device
-        # failed_parts = DevicesFinder.byKeyAfter("Device")
-        # failed_parts = [f"{fail_status}-{part}" for part in failed_parts]
+    parts_by_shorts = DevicesFinder.byOpenShort()
+    parts_by_shorts = [f"{fail_status}-{part}" for part in parts_by_shorts]
+    parts_by_testjet = []
+    testjet_failed_devices = DevicesFinder.byKeyAfter("Device")
+    testjet_failed_pins = DevicesFinder.byKeyAfter("Pin")
 
-        # #Option 2: Only with Pin
-        # failed_parts = DevicesFinder.byKeyAfter("Pin")
-        # failed_parts = [f"{fail_status}-{part}" for part in failed_parts]
+    if len(testjet_failed_devices) == len(testjet_failed_pins):
+        for i in range(0, len(testjet_failed_devices)):
+            parts_by_testjet.append (f"{fail_status}-{testjet_failed_devices[i]}-{testjet_failed_pins[i]}")
 
-        # #Option 3: Only with Node
-        # failed_parts = DevicesFinder.byKeyAfter("Node")
-        # failed_parts = [f"{fail_status}-{part}" for part in failed_parts]
+    failed_parts = parts_by_hf + parts_by_shorts + parts_by_testjet
 
-        #Option 4: Combination between Device, Pin & Node
-        failed_parts = []
-        failed_devices = DevicesFinder.byKeyAfter("Device")
-        failed_pins = DevicesFinder.byKeyAfter("Pin")
-        failed_nodes = DevicesFinder.byKeyAfter("Node")
-
-        for i in range(0, len(failed_devices)):
-            failed_parts.append (f"{fail_status}-{failed_devices[i]}-{failed_pins[i]}-{failed_nodes[i]}")
-        
-        return failed_parts
-    
-    elif error_code == "Analog unpowered":
-        # #Option 1: Only by HAS FAILED
-        # failed_parts = DevicesFinder.byHasFailed()
-        # failed_parts = [f"{fail_status}-{part}" for part in failed_parts]
-        
-        #Option 2: With devices in parallel
-        failed_parts = DevicesFinder.byHasFailed()
-        failed_in_parallel = DevicesFinder.byDevicesInParallel()
-
-        failed_parts = failed_parts + failed_in_parallel
-        failed_parts = [f"{fail_status}-{part}" for part in failed_parts]
-
-        return failed_parts
-    else:
+    if len(failed_parts) == 0:
         return ["OTF"]
+    return failed_parts
 
 
 class DevicesFinder:
@@ -78,8 +36,13 @@ class DevicesFinder:
             data = file.read()
     
         sections = data.split('----------------------------------------')
-            
+        
         for section in sections:
+
+            if "Pin " in section:
+                failed_parts = []
+                break
+
             if "Open #" in section:
                 prefix = "OPEN"
             elif "Short #" in section:
