@@ -7,7 +7,7 @@ from Db.Models import Fixture
 from Db.Models import TestInfo
 from env import BASE_DIR
 from rich import print
-from Utils.LogParser import extractFailedPartsByStatus
+from Utils.LogParser import extractFailedPartsInLog
 
 class FixtureManager:
 
@@ -72,7 +72,8 @@ class FixtureManager:
 
     def onTestSave(self, result: str, serial: str, fixture_id: str, fail_status: int):
         
-        partsFailed = extractFailedPartsByStatus(fail_status)
+        partsFailed = extractFailedPartsInLog(fail_status)
+        print(partsFailed)
 
         i = 1
         for partFailed in partsFailed:
@@ -91,7 +92,7 @@ class FixtureManager:
                     print("Result uploaded to SFC")
                     break
                 elif i >= len(partsFailed):
-                    subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'retestView'])
+                    subprocess.run([str(os.path.join(BASE_DIR, "dist/JocelineFB.exe")), 'window', 'open', 'retestView'])
                     self.saveRetestResultInPath("True")
 
             else:
@@ -111,7 +112,7 @@ class FixtureManager:
 
             if self.isMaxFailsReached():
                 self.setOnline(False)
-                subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'blockedView'])
+                subprocess.run([str(os.path.join(BASE_DIR, "dist/JocelineFB.exe")), 'window', 'open', 'blockedView'])
                 print("Max fail count reached")
 
 
