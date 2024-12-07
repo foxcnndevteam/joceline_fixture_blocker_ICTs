@@ -6,6 +6,7 @@ from peewee import *
 localDBPath = os.path.join(BASE_DIR, "jocelinefb.db")
 localDB = SqliteDatabase(localDBPath)
 
+
 class Fixture(Model):
     fixture_id = TextField(unique=True)
     fail_count = IntegerField()
@@ -51,6 +52,9 @@ class TestInfo(Model):
 
     class Meta:
         database = globalDB
-
-globalDB.connect()
-globalDB.create_tables([TestInfo], safe=True)
+try:
+    globalDB.connect()
+    globalDB.create_tables([TestInfo], safe=True)
+except OperationalError:
+    print("ERROR: No se encontro la ruta a la base de datos.")
+    exit(1)
