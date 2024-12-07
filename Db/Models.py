@@ -1,5 +1,6 @@
 import os
 import json
+import sys
 from env import BASE_DIR
 from peewee import *
 
@@ -57,4 +58,4 @@ try:
     globalDB.create_tables([TestInfo], safe=True)
 except OperationalError:
     print("ERROR: No se encontro la ruta a la base de datos.")
-    exit(1)
+    sys.exit(1)
