@@ -1,7 +1,6 @@
 import peewee
 import subprocess
 import os
-import re
 from Manager.ConfigManager import ConfigManager
 from Db.Models import Fixture
 from Db.Models import TestInfo

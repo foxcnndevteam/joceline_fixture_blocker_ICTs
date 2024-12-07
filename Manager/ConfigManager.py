@@ -1,6 +1,4 @@
 import peewee
-import json
-import os
 from Db.Models import Config
 from env import BASE_DIR
 
