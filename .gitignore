@@ -21,3 +21,4 @@ online_result.txt
 /.vscode
 /dummy_data
 /reports
+boards_to_retest.json
