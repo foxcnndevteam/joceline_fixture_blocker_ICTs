@@ -1,24 +1,54 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QSizePolicy
+import os
+import json
+import logger
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QSizePolicy, QGridLayout
 from PyQt5.QtCore import Qt, QSize
 from Utils.MessageLoader import getMessages
+from env import BASE_DIR
 
 import PyQt5
 
 class RetestWindow:
 
     def __init__(self):
+        boards_to_retest = self.getBoards()
+        print(boards_to_retest)
+
         self.messages = getMessages()
 
         self.app = QApplication(sys.argv)
 
         self.window = QWidget()
-        self.window.setStyleSheet("background-color: #e5e400;")
+        # self.window.setStyleSheet("background-color: #e5e400;")
+        self.window.setStyleSheet("background-color: rgb(240, 240, 240);")
 
         layout = QVBoxLayout()
-        layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
-        labelTitle = QLabel("Favor de colocar la tarjeta en otro equipo")
+        fixture_layout = QGridLayout()
+        fixture_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+
+        labels_texts = ["1", "2", "3", "4"]
+        labels_positions = [(0, 0), (1, 0), (0, 1), (1, 1)]
+
+        for text, position in zip(labels_texts, labels_positions):
+            label = QLabel(text)
+            style = """
+                font-size: 30px;
+                border: 1px solid black;
+            """
+            if int(text) in boards_to_retest: style = style + "background-color: #e5e400;"
+
+            label.setStyleSheet(style)
+            label.setFixedWidth(300)
+            label.setFixedHeight(150)
+            label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+            
+
+            fixture_layout.addWidget(label, position[0], position[1])
+
+        labelTitle = QLabel("Favor de colocar la tarjetas marcadas en amarillo en otro equipo")
         labelTitle.setStyleSheet("font-size: 30px; padding: 0px; margin: 0px; font-weight: bold;")
         button = QPushButton("Ok")
         button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -31,19 +61,18 @@ class RetestWindow:
                 text-align: center;
             }
             QPushButton:hover {
-                background-color: rgb(220, 220, 220); /* Color de fondo al pasar el cursor */
+                background-color: rgb(220, 220, 220); 
             }
         """)
         button.setCursor(Qt.CursorShape.PointingHandCursor)
         button.clicked.connect(self.onJoinPassword)
-        # button.setFixedHeight(500)
         button.setFixedSize(QSize(200, 500))
-        # button.resize(500, 500)
 
         labelTitle.setFixedHeight(40)
         button.setFixedHeight(30)
 
         layout.addWidget(labelTitle)
+        layout.addLayout(fixture_layout)
         layout.addWidget(button)
 
         layout.setAlignment(labelTitle, Qt.AlignmentFlag.AlignHCenter)
@@ -53,9 +82,19 @@ class RetestWindow:
         self.window.setWindowFlags(Qt.Window | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
         self.window.showFullScreen()
 
+    def getBoards(self):
+        boards_filename = "boards_to_retest.json"
+
+        with open(os.path.join(BASE_DIR, boards_filename), 'r+') as file:
+            boards = json.loads(file.read())
+
+        with open(os.path.join(BASE_DIR, boards_filename), 'w') as file:
+            file.write("[]")
+        
+        return boards
+
     def onJoinPassword(self):
         self.app.closeAllWindows()
-        # self.app.quit()
 
     def open(self):
         self.app.exec()
