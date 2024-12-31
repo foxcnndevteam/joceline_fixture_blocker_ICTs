@@ -6,7 +6,6 @@ import atexit
 from Manager.FixtureManager import FixtureManager
 from Manager.UserManager    import UserManager
 from Manager.ConfigManager  import ConfigManager
-from env import BASE_DIR
 from Views.BlockedWindow import BlockedWindow
 from Views.RetestWindow  import RetestWindow
 
