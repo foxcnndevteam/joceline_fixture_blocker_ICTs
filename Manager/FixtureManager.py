@@ -1,6 +1,7 @@
 import peewee
 import subprocess
 import os
+import json
 import logger
 from Manager.ConfigManager import ConfigManager
 from Db.Models import Fixture
@@ -67,13 +68,30 @@ class FixtureManager:
         with open(os.path.join(BASE_DIR, "online_result.txt"), "w") as f:
             f.write(str(self.isOnline()))
 
+    def saveBoardNumber(self):
+        boards_filename = "boards_to_retest.json"
+        
+        open(os.path.join(BASE_DIR, boards_filename), "a").close()
+
+        with open(os.path.join(BASE_DIR, boards_filename), 'r') as file:
+            text = file.read()
+            if text == "":
+                boards = []
+                print("reacreating")
+            else:
+                boards = json.loads(text)
+            boards.append(int(self.board_number))
+
+        with open(os.path.join(BASE_DIR, boards_filename), "w") as file:
+            file.write(str(boards))
+
 
     # --- Listeners --- #
 
     def onTestSave(self, result: str, serial: str, fixture_id: str, fail_status: int):
-
         logger.info("SAVING TEST INFO")
-        
+        self.board_number = fixture_id[-1]
+
         partsFailed = extractFailedPartsInLog(fail_status)
         print(partsFailed)
 
@@ -94,7 +112,8 @@ class FixtureManager:
                     print("Result uploaded to SFC")
                     break
                 elif i >= len(partsFailed):
-                    subprocess.run([str(os.path.join(BASE_DIR, "dist/JocelineFB.exe")), 'window', 'open', 'retestView'])
+                    self.saveBoardNumber()
+                    # subprocess.run([str(os.path.join(BASE_DIR, "dist/JocelineFB.exe")), 'window', 'open', 'retestView'])
                     self.saveRetestResultInPath("True")
 
             else:
@@ -114,7 +133,7 @@ class FixtureManager:
 
             if self.isMaxFailsReached():
                 self.setOnline(False)
-                subprocess.run([str(os.path.join(BASE_DIR, "dist/JocelineFB.exe")), 'window', 'open', 'blockedView'])
+                subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'blockedView'])
                 print("Max fail count reached")
 
 
