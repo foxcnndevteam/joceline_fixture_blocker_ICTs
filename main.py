@@ -1,10 +1,8 @@
-import datetime
 import typer
 import os
-import logging
 import psutil
 import logger
-import traceback
+import atexit
 from Manager.FixtureManager import FixtureManager
 from Manager.UserManager    import UserManager
 from Manager.ConfigManager  import ConfigManager
@@ -12,10 +10,16 @@ from env import BASE_DIR
 from Views.BlockedWindow import BlockedWindow
 from Views.RetestWindow  import RetestWindow
 
-# app_logging.configure_logging()
+# --- Exit handler --- #
+# Used to save logs when exit
+def exit_handler():
+    logger.saveLogs()
+atexit.register(exit_handler)
+
+
+# --- App start --- #
 
 logger.configureLogger()
-
 try:
     app = typer.Typer( add_completion=False )
 
@@ -97,8 +101,8 @@ try:
 
     if __name__ == "__main__":
         app()
+
 except Exception as e:
-    # logging.info(traceback.format_exc())
+    print("Ocurrio un error inesperado, contacta al equipo de desarollo para resolver el problema.")
     logger.error("ERROR PRINCIPAL")
 
-logger.saveLogs()
