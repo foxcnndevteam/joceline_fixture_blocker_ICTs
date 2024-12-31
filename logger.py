@@ -1,4 +1,3 @@
-import logging
 import os
 import datetime
 import traceback
@@ -12,7 +11,7 @@ class ReportFiles:
     ERROR_LOG_PATH: str = os.path.join(BASE_DIR, "reports", "crash")
 
     CRASH_REPORT_FILENAME: str = f"CRASH_REPORT_{DATE}.log".replace(':', "-")
-    INFO_REPORT_FILENAME: str = f"CRASH_REPORT_{DATE}.log".replace(':', "-")
+    INFO_REPORT_FILENAME: str = f"LOG_REPORT_{DATE}.log".replace(':', "-")
 
 class Levels:
     INFO: str = "INFO"
