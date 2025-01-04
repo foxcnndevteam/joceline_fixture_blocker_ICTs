@@ -1,5 +1,8 @@
 import os
 import re
+import sys
+import logger
+
 from env import BASE_DIR
 
 def extractFailedPartsInLog(fail_status: int):
@@ -41,8 +44,12 @@ class DevicesFinder:
     def byOpenShort():
         failed_parts = []
 
-        with open(os.path.join(BASE_DIR, DevicesFinder.RESULT_FILE_NAME), 'r') as file:
-            data = file.read()
+        try:
+            with open(os.path.join(BASE_DIR, DevicesFinder.RESULT_FILE_NAME), 'r') as file:
+                data = file.read()
+        except FileNotFoundError:
+            logger.error('Missing \'Result (last_result.log)\' file')
+            sys.exit(0)
     
         sections = data.split('----------------------------------------')
         
@@ -78,21 +85,31 @@ class DevicesFinder:
     def byHasFailed():
         failed_parts = []
 
-        with open(os.path.join(BASE_DIR, DevicesFinder.RESULT_FILE_NAME), 'r') as file:
-            for line in file:
-                matches = re.findall(r"(\S+?) HAS FAILED", line)
-                if matches:
-                    failed_parts.extend(f"HF-{comp}" for comp in matches)
+        try:
+            with open(os.path.join(BASE_DIR, DevicesFinder.RESULT_FILE_NAME), 'r') as file:
+                for line in file:
+                    matches = re.findall(r"(\S+?) HAS FAILED", line)
+                    if matches:
+                        failed_parts.extend(f"HF-{comp}" for comp in matches)
+        except FileNotFoundError:
+            logger.error('Missing \'Result (last_result.log)\' file')
+            sys.exit(0)
+
         return failed_parts
 
     @staticmethod
     def byKeyAfter(strKey: str):
         failed_parts = []
 
-        with open(os.path.join(BASE_DIR, DevicesFinder.RESULT_FILE_NAME), 'r') as file:
-            for line in file:
-                matches = re.findall(r" " + strKey + r" (\S+)", line)
-                if matches:
-                    failed_parts.extend(f"{strKey}-{comp}" for comp in matches)
+        try:
+            with open(os.path.join(BASE_DIR, DevicesFinder.RESULT_FILE_NAME), 'r') as file:
+                for line in file:
+                    matches = re.findall(r" " + strKey + r" (\S+)", line)
+                    if matches:
+                        failed_parts.extend(f"{strKey}-{comp}" for comp in matches)
+        except FileNotFoundError:
+            logger.error('Missing \'Result (last_result.log)\' file')
+            sys.exit(0)
+
         return failed_parts
     
