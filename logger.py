@@ -1,6 +1,8 @@
 import os
 import datetime
 import traceback
+
+from rich import print
 from typing import List
 from env import BASE_DIR
 
@@ -8,25 +10,59 @@ class ReportFiles:
     DATE: str = datetime.datetime.now().replace(microsecond=0).isoformat()[:19]
 
     INFO_LOG_PATH: str = os.path.join(BASE_DIR, "reports")
-    ERROR_LOG_PATH: str = os.path.join(BASE_DIR, "reports", "crash")
+    CRASH_LOG_PATH: str = os.path.join(BASE_DIR, "reports", "crash")
 
-    CRASH_REPORT_FILENAME: str = f"CRASH_REPORT_{DATE}.log".replace(':', "-")
     INFO_REPORT_FILENAME: str = f"LOG_REPORT_{DATE}.log".replace(':', "-")
+    CRASH_REPORT_FILENAME: str = f"CRASH_REPORT_{DATE}.log".replace(':', "-")
 
 class Levels:
     INFO: str = "INFO"
-    WARNING: str = "WARNING"
     ERROR: str = "ERROR"
+    CRASH: str = "CRASH"
     DEBUG: str = "DEBUG"
+    WARNING: str = "WARNING"
+
 
 PROGRAM: str = "JocelineFB"
 
-ERROR_LOG_RESULT: List[str] = []
 INFO_LOG_RESULT: List[str] = []
+CRASH_LOG_RESULT: List[str] = []
 
-def configureLogger():
-    if not os.path.exists(ReportFiles.INFO_LOG_PATH): os.makedirs(ReportFiles.INFO_LOG_PATH)
-    if not os.path.exists(ReportFiles.ERROR_LOG_PATH): os.makedirs(ReportFiles.ERROR_LOG_PATH)
+def info(message: str):
+    print(f'[bold]Info:[/bold] {message}')
+    INFO_LOG_RESULT.append(
+        f"{Levels.INFO}:{PROGRAM}:{message}"
+    )
+
+def debug(message: str):
+    print(f'[bold #949494]Debug:[/bold #949494] {message}')
+    INFO_LOG_RESULT.append(
+        f"{Levels.DEBUG}:{PROGRAM}:{message}"
+    )
+
+def error(message: str):
+    datetime_now = datetime.datetime.now()
+
+    timestamp_date = f'{datetime_now.year}-{datetime_now.month}-{datetime_now.day}'
+    timestamp_time = f'{datetime_now.hour}:{datetime_now.minute}:{datetime_now.second}'
+
+    print(f'[bold red]Error:[/bold red] {message}')
+    INFO_LOG_RESULT.append(
+        f"[{timestamp_date}]:[{timestamp_time}]:[{Levels.ERROR}]:{PROGRAM}:{message}"
+    )
+
+def warning(message: str):
+    print(f'[bold #bbc000]Warning:[/bold #bbc000] {message}')
+    INFO_LOG_RESULT.append(
+        f"{Levels.WARNING}:{PROGRAM}:{message}"
+    )
+
+def crash(crash_title: str):
+    separator = ("*" * 100) + '\n' + ("*" * 100) + '\n'
+
+    CRASH_LOG_RESULT.append(
+        f"{separator}{Levels.CRASH}:{PROGRAM}:{crash_title}\n{traceback.format_exc()}"
+    )
 
 def writeLog(path: str, log_result: List[str], filename: str):
     str_result = ''.join(str(f"{line}\n") for line in log_result)
@@ -34,49 +70,11 @@ def writeLog(path: str, log_result: List[str], filename: str):
     with open(os.path.join(path, filename), 'a') as f:
         f.write(str_result)
 
-
-def info(message: str):
-    INFO_LOG_RESULT.append(
-        f"{Levels.INFO}:{PROGRAM}:{message}"
-    )
-
-def warning(message: str):
-    INFO_LOG_RESULT.append(
-        f"{Levels.WARNING}:{PROGRAM}:{message}"
-    )
-
-def debug(message: str):
-    INFO_LOG_RESULT.append(
-        f"{Levels.DEBUG}:{PROGRAM}:{message}"
-    )
-
-def error(error_title: str):
-    separator = ("*" * 100) + '\n' + ("*" * 100) + '\n'
-
-    ERROR_LOG_RESULT.append(
-        f"{separator}{Levels.ERROR}:{PROGRAM}:{error_title}\n{traceback.format_exc()}"
-    )
+def configureLogger():
+    if not os.path.exists(ReportFiles.INFO_LOG_PATH): os.makedirs(ReportFiles.INFO_LOG_PATH)
+    if not os.path.exists(ReportFiles.CRASH_LOG_PATH): os.makedirs(ReportFiles.CRASH_LOG_PATH)
 
 def saveLogs():
     if len(INFO_LOG_RESULT) > 0: writeLog(ReportFiles.INFO_LOG_PATH, INFO_LOG_RESULT, ReportFiles.INFO_REPORT_FILENAME)
-    if len(ERROR_LOG_RESULT) > 0: writeLog(ReportFiles.ERROR_LOG_PATH, ERROR_LOG_RESULT, ReportFiles.CRASH_REPORT_FILENAME)
-    # writeLog(INFO_LOG_RESULT)
-    # print(len(ERROR_LOG_RESULT))
-    # pass
-
-# def configure_logging():
-#     logpath = os.path.join(BASE_DIR, "reports")
-#     if not os.path.exists(logpath):
-#         os.makedirs(logpath)
-
-#     date = str(datetime.datetime.now().replace(microsecond=0).isoformat())[:19]
-#     filename = f"CRASH_REPORT_{date}.log".replace(':', "-")
-
-#     logging.basicConfig(filename=f"./reports/{filename}", level=logging.ERROR)
-
-#     filename = f"INFO_REPORT_{date}.log".replace(':', "-")
-
-#     logging.basicConfig(filename=f"./reports/{filename}", level=logging.INFO)
-
-
+    if len(CRASH_LOG_RESULT) > 0: writeLog(ReportFiles.CRASH_LOG_PATH, CRASH_LOG_RESULT, ReportFiles.CRASH_REPORT_FILENAME)
 
