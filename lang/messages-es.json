@@ -1,0 +1,38 @@
+{
+    "user": {
+        "created": "El usuario fue creado correctamente",
+        "error": {
+            "password_length": "La contraseña debe ser mayor o igual a 8 digitos",
+            "user_in_db": "El usuario ya existe en la base de datos"
+        },
+        "login": "Para ejecutar este comando debes ser administrador, porfavor verifica tu identidad",
+        "bad_login": "Autenticación fallida"
+    },
+    "fixture": {
+        "saving_test": "Guardando informacion del test...",
+        "result_uploaded": "El resultado se subio directamente al SFC",
+        "fixture_unlocked": "El equipo ah sido desbloqueado",
+        "fixture_locked": "El equipo ah sido bloqueado",
+        "max_fail_count_reached": "El numero de falas ah sido alcanzado, la fixtura sera bloqueada"
+    },
+    "setter": {
+        "fail_count": "El numero de fallas actual ah sido modificado correctamente",
+        "max_fail_count": "El numero maximo de fallas ah sido modificado correctamente",
+        "block_password": "La contraseña de bloqueo de fixtura ah sido modificada correctamente"
+    },
+    "block_view": {
+        "title": "Equipo bloqueado",
+        "subtitle": "Favor de avisar a un Técnico/Ingeniero para su revisión",
+        "reasons": {
+            "failsLimitReached": "Límite de fallas alcanzado (failsLimitReached)",
+            "stepsLimitReached": "Límite de steps alcanzado, cambiar la Transboard V2 (stepsLimitReached)"
+        }
+    },
+    "retest_view": {
+        "show_boards_title": "Favor de colocar la tarjetas marcadas en amarillo en otro equipo",
+        "default_title": "Favor de colocar la tarjeta en otro equipo",
+        "title": "Favor de colocar la tarjetas marcadas en amarillo en otro equipo"
+    },
+    "unexpected_error": "Ocurrio un error inesperado, contacta al equipo de desarollo para resolver el problema",
+    "view_not_exist": "La vista que ingreso no existe"
+}
