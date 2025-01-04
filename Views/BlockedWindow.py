@@ -1,13 +1,25 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QSizePolicy
+import logger
+import Utils.lang as lang
+import Manager.config as config
+
 from PyQt5.QtCore import Qt
-from Manager.ConfigManager import ConfigManager
-from Utils.MessageLoader import getMessages
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QSizePolicy
 
 class BlockedWindow:
 
     def __init__(self, blockedBy: str):
-        self.messages = getMessages()
+        try:
+            messages = {
+                'title': lang.messages['block_view']['title'],
+                'subtitle': lang.messages['block_view']['subtitle'],
+                'reasons': {
+                    f'{blockedBy}': lang.messages['block_view']['reasons'][blockedBy]
+                }
+            }
+        except KeyError as e:
+            logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
+            sys.exit(0)
 
         self.app = QApplication(sys.argv)
 
@@ -17,14 +29,14 @@ class BlockedWindow:
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
-        labelTitle = QLabel(self.messages["fixture"]["fixBlocked"])
+        labelTitle = QLabel(messages["title"])
         labelTitle.setStyleSheet("font-size: 30px; padding: 0px; margin: 0px; font-weight: bold;")
 
 
-        label = QLabel(self.messages["fixture"]["blocked"])
+        label = QLabel(messages["subtitle"])
         label.setStyleSheet("font-size: 30px; padding: 0px; margin: 0px; font-weight: bold;")
 
-        labelReason = QLabel("Reason code: " + self.messages["fixture"][blockedBy])
+        labelReason = QLabel("Reason code: " + messages["reasons"][blockedBy])
         labelReason.setStyleSheet("font-size: 20px; padding: 0px; margin: 0px;")
 
         self.input_text = QLineEdit()
@@ -73,9 +85,7 @@ class BlockedWindow:
         self.window.showFullScreen()
 
     def onJoinPassword(self):
-        cm = ConfigManager()
-
-        if self.input_text.text() == cm.getBlockPassword():
+        if self.input_text.text() == config.getBlockPassword():
             self.app.closeAllWindows()
             self.app.quit()
 
