@@ -6,6 +6,9 @@ from rich import print
 from typing import List
 from env import BASE_DIR
 
+datetime_now = datetime.datetime.now()
+
+
 class ReportFiles:
     DATE: str = datetime.datetime.now().replace(microsecond=0).isoformat()[:19]
 
@@ -29,20 +32,24 @@ INFO_LOG_RESULT: List[str] = []
 CRASH_LOG_RESULT: List[str] = []
 
 def info(message: str):
+    timestamp_date = f'{datetime_now.year}-{datetime_now.month}-{datetime_now.day}'
+    timestamp_time = f'{datetime_now.hour}:{datetime_now.minute}:{datetime_now.second}'
+    
     print(f'[bold]Info:[/bold] {message}')
     INFO_LOG_RESULT.append(
-        f"{Levels.INFO}:{PROGRAM}:{message}"
+        f"[{timestamp_date}]:[{timestamp_time}]:[{Levels.INFO}]:{PROGRAM}:{message}"
     )
 
 def debug(message: str):
+    timestamp_date = f'{datetime_now.year}-{datetime_now.month}-{datetime_now.day}'
+    timestamp_time = f'{datetime_now.hour}:{datetime_now.minute}:{datetime_now.second}'
+    
     print(f'[bold #949494]Debug:[/bold #949494] {message}')
     INFO_LOG_RESULT.append(
-        f"{Levels.DEBUG}:{PROGRAM}:{message}"
+        f"[{timestamp_date}]:[{timestamp_time}]:[{Levels.DEBUG}]:{PROGRAM}:{message}"
     )
 
 def error(message: str):
-    datetime_now = datetime.datetime.now()
-
     timestamp_date = f'{datetime_now.year}-{datetime_now.month}-{datetime_now.day}'
     timestamp_time = f'{datetime_now.hour}:{datetime_now.minute}:{datetime_now.second}'
 
@@ -52,16 +59,20 @@ def error(message: str):
     )
 
 def warning(message: str):
+    timestamp_date = f'{datetime_now.year}-{datetime_now.month}-{datetime_now.day}'
+    timestamp_time = f'{datetime_now.hour}:{datetime_now.minute}:{datetime_now.second}'
+    
     print(f'[bold #bbc000]Warning:[/bold #bbc000] {message}')
     INFO_LOG_RESULT.append(
-        f"{Levels.WARNING}:{PROGRAM}:{message}"
+        f"[{timestamp_date}]:[{timestamp_time}]:[{Levels.WARNING}]:{PROGRAM}:{message}"
     )
 
 def crash(crash_title: str):
-    separator = ("*" * 100) + '\n' + ("*" * 100) + '\n'
-
+    timestamp_date = f'{datetime_now.year}-{datetime_now.month}-{datetime_now.day}'
+    timestamp_time = f'{datetime_now.hour}:{datetime_now.minute}:{datetime_now.second}'
+    
     CRASH_LOG_RESULT.append(
-        f"{separator}{Levels.CRASH}:{PROGRAM}:{crash_title}\n{traceback.format_exc()}"
+        f"[{timestamp_date}]:[{timestamp_time}]:[{Levels.CRASH}]:{PROGRAM}:{crash_title}\n{traceback.format_exc()}"
     )
 
 def writeLog(path: str, log_result: List[str], filename: str):
