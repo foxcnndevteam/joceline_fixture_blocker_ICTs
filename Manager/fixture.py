@@ -8,8 +8,8 @@ import Utils.lang as lang
 import Db.Models as Models
 import Manager.config as config
 
-from Utils.logparser import extractFailedPartsInLog
 from env import BASE_DIR
+from Utils.logparser import extractFailedPartsInLog
 
 f_data: Models.Local.Fixture
 max_fail_count: int
@@ -129,9 +129,6 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int, not_
     board_number = fixture_id[-1]
     partsFailed = extractFailedPartsInLog(fail_status)
 
-    logger.info(f'PARTS_FAILED:')
-    logger.info(f'{partsFailed}')
-
     i = 1
     for partFailed in partsFailed:
 
@@ -152,7 +149,7 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int, not_
                 if not_open_retestview:
                     saveBoardNumber(board_number)
                 else:
-                    subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'retestView'])
+                    subprocess.run([str(os.path.join(BASE_DIR, "dist/JocelineFB.exe")), 'window', 'open', 'retestView'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
 
         else:
@@ -168,11 +165,14 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int, not_
         i += 1
 
     if result == "FAIL" or result == "FAILED":
+        logger.info(f'PARTS_FAILED:')
+        logger.info(f'{partsFailed}')
+
         incrementFixtureFails()
 
         if isMaxFailsReached():
             setOnline(False)
-            subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'blockedView'])
+            subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'blockedView'], capture_output=False)
             logger.warning(fixture_messages["max_fail_count_reached"])
 
 
