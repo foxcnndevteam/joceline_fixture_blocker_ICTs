@@ -1,5 +1,4 @@
 import sys
-import time
 import typer
 import logger
 import atexit
@@ -19,7 +18,6 @@ from typing_extensions import Annotated
 
 def exit_handler():
     logger.saveLogs()
-    time.sleep(3)
     print()
 atexit.register(exit_handler)
 
