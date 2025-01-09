@@ -1,4 +1,8 @@
 {
-    "externDbPath": "C:\\Users\\nesto\\source\\WORK_PROJECTS\\joceline_fixture_blocker_ICTs\\dist\\externDb.db",
-    "lang": "es"
+    "extern_db_path": "C:\\Users\\nesto\\source\\WORK_PROJECTS\\joceline_fixture_blocker_ICTs\\externDb.db",
+    "lang": "es",
+    "boards_on_fixture_map":[
+        [1, 3],
+        [2, 4]
+    ]
 }
