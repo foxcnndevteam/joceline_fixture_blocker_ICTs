@@ -25,14 +25,22 @@ class Local:
             database = LocalMetadata.localDB
 
     class Config(Model):
-        configId = IntegerField(unique=True)
+        config_id = IntegerField(unique=True)
         max_fail_count = IntegerField()
         block_pass = TextField()
-        externDbPath = TextField()
+        extern_db_path = TextField()
         language = TextField()
+        boards_on_fixture_map = TextField()
 
         class Meta:
             database = LocalMetadata.localDB
-
+    
+    class Boards(Model):
+        board_id = IntegerField(unique=True)
+        should_board_retest = BooleanField()
+        
+        class Meta:
+            database = LocalMetadata.localDB
+            
     LocalMetadata.localDB.connect()
-    LocalMetadata.localDB.create_tables([Fixture, User, Config], safe=True)
+    LocalMetadata.localDB.create_tables([Fixture, User, Config, Boards], safe=True)
