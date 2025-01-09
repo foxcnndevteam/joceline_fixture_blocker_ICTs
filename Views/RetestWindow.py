@@ -2,6 +2,8 @@ import os
 import sys
 import json
 import logger
+# import Manager.config as config
+import Manager.boards as boards
 import Utils.lang as lang
 
 from env import BASE_DIR
@@ -12,7 +14,9 @@ from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLay
 
 class RetestWindow:
 
-    def __init__(self, show_boards):
+    def __init__(self):
+        show_boards = not boards.isOnlyOneBoard()
+        
         try:
             messages = {
                 "show_boards_title": lang.messages["retest_view"]["show_boards_title"],
@@ -22,7 +26,7 @@ class RetestWindow:
             logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
             sys.exit(0)
 
-        boards_to_retest = self.getBoards()
+        boards_to_retest = boards.getBoardsToRetest()
 
         if len(boards_to_retest) == 0 and show_boards: sys.exit(0)
 
@@ -43,9 +47,14 @@ class RetestWindow:
         if show_boards:
             fixture_layout = QGridLayout()
             fixture_layout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-
-            labels_texts = ["1", "2", "3", "4"]
-            labels_positions = [(0, 0), (1, 0), (0, 1), (1, 1)]
+            
+            labels_texts = []
+            labels_positions = []
+            
+            for row_index, row in enumerate(boards.getBoardsMap()):
+                for col_index, value in enumerate(row):
+                    labels_texts.append(str(value))
+                    labels_positions.append((row_index, col_index))
 
             for text, position in zip(labels_texts, labels_positions):
                 label = QLabel(text)
@@ -81,7 +90,7 @@ class RetestWindow:
             }
         """)
         button.setCursor(Qt.CursorShape.PointingHandCursor)
-        button.clicked.connect(self.onJoinPassword)
+        button.clicked.connect(self.onPress)
         button.setFixedSize(QSize(200, 500))
 
         labelTitle.setFixedHeight(40)
@@ -98,21 +107,7 @@ class RetestWindow:
         self.window.setWindowFlags(Qt.Window | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
         self.window.showFullScreen()
 
-    def getBoards(self):
-        boards_filename = "boards_to_retest.json"
-        boards_path = os.path.join(BASE_DIR, boards_filename)
-
-        if not os.path.isfile(boards_path): return []
-
-        with open(boards_path, 'r+') as file:
-            boards = json.loads(file.read())
-
-        with open(boards_path, 'w') as file:
-            file.write("[]")
-        
-        return boards
-
-    def onJoinPassword(self):
+    def onPress(self):
         self.app.closeAllWindows()
 
     def open(self):

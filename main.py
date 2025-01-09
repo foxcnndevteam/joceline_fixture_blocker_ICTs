@@ -5,12 +5,12 @@ import atexit
 import Utils.lang as lang
 import Manager.user as user
 import Manager.config as config
+import Manager.boards as boards
 import Manager.fixture as fixture
 
 from rich import print
 from Views.RetestWindow  import RetestWindow
 from Views.BlockedWindow import BlockedWindow
-from typing_extensions import Annotated
 
 
 # --- Exit handler --- #
@@ -26,12 +26,11 @@ atexit.register(exit_handler)
 
 def startAppData():
     logger.configureLogger()
-
     config.loadRawConfig()
     config.loadConfigInDb()
-
     lang.loadMessages()
     fixture.loadFixtureInfo()
+    boards.loadBoardsInfo()
 
 try:
     app = typer.Typer(add_completion=False)
@@ -50,8 +49,8 @@ try:
     set_command.add_typer(config_command, name="config")
 
     @test_command.command()
-    def saveresult( result: str, serial: str, fixtureid: str, failstatus: int, not_open_retestview: Annotated[bool, typer.Option("--not-open-retestview")] = False ):
-        fixture.onTestSave( result, serial, fixtureid, failstatus, not_open_retestview )
+    def saveresult( result: str, serial: str, fixtureid: str, failstatus: int):
+        fixture.onTestSave( result, serial, fixtureid, failstatus )
 
     @app.command()
     def createsuperuser( username: str, password: str ):
@@ -104,13 +103,13 @@ try:
 #     # --- window commands --- #
 
     @window_command.command()
-    def open( view: str, show_boards: Annotated[bool, typer.Option("--show-boards")] = False ):
+    def open( view: str):
         if view == "blockedView":
             pass
             blockWindow = BlockedWindow("failsLimitReached")
             blockWindow.open()
         elif view == "retestView":
-            retestWindow = RetestWindow(show_boards)
+            retestWindow = RetestWindow()
             retestWindow.open()
         else:
             try:
@@ -119,12 +118,11 @@ try:
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)
 
-#     # --- test debug command ---#
+    # --- test debug command ---#
 
-#     @app.command()
-#     def testprogram():
-#         ppid = os.getppid()
-#         print(psutil.Process(ppid).name())
+    # @app.command()
+    # def testprogram():
+    #     boards.fixtureHasFails()
 
     if __name__ == "__main__":
         print()

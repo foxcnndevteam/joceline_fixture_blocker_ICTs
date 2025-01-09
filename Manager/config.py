@@ -38,7 +38,8 @@ def loadConfigInDb():
 
     try:
         language = raw_data["lang"]
-        externDbPath = raw_data["externDbPath"]
+        extern_db_path = raw_data["extern_db_path"]
+        boards_on_fixture_map = str(raw_data["boards_on_fixture_map"])
 
     except KeyError as e:
         logger.error(f'Corrupted configuration file: Missing key "{e.args[0]}" in configuration file')
@@ -46,20 +47,22 @@ def loadConfigInDb():
 
     try:
         data = Models.Local.Config(
-            configId = 0, 
+            config_id = 0, 
             max_fail_count = 2, 
             block_pass = "R!ser2",
             language = language,
-            externDbPath = externDbPath
+            extern_db_path = extern_db_path,
+            boards_on_fixture_map = boards_on_fixture_map
         )
 
         data.save()
         logger.info("Configuration loaded first time")
 
     except peewee.IntegrityError:
-        data = Models.Local.Config().select().where(Models.Local.Config.configId == 0).get()
+        data = Models.Local.Config().select().where(Models.Local.Config.config_id == 0).get()
         data.language = language
-        data.externDbPath = externDbPath
+        data.extern_db_path = extern_db_path
+        data.boards_on_fixture_map = boards_on_fixture_map
         data.save()
 
 
@@ -80,8 +83,11 @@ def getLanguage():
 
 def getExternDbPath():
     global data
-    return data.externDbPath
+    return data.extern_db_path
 
+def getBoardsOnFixtureMap():
+    global data
+    return data.boards_on_fixture_map
 
 # --- Setters --- #
 

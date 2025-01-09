@@ -6,6 +6,7 @@ import peewee
 import subprocess
 import Utils.lang as lang
 import Db.Models as Models
+import Manager.boards as boards
 import Manager.config as config
 
 from env import BASE_DIR
@@ -86,26 +87,10 @@ def saveOnlineResultInPath():
     with open(os.path.join(BASE_DIR, "online_result.txt"), "w") as f:
         f.write(str(isOnline()))
 
-def saveBoardNumber(board_number):
-    boards_filename = "boards_to_retest.json"
-        
-    open(os.path.join(BASE_DIR, boards_filename), "a").close()
-
-    with open(os.path.join(BASE_DIR, boards_filename), 'r') as file:
-        text = file.read()
-        if text == "":
-            boards = []
-        else:
-            boards = json.loads(text)
-        boards.append(int(board_number))
-
-    with open(os.path.join(BASE_DIR, boards_filename), "w") as file:
-        file.write(str(boards))
-
 
 # --- Listeners --- #
 
-def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int, not_open_retestview: bool):
+def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
     und_messages = getFixtureMessages()
 
     try:
@@ -124,7 +109,6 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int, not_
     logger.info(f'Serial: {serial}')
     logger.info(f'Result: {result}')
     logger.info(f'FixtureID: {fixture_id}')
-    logger.info(f'Fail Status: {fail_status}')
 
     board_number = fixture_id[-1]
     partsFailed = extractFailedPartsInLog(fail_status)
@@ -146,10 +130,10 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int, not_
                 break
             elif i >= len(partsFailed):
                 saveRetestResultInPath("True")
-                if not_open_retestview:
-                    saveBoardNumber(board_number)
-                else:
+                if boards.isOnlyOneBoard():
                     subprocess.run([str(os.path.join(BASE_DIR, "dist/JocelineFB.exe")), 'window', 'open', 'retestView'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                else:
+                    boards.saveBoardShouldRetest(board_number, True)
 
 
         else:
@@ -165,15 +149,18 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int, not_
         i += 1
 
     if result == "FAIL" or result == "FAILED":
+        logger.info(f'Fail Status: {fail_status}')
         logger.info(f'PARTS_FAILED:')
         logger.info(f'{partsFailed}')
+        
+        if boards.isOnlyOneBoard():
+            incrementFixtureFails()
 
-        incrementFixtureFails()
-
-        if isMaxFailsReached():
-            setOnline(False)
-            subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'blockedView'], capture_output=False)
-            logger.warning(fixture_messages["max_fail_count_reached"])
+            if isMaxFailsReached():
+                setOnline(False)
+                subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'blockedView'], capture_output=False)
+                logger.warning(fixture_messages["max_fail_count_reached"])
+            
 
 
 # -- Verifiers --- #
