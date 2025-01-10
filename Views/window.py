@@ -8,12 +8,6 @@ app = QApplication(sys.argv)
 windows_to_show: list[QWidget] = []
 
 def openWindows():
-    # ow = BlockedWindow("failsLimitReached")
-    # ow.showFullScreen()
-    
-    # ex = RetestWindow()
-    # ex.showFullScreen()
-    
     for window in windows_to_show:
         if window.show_fullscreen:
             window.showFullScreen()
@@ -23,4 +17,4 @@ def openWindows():
     if len(windows_to_show) > 0: app.exec_()
     
 def show(window: QWidget):
-    windows_to_show.append(window)
+    windows_to_show.insert(0, window)
