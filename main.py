@@ -9,9 +9,6 @@ import Manager.boards as boards
 import Manager.fixture as fixture
 
 from rich import print
-from Views.RetestWindow  import RetestWindow
-from Views.BlockedWindow import BlockedWindow
-
 
 # --- Exit handler --- #
 # Used to save logs when app exit
@@ -39,13 +36,11 @@ try:
     get_command = typer.Typer()
     test_command = typer.Typer()
     config_command = typer.Typer()
-    window_command = typer.Typer()
 
 
     app.add_typer(set_command, name="set")
     app.add_typer(get_command, name="get")
     app.add_typer(test_command, name="test")
-    app.add_typer(window_command, name="window")
     set_command.add_typer(config_command, name="config")
 
     @test_command.command()
@@ -96,24 +91,6 @@ try:
             config.setBlockPassword( newpassword )
             try:
                 logger.info(lang.messages["setter"]["block_password"])
-            except KeyError as e:
-                logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
-                sys.exit(0)
-
-#     # --- window commands --- #
-
-    @window_command.command()
-    def open( view: str):
-        if view == "blockedView":
-            pass
-            blockWindow = BlockedWindow("failsLimitReached")
-            blockWindow.open()
-        elif view == "retestView":
-            retestWindow = RetestWindow()
-            retestWindow.open()
-        else:
-            try:
-                logger.error(lang.messages["view_not_exist"])
             except KeyError as e:
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)
