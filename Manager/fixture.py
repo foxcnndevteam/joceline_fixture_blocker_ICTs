@@ -1,15 +1,17 @@
 import os
 import sys
-import json
 import logger
 import peewee
-import subprocess
+import Views.window as window
+
 import Utils.lang as lang
 import Db.Models as Models
 import Manager.boards as boards
 import Manager.config as config
 
 from env import BASE_DIR
+from Views.retest import RetestWindow
+from Views.blocked import BlockedWindow
 from Utils.logparser import extractFailedPartsInLog
 
 f_data: Models.Local.Fixture
@@ -91,6 +93,7 @@ def saveOnlineResultInPath():
 # --- Listeners --- #
 
 def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
+    check_status = not boards.isOnlyOneBoard()
     und_messages = getFixtureMessages()
 
     try:
@@ -130,8 +133,8 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
                 break
             elif i >= len(partsFailed):
                 saveRetestResultInPath("True")
-                if boards.isOnlyOneBoard():
-                    subprocess.run([str(os.path.join(BASE_DIR, "dist/JocelineFB.exe")), 'window', 'open', 'retestView'], stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                if check_status:
+                    window.show(RetestWindow())
                 else:
                     boards.saveBoardShouldRetest(board_number, True)
 
@@ -153,13 +156,15 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
         logger.info(f'PARTS_FAILED:')
         logger.info(f'{partsFailed}')
         
-        if boards.isOnlyOneBoard():
+        if check_status:
             incrementFixtureFails()
 
             if isMaxFailsReached():
                 setOnline(False)
-                subprocess.run([str(os.path.join(BASE_DIR, "JocelineFB.exe")), 'window', 'open', 'blockedView'], capture_output=False)
+                window.show(BlockedWindow("failsLimitReached"))
                 logger.warning(fixture_messages["max_fail_count_reached"])
+    
+    window.openWindows()
             
 
 
