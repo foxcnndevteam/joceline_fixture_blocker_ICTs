@@ -37,10 +37,19 @@ class Local:
     
     class Boards(Model):
         board_id = IntegerField(unique=True)
+        board_failed = BooleanField()
         should_board_retest = BooleanField()
         
         class Meta:
             database = LocalMetadata.localDB
             
+    class Fails(Model):
+        fail_status = IntegerField()
+        board_failed = TextField()
+        iteration_failed = IntegerField()
+        
+        class Meta:
+            database = LocalMetadata.localDB
+            
     LocalMetadata.localDB.connect()
-    LocalMetadata.localDB.create_tables([Fixture, User, Config, Boards], safe=True)
+    LocalMetadata.localDB.create_tables([Fixture, User, Config, Boards, Fails], safe=True)

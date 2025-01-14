@@ -37,16 +37,11 @@ try:
     test_command = typer.Typer()
     config_command = typer.Typer()
 
-
     app.add_typer(set_command, name="set")
     app.add_typer(get_command, name="get")
     app.add_typer(test_command, name="test")
     set_command.add_typer(config_command, name="config")
-
-    @test_command.command()
-    def saveresult( result: str, serial: str, fixtureid: str, failstatus: int):
-        fixture.onTestSave( result, serial, fixtureid, failstatus )
-
+    
     @app.command()
     def createsuperuser( username: str, password: str ):
         user.createSuperUser( username, password )
@@ -54,8 +49,20 @@ try:
     @app.command()
     def savefixtureonline():
         fixture.saveOnlineResultInPath()
+        
+        
+    # --- test commands --- #
 
-#     # --- Set commands --- #
+    @test_command.command()
+    def saveresult( result: str, serial: str, fixtureid: str, failstatus: int):
+        fixture.onTestSave( result, serial, fixtureid, failstatus )
+
+    def checkStatus():
+        # TODO: Add status checker
+        pass
+
+
+    # --- Set commands --- #
 
     @set_command.command()
     def failcount( failcount ):
@@ -67,13 +74,15 @@ try:
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)
 
-#     # --- Get commands --- #
+
+    # --- Get commands ---   #
 
     @get_command.command()
     def failcount():
         print( "[bold]Fails count:[/bold] " + str( fixture.getFailCount() ) )
 
-#     # --- Config Commands --- #
+
+    # --- Config Commands --- #
 
     @config_command.command()
     def maxfailcount( maxfailcount: int ):
@@ -95,10 +104,11 @@ try:
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)
 
-    # --- test debug command ---#
+
+    # --- Debug command ---#
 
     # @app.command()
-    # def testprogram():
+    # def debug():
     #     boards.fixtureHasFails()
 
     if __name__ == "__main__":

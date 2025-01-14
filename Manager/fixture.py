@@ -89,11 +89,58 @@ def saveOnlineResultInPath():
     with open(os.path.join(BASE_DIR, "online_result.txt"), "w") as f:
         f.write(str(isOnline()))
 
+def saveFixtureFail(fail_status: int, board_failed: str, iteration_failed: int):
+    fail = Models.Local.Fails(
+        fail_status = fail_status,
+        board_failed = board_failed,
+        iteration_failed = iteration_failed
+    )
+    
+    fail.save()
+    
+def shouldCheckFails():
+    if boards.someBoardFailed() and getFailCount() == 0:
+        incrementFixtureFails()
+        return False
+    elif not boards.someBoardFailed():
+        resetFailCount()
+        return False
+    
+    return True
+
+def checkFixtureBlockStatus():
+    
+    if not shouldCheckFails(): return
+    
+    fail_finded = False
+    iterations = [[] for _ in range(getFailCount() + 1)]
+
+    for fail in Models.Local.Fails().select():
+        if not fail.fail_status in iterations[fail.iteration_failed]:
+            iterations[fail.iteration_failed].append(fail.fail_status)
+
+    for last_fail in iterations[-1]:
+        times_finded = 1
+        
+        for next_iteration in iterations[0:-1]:
+            if last_fail in next_iteration:
+                times_finded += 1
+                fail_finded = True
+            else:
+                break
+            if times_finded == config.getMaxFailCount():
+                setOnline(False)
+                window.show(BlockedWindow('failsLimitReached'))
+                print(f'La fixtura se bloqueara por que la falla {last_fail} se econtro mas de {config.getMaxFailCount()} veces')
+                
+                
+    if fail_finded:
+        incrementFixtureFails()
 
 # --- Listeners --- #
 
 def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
-    check_status = not boards.isOnlyOneBoard()
+    check_status = boards.isOnlyOneBoard()
     und_messages = getFixtureMessages()
 
     try:
@@ -115,17 +162,20 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
 
     board_number = fixture_id[-1]
     partsFailed = extractFailedPartsInLog(fail_status)
+    saveFixtureFail(fail_status, board_number, getFailCount())    
 
     i = 1
     for partFailed in partsFailed:
 
         if isOnline():
             saveTestInfo(result, serial, partFailed, fixture_id)
-            resetFailCountIfPass(result == "PASS" or result == "PASSED")
+            # resetFailCountIfPass(result == "PASS" or result == "PASSED")
+            
 
             if partFailed == "OTF" or ((result == "FAIL" or result == "FAILED") and shouldUploadResult(serial)):
                 saveRetestResultInPath("False")
                 logger.info(fixture_messages["result_uploaded"])
+                boards.setBoardFailed(board_number, True)
                 break
             elif result == "PASS" or result == "PASSED":
                 saveRetestResultInPath("False")
@@ -133,10 +183,11 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
                 break
             elif i >= len(partsFailed):
                 saveRetestResultInPath("True")
+                boards.saveBoardShouldRetest(board_number, True)
+                boards.setBoardFailed(board_number, True)
+                
                 if check_status:
                     window.show(RetestWindow())
-                else:
-                    boards.saveBoardShouldRetest(board_number, True)
 
 
         else:
@@ -156,7 +207,10 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
         logger.info(f'PARTS_FAILED:')
         logger.info(f'{partsFailed}')
         
+        boards.setBoardFailed(board_number, True)
+        
         if check_status:
+            # checkFixtureBlockStatus()
             incrementFixtureFails()
 
             if isMaxFailsReached():

@@ -29,6 +29,7 @@ def loadBoardsInfo():
         try:
             boards[str(board)] = Models.Local.Boards(
                 board_id = board,
+                board_failed = False,
                 should_board_retest = False
             )
             
@@ -48,6 +49,11 @@ def getBoardsMap():
 def getBoardsList():
     return [board for row in getBoardsMap() for board in row]
 
+def getBoardFailed(board_id: str):
+    global boards
+    
+    return boards[board_id].board_failed
+
 def getBoardsToRetest():
     boards_to_retest = []
     try:
@@ -61,8 +67,27 @@ def getBoardsToRetest():
     except:
         return boards_to_retest
     
+def someBoardFailed():
+    board: Models.Local.Boards
+    boards = Models.Local.Boards().select()
+    some_board_faied = False
+    
+    for board in boards:
+        if board.board_failed:
+            some_board_faied = True
+            board.board_failed = False
+            board.save()
+    
+    return some_board_faied
+    
     
 # --- Setters --- #
+
+def setBoardFailed(board_id: str, board_failed: bool):
+    global boards
+    
+    boards[board_id].board_failed = board_failed
+    boards[board_id].save()
 
 def saveBoardShouldRetest(board_id: str, should_board_retest: bool):
     global boards
