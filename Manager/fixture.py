@@ -159,9 +159,13 @@ def checkFixtureBlockStatus():
     if fail_finded:
         incrementFixtureFails()
     else:
-        resetFailCount()
+        Models.Local.Fails.delete().where(Models.Local.Fails.iteration_failed != getFailCount()).execute()
+        fails = Models.Local.Fails.select()
+        for fail in fails:
+            fail.iteration_failed = 0
+            fail.save()
+        setFailCount(1)
         setOnline(True)
-        Models.Local.Fails.delete().execute()
         
 def checkFixtureRetestStatus():
     boards_to_retest = boards.getBoardsToRetest()
