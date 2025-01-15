@@ -10,11 +10,11 @@ from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QSizePoli
 class RetestWindow(QWidget):
     show_fullscreen = True
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, boards_to_retest, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.setupGui()
+        self.setupGui(boards_to_retest)
 
-    def setupGui(self):
+    def setupGui(self, boards_to_retest):
         show_boards = not boards.isOnlyOneBoard()
         
         try:
@@ -25,10 +25,6 @@ class RetestWindow(QWidget):
         except KeyError as e:
             logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
             sys.exit(0)
-
-        boards_to_retest = boards.getBoardsToRetest()
-
-        if len(boards_to_retest) == 0 and show_boards: pass #sys.exit(0)
 
         if show_boards:
             view_background = 'rgb(240, 240, 240)'

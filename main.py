@@ -4,6 +4,7 @@ import logger
 import atexit
 import Utils.lang as lang
 import Manager.user as user
+import Views.window as window
 import Manager.config as config
 import Manager.boards as boards
 import Manager.fixture as fixture
@@ -57,10 +58,11 @@ try:
     def saveresult( result: str, serial: str, fixtureid: str, failstatus: int):
         fixture.onTestSave( result, serial, fixtureid, failstatus )
 
-    def checkStatus():
-        # TODO: Add status checker
-        pass
-
+    @test_command.command()
+    def checkstatus():
+        fixture.checkFixtureRetestStatus()
+        fixture.checkFixtureBlockStatus()
+        window.openWindows()
 
     # --- Set commands --- #
 
