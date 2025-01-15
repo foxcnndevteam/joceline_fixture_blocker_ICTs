@@ -30,11 +30,10 @@
     },
     "retest_view": {
         "show_boards_title": "Favor de colocar la tarjetas marcadas en amarillo en otro equipo",
-        "default_title": "Favor de colocar la tarjeta en otro equipo",
-        "title": "Favor de colocar la tarjetas marcadas en amarillo en otro equipo"
+        "default_title": "Favor de colocar la tarjeta en otro equipo"
     },
     "boards": {
-        "repeated_ids": "El mapa de 'boards' en la configuracion tiene IDs repetidas."
+        "repeated_ids": "El mapa de 'boards' en la configuracion tiene IDs repetidas"
     },
     "unexpected_error": "Ocurrio un error inesperado, contacta al equipo de desarollo para resolver el problema",
     "view_not_exist": "La vista que ingreso no existe"
