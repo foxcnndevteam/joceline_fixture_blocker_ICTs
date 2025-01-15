@@ -1,7 +1,5 @@
 import sys
 
-from Views.retest import RetestWindow
-from Views.blocked import BlockedWindow
 from PyQt5.QtWidgets import QApplication, QWidget
 
 app = QApplication(sys.argv)
