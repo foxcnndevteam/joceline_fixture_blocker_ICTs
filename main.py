@@ -49,13 +49,9 @@ try:
     @app.command()
     def createsuperuser( username: str, password: str ):
         user.createSuperUser( username, password )
-
-    @app.command()
-    def savefixtureonline():
-        fixture.saveOnlineResultInPath()
         
         
-    # --- test commands --- #
+    # --- Test commands --- #
 
     @test_command.command()
     def saveresult( result: str, serial: str, fixtureid: str, failstatus: int):
