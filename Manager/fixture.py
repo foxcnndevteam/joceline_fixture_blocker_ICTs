@@ -1,5 +1,5 @@
-# Archiv main.py
-# ruta: ./main.py
+# File: fixture.py
+# Path: Manager/fixture.py
 
 import os
 import sys
@@ -79,11 +79,17 @@ def getFailCount():
 # --- Utils --- #
 
 def saveRetestResultInPath(result: str):
-    with open(os.path.join(BASE_DIR, "retest_result.txt"), "w") as f:
+    result_path = os.path.join(BASE_DIR, "output")
+    if not os.path.exists(result_path): os.makedirs(result_path)
+    
+    with open(os.path.join(result_path, "should_retest") + "", "w") as f:
         f.write(result)
 
 def saveOnlineResultInPath():
-    with open(os.path.join(BASE_DIR, "online_result.txt"), "w") as f:
+    result_path = os.path.join(BASE_DIR, "output")
+    if not os.path.exists(result_path): os.makedirs(result_path)
+    
+    with open(os.path.join(result_path, "fixture_status"), "w") as f:
         f.write(str(isOnline()))
 
 def saveFixtureFail(fail_status: int, board_failed: str, iteration_failed: int):
@@ -122,6 +128,7 @@ def shouldCheckFails():
         incrementFixtureFails()
         return False
     elif not some_board_failed:
+        setOnline(True)
         resetFailCount()
         Models.Local.Fails.delete().execute()
         return False
@@ -211,9 +218,10 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
 
         else:
             if result == "PASS" or result == "PASSED":
-                setOnline(True)
-                resetFailCount()
-                logger.info(fixture_messages["fixture_unlocked"])
+                if check_status:
+                    setOnline(True)
+                    resetFailCount()
+                    logger.info(fixture_messages["fixture_unlocked"])
                 break
             else:
                 logger.warning(fixture_messages["fixture_locked"])
@@ -255,3 +263,5 @@ def shouldUploadResult(serial, fixture_id, fail_reason):
             return True
 
     return False
+
+
