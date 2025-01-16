@@ -4,7 +4,6 @@
 import os
 import sys
 import logger
-import peewee
 import Utils.lang as lang
 import Db.Models as Models
 import Views.window as window
@@ -31,10 +30,10 @@ def loadFixtureInfo():
     global max_fail_count
 
     try:
+        f_data = Models.Local.Fixture().select().where(Models.Local.Fixture.fixture_id == "HR001").get()
+    except Models.DoesNotExist:
         f_data = Models.Local.Fixture(fixture_id="HR001", fail_count=0, steps_count=0, pass_count=0, online=True)
         f_data.save()
-    except peewee.IntegrityError:
-        f_data = Models.Local.Fixture().select().where(Models.Local.Fixture.fixture_id == "HR001").get()
 
 
     max_fail_count = config.getMaxFailCount()
@@ -137,7 +136,7 @@ def checkFixtureBlockStatus():
     fail_finded = False
     iterations = [[] for _ in range(getFailCount() + 1)]
 
-    for fail in Models.Local.Fails().select():
+    for fail in Models.Local.Fails().select(Models.Local.Fails.fail_status, Models.Local.Fails.iteration_failed):
         if not fail.fail_status in iterations[fail.iteration_failed]:
             iterations[fail.iteration_failed].append(fail.fail_status)
     
@@ -164,6 +163,7 @@ def checkFixtureBlockStatus():
         for fail in fails:
             fail.iteration_failed = 0
             fail.save()
+            
         setFailCount(1)
         setOnline(True)
         
