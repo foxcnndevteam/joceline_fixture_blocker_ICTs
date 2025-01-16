@@ -1,3 +1,6 @@
+# File: main.py
+# Path: main.py
+
 import sys
 import typer
 import logger
@@ -82,6 +85,11 @@ try:
     @get_command.command()
     def failcount():
         print( "[bold]Fails count:[/bold] " + str( fixture.getFailCount() ) )
+        
+    @get_command.command()
+    def fixturestatus():
+        fixture.saveOnlineResultInPath()
+        print( "[bold]Fixture online status:[/bold] " + str( fixture.isOnline() ) )
 
 
     # --- Config Commands --- #
