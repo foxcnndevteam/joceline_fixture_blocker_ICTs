@@ -101,6 +101,19 @@ def saveFixtureFail(fail_status: int, board_failed: str, iteration_failed: int):
     
     fail.save()
     
+def setFixtureOnline(delete_fixture_fails = True, fixture_fail = False, show_unlock_message = True):
+    fixture_messages = checkFixtureMessages()
+    
+    setOnline(True)
+    resetFailCount()
+    
+    if delete_fixture_fails: Models.Local.Fails.delete().execute()
+    
+    if fixture_fail: setFailCount(1)
+    else: setFailCount(0)
+        
+    if show_unlock_message: logger.info(fixture_messages["fixture_unlocked"])
+
 
 # --- Verifiers --- #
 
@@ -128,9 +141,7 @@ def shouldCheckFails():
         incrementFixtureFails()
         return False
     elif not some_board_failed:
-        setOnline(True)
-        resetFailCount()
-        Models.Local.Fails.delete().execute()
+        setFixtureOnline()
         return False
     
     return True
@@ -157,6 +168,7 @@ def checkFixtureBlockStatus():
                 fail_finded = True
             else:
                 break
+            
             if times_finded == config.getMaxFailCount():
                 setOnline(False)
                 window.show(BlockedWindow('failsLimitReached'))
@@ -171,8 +183,7 @@ def checkFixtureBlockStatus():
             fail.iteration_failed = 0
             fail.save()
             
-        setFailCount(1)
-        setOnline(True)
+        setFixtureOnline(delete_fixture_fails = False, fixture_fail = True, show_unlock_message = False)
         
 def checkFixtureRetestStatus():
     boards_to_retest = boards.getBoardsToRetest()
@@ -197,10 +208,9 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
             saveTestInfo(result, serial, fixture_id)
             saveRetestResultInPath("False")
             logger.info(fixture_messages["result_uploaded"])
+            setFixtureOnline(show_unlock_message = False)
         elif check_status:
-            setOnline(True)
-            resetFailCount()
-            logger.info(fixture_messages["fixture_unlocked"])
+            setFixtureOnline()
         return
     else:
         board_number = fixture_id[-1]
@@ -212,6 +222,8 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
 
             if isOnline():
                 saveTestInfo(result, serial, fixture_id, partFailed)
+                
+                print(shouldUploadResult(serial, fixture_id, partFailed))
 
                 if partFailed == "OTF" or shouldUploadResult(serial, fixture_id, partFailed):
                     saveRetestResultInPath("False")
