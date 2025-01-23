@@ -3,6 +3,7 @@ import logger
 import Manager.boards as boards
 import Utils.lang as lang
 
+from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QSizePolicy, QGridLayout
 
@@ -99,3 +100,7 @@ class RetestWindow(QWidget):
 
     def onPress(self):
         self.close()
+        
+    def keyPressEvent(self, e: QKeyEvent):
+        if e.key() == Qt.Key.Key_Enter or Qt.Key.Key_Return:
+                self.onPress()

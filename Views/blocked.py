@@ -4,6 +4,7 @@ import Utils.lang as lang
 import Manager.config as config
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QSizePolicy
 
 class BlockedWindow(QWidget):
@@ -89,3 +90,7 @@ class BlockedWindow(QWidget):
         
         if self.input_text.text() == config.getBlockPassword():
             self.close()
+            
+    def keyPressEvent(self, e: QKeyEvent):
+        if e.key() == Qt.Key.Key_Enter or Qt.Key.Key_Return:
+            self.onJoinPassword()
