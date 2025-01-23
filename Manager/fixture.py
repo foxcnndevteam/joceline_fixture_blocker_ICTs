@@ -146,7 +146,7 @@ def checkFixtureBlockStatus():
     for fail in Models.Local.Fails().select(Models.Local.Fails.fail_status, Models.Local.Fails.iteration_failed):
         if not fail.fail_status in iterations[fail.iteration_failed]:
             iterations[fail.iteration_failed].append(fail.fail_status)
-    
+            
     for last_fail in iterations[-1]:
         times_finded = 1
         
@@ -186,50 +186,49 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
     result = result.upper()
     check_status = boards.isOnlyOneBoard()
     fixture_messages = checkFixtureMessages()
-
+    
     logger.info(fixture_messages["saving_test"])
     logger.info(f'Serial: {serial}')
     logger.info(f'Result: {result}')
     logger.info(f'FixtureID: {fixture_id}')
-
-    board_number = fixture_id[-1]
-    partsFailed = extractFailedPartsInLog(fail_status)
-    saveFixtureFail(fail_status, board_number, getFailCount())
-
-    i = 1
-    for partFailed in partsFailed:
-
+    
+    if result == "PASS" or result == "PASSED":
         if isOnline():
-            saveTestInfo(result, serial, partFailed, fixture_id)
+            saveTestInfo(result, serial, fixture_id)
+            saveRetestResultInPath("False")
+            logger.info(fixture_messages["result_uploaded"])
+        elif check_status:
+            setOnline(True)
+            resetFailCount()
+            logger.info(fixture_messages["fixture_unlocked"])
+        return
+    else:
+        board_number = fixture_id[-1]
+        partsFailed = extractFailedPartsInLog(fail_status)
+        saveFixtureFail(fail_status, board_number, getFailCount())
 
-            if partFailed == "OTF" or ((result == "FAIL" or result == "FAILED") and shouldUploadResult(serial, fixture_id, partFailed)):
-                saveRetestResultInPath("False")
-                logger.info(fixture_messages["result_uploaded"])
-                boards.setBoardFailed(board_number, True)
-                break
-            elif result == "PASS" or result == "PASSED":
-                saveRetestResultInPath("False")
-                logger.info(fixture_messages["result_uploaded"])
-                break
-            elif i >= len(partsFailed):
-                saveRetestResultInPath("True")
-                boards.saveBoardShouldRetest(board_number, True)
-                boards.setBoardFailed(board_number, True)
+        i = 1
+        for partFailed in partsFailed:
 
-        else:
-            if result == "PASS" or result == "PASSED":
-                if check_status:
-                    setOnline(True)
-                    resetFailCount()
-                    logger.info(fixture_messages["fixture_unlocked"])
-                break
+            if isOnline():
+                saveTestInfo(result, serial, fixture_id, partFailed)
+
+                if partFailed == "OTF" or shouldUploadResult(serial, fixture_id, partFailed):
+                    saveRetestResultInPath("False")
+                    logger.info(fixture_messages["result_uploaded"])
+                    boards.setBoardFailed(board_number, True)
+                    break
+                elif i >= len(partsFailed):
+                    saveRetestResultInPath("True")
+                    boards.saveBoardShouldRetest(board_number, True)
+
             else:
                 logger.warning(fixture_messages["fixture_locked"])
                 break
 
-        i += 1
+            i += 1
 
-    if result == "FAIL" or result == "FAILED":
+        boards.setBoardFailed(board_number, True)
         logger.info(f'Fail Status: {fail_status}')
         logger.info(f'PARTS_FAILED:')
         logger.info(f'{partsFailed}')
@@ -244,7 +243,7 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
 
 # --- SFC --- #
 
-def saveTestInfo(result, serial, fail_reason, fixture_id):
+def saveTestInfo(result, serial, fixture_id, fail_reason = None):
     import Db.Extern as Extern
 
     if result == "PASS":
