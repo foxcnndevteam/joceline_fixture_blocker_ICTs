@@ -223,8 +223,6 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
             if isOnline():
                 saveTestInfo(result, serial, fixture_id, partFailed)
                 
-                print(shouldUploadResult(serial, fixture_id, partFailed))
-
                 if partFailed == "OTF" or shouldUploadResult(serial, fixture_id, partFailed):
                     saveRetestResultInPath("False")
                     logger.info(fixture_messages["result_uploaded"])
