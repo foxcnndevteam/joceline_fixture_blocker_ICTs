@@ -101,16 +101,24 @@ def saveFixtureFail(fail_status: int, board_failed: str, iteration_failed: int):
     
     fail.save()
     
-def setFixtureOnline(delete_fixture_fails = True, fixture_fail = False, show_unlock_message = True):
+def setFixtureOnline(
+        delete_fixture_fails = True, 
+        fixture_fail = False, 
+        show_unlock_message = True,
+        modify_fail_count = True
+    ):
+    
     fixture_messages = checkFixtureMessages()
     
     setOnline(True)
-    resetFailCount()
     
     if delete_fixture_fails: Models.Local.Fails.delete().execute()
     
-    if fixture_fail: setFailCount(1)
-    else: setFailCount(0)
+    if modify_fail_count:
+        if fixture_fail: 
+            setFailCount(1)
+        else:
+            resetFailCount()
         
     if show_unlock_message: logger.info(fixture_messages["fixture_unlocked"])
 
@@ -142,8 +150,7 @@ def shouldCheckFails():
         return False
     elif not some_board_failed:
         setFixtureOnline()
-        return False
-    
+        return False    
     return True
 
 def checkFixtureBlockStatus():
@@ -208,9 +215,14 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
             saveTestInfo(result, serial, fixture_id)
             saveRetestResultInPath("False")
             logger.info(fixture_messages["result_uploaded"])
-            setFixtureOnline(show_unlock_message = False)
+            setFixtureOnline(
+                show_unlock_message = False, 
+                delete_fixture_fails = check_status,
+                modify_fail_count = False
+            )
         elif check_status:
             setFixtureOnline()
+            
         return
     else:
         board_number = fixture_id[-1]
