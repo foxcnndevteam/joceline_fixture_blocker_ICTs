@@ -1,6 +1,8 @@
 import os
+import shutil
 import datetime
 import traceback
+import Manager.config as config
 
 from rich import print
 from typing import List
@@ -15,8 +17,8 @@ class ReportFiles:
     INFO_LOG_PATH: str = os.path.join(BASE_DIR, "reports")
     CRASH_LOG_PATH: str = os.path.join(BASE_DIR, "reports", "crash")
 
-    INFO_REPORT_FILENAME: str = f"LOG_REPORT_{DATE}.log".replace(':', "-")
-    CRASH_REPORT_FILENAME: str = f"CRASH_REPORT_{DATE}.log".replace(':', "-")
+    INFO_REPORT_FILENAME: str = f"LOG_REPORT_{DATE}.txt".replace(':', "-")
+    CRASH_REPORT_FILENAME: str = f"CRASH_REPORT_{DATE}.txt".replace(':', "-")
 
 class Levels:
     INFO: str = "INFO"
@@ -81,6 +83,17 @@ def writeLog(path: str, log_result: List[str], filename: str):
     with open(os.path.join(path, filename), 'a') as f:
         f.write(str_result)
 
+    shutil.copyfile(
+        os.path.join(
+            path,
+            filename
+        ),
+        os.path.join(
+            config.getServerLogPath(),
+            filename
+        )
+    )    
+
 def configureLogger():
     if not os.path.exists(ReportFiles.INFO_LOG_PATH): os.makedirs(ReportFiles.INFO_LOG_PATH)
     if not os.path.exists(ReportFiles.CRASH_LOG_PATH): os.makedirs(ReportFiles.CRASH_LOG_PATH)
@@ -89,3 +102,12 @@ def saveLogs():
     if len(INFO_LOG_RESULT) > 0: writeLog(ReportFiles.INFO_LOG_PATH, INFO_LOG_RESULT, ReportFiles.INFO_REPORT_FILENAME)
     if len(CRASH_LOG_RESULT) > 0: writeLog(ReportFiles.CRASH_LOG_PATH, CRASH_LOG_RESULT, ReportFiles.CRASH_REPORT_FILENAME)
 
+
+
+def setLogNameType(type: int, props_to_add):
+    ReportFiles.INFO_REPORT_FILENAME = ReportFiles.INFO_REPORT_FILENAME[:-4]
+    
+    for prop in props_to_add:
+        ReportFiles.INFO_REPORT_FILENAME += f'-{prop}'
+    
+    ReportFiles.INFO_REPORT_FILENAME += '.txt'

@@ -39,6 +39,7 @@ def loadConfigInDb():
     try:
         language = raw_data["lang"]
         extern_db_path = raw_data["extern_db_path"]
+        server_log_path = raw_data["server_log_path"]
         boards_on_fixture_map = str(raw_data["boards_on_fixture_map"])
 
     except KeyError as e:
@@ -52,6 +53,7 @@ def loadConfigInDb():
             block_pass = "R!ser2",
             language = language,
             extern_db_path = extern_db_path,
+            server_log_path = server_log_path,
             boards_on_fixture_map = boards_on_fixture_map
         )
 
@@ -62,8 +64,16 @@ def loadConfigInDb():
         data = Models.Local.Config().select().where(Models.Local.Config.config_id == 0).get()
         data.language = language
         data.extern_db_path = extern_db_path
+        data.server_log_path = server_log_path
         data.boards_on_fixture_map = boards_on_fixture_map
         data.save()
+        
+        logger.info("------------------------ Config used ------------------------")
+        logger.info(f'Language: {data.language}')
+        logger.info(f'Extern DB path: {data.extern_db_path}')
+        logger.info(f'Server log path: {data.server_log_path}')
+        logger.info(f'Boards on fixture map: {data.boards_on_fixture_map}')
+        logger.info("-------------------------------------------------------------")
 
 
 
@@ -84,6 +94,10 @@ def getLanguage():
 def getExternDbPath():
     global data
     return data.extern_db_path
+
+def getServerLogPath():
+    global data
+    return data.server_log_path
 
 def getBoardsOnFixtureMap():
     global data
