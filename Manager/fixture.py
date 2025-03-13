@@ -241,8 +241,11 @@ def onTestSave(result: str, serial: str, fixture_id: str, fail_status: int):
                     boards.setBoardFailed(board_number, True)
                     break
                 elif i >= len(partsFailed):
-                    saveRetestResultInPath("True")
-                    boards.saveBoardShouldRetest(board_number, True)
+                    saveRetestResultInPath("False")
+                    logger.info("It PCB shouldnt be failed")
+                    boards.setBoardFailed(board_number, True)
+                    #saveRetestResultInPath("True")
+                    #boards.saveBoardShouldRetest(board_number, True)
 
             else:
                 logger.warning(fixture_messages["fixture_locked"])

@@ -68,12 +68,12 @@ def loadConfigInDb():
         data.boards_on_fixture_map = boards_on_fixture_map
         data.save()
         
-        logger.info("------------------------ Config used ------------------------")
-        logger.info(f'Language: {data.language}')
-        logger.info(f'Extern DB path: {data.extern_db_path}')
-        logger.info(f'Server log path: {data.server_log_path}')
-        logger.info(f'Boards on fixture map: {data.boards_on_fixture_map}')
-        logger.info("-------------------------------------------------------------")
+    logger.info("------------------------ Config used ------------------------")
+    logger.info(f'Language: {data.language}')
+    logger.info(f'Extern DB path: {data.extern_db_path}')
+    logger.info(f'Server log path: {data.server_log_path}')
+    logger.info(f'Boards on fixture map: {data.boards_on_fixture_map}')
+    logger.info("-------------------------------------------------------------")
 
 
 
