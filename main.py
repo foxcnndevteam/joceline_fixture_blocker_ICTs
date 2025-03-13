@@ -55,7 +55,13 @@ try:
 
     @test_command.command()
     def saveresult( result: str, serial: str, fixtureid: str, failstatus: int):
-        logger.setLogNameType(0, props_to_add = [serial, result, fixtureid])
+        logger.modifyLogName(
+            props_to_add = {
+                'serial': serial, 
+                'result': result, 
+                'fixtureid': fixtureid
+            }
+        )
         fixture.onTestSave( result, serial, fixtureid, failstatus )
 
     @test_command.command()

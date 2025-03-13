@@ -3,6 +3,7 @@ import shutil
 import datetime
 import traceback
 import Manager.config as config
+import logger
 
 from rich import print
 from typing import List
@@ -13,6 +14,7 @@ datetime_now = datetime.datetime.now()
 
 class ReportFiles:
     DATE: str = datetime.datetime.now().replace(microsecond=0).isoformat()[:19]
+    SAVE_ON_SERVER: bool = False
 
     INFO_LOG_PATH: str = os.path.join(BASE_DIR, "reports")
     CRASH_LOG_PATH: str = os.path.join(BASE_DIR, "reports", "crash")
@@ -82,17 +84,25 @@ def writeLog(path: str, log_result: List[str], filename: str):
 
     with open(os.path.join(path, filename), 'a') as f:
         f.write(str_result)
+        
+    if ReportFiles.SAVE_ON_SERVER:
+        logger.info("------------------------ Config used ------------------------")
+        logger.info(f'Language: {config.data.language}')
+        logger.info(f'Extern DB path: {config.data.extern_db_path}')
+        logger.info(f'Server log path: {config.data.server_log_path}')
+        logger.info(f'Boards on fixture map: {config.data.boards_on_fixture_map}')
+        logger.info("-------------------------------------------------------------")
 
-    shutil.copyfile(
-        os.path.join(
-            path,
-            filename
-        ),
-        os.path.join(
-            config.getServerLogPath(),
-            filename
-        )
-    )    
+        shutil.copyfile(
+            os.path.join(
+                path,
+                filename
+            ),
+            os.path.join(
+                config.getServerLogPath(),
+                filename
+            )
+        )    
 
 def configureLogger():
     if not os.path.exists(ReportFiles.INFO_LOG_PATH): os.makedirs(ReportFiles.INFO_LOG_PATH)
@@ -104,10 +114,12 @@ def saveLogs():
 
 
 
-def setLogNameType(type: int, props_to_add):
+def modifyLogName(props_to_add):
     ReportFiles.INFO_REPORT_FILENAME = ReportFiles.INFO_REPORT_FILENAME[:-4]
     
-    for prop in props_to_add:
+    ReportFiles.SAVE_ON_SERVER = (props_to_add['result'] == 'FAIL')
+    
+    for prop in props_to_add.values():
         ReportFiles.INFO_REPORT_FILENAME += f'-{prop}'
     
     ReportFiles.INFO_REPORT_FILENAME += '.txt'
