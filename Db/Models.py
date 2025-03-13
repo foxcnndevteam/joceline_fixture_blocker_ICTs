@@ -29,6 +29,7 @@ class Local:
         max_fail_count = IntegerField()
         block_pass = TextField()
         extern_db_path = TextField()
+        server_log_path = TextField()
         language = TextField()
         boards_on_fixture_map = TextField()
 
