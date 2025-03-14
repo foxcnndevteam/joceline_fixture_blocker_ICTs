@@ -3,7 +3,6 @@ import shutil
 import datetime
 import traceback
 import Manager.config as config
-import logger
 
 from rich import print
 from typing import List
@@ -86,12 +85,12 @@ def writeLog(path: str, log_result: List[str], filename: str):
         f.write(str_result)
         
     if ReportFiles.SAVE_ON_SERVER:
-        logger.info("------------------------ Config used ------------------------")
-        logger.info(f'Language: {config.data.language}')
-        logger.info(f'Extern DB path: {config.data.extern_db_path}')
-        logger.info(f'Server log path: {config.data.server_log_path}')
-        logger.info(f'Boards on fixture map: {config.data.boards_on_fixture_map}')
-        logger.info("-------------------------------------------------------------")
+        info("------------------------ Config used ------------------------")
+        info(f'Language: {config.data.language}')
+        info(f'Extern DB path: {config.data.extern_db_path}')
+        info(f'Server log path: {config.data.server_log_path}')
+        info(f'Boards on fixture map: {config.data.boards_on_fixture_map}')
+        info("-------------------------------------------------------------")
 
         shutil.copyfile(
             os.path.join(
