@@ -8,7 +8,7 @@ import Manager.config as config
 
 boards: dict[str, Models.Local.Boards] = {}
 
-def loadBoardsInfo():
+def load_boards_info():
     global boards
     
     try:
