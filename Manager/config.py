@@ -10,15 +10,10 @@ from env import BASE_DIR
 
 data: Models.Local.Config
 
-configFileName = "jocelinefb.conf.json"
-configFilePath = os.path.join(BASE_DIR, configFileName)
-
-raw_data = []
-
-def loadRawConfig():
-    global raw_data
-    global configFileName
-    global configFilePath
+def load_raw_config():
+    raw_data = []
+    configFileName = "jocelinefb.conf.json"
+    configFilePath = os.path.join(BASE_DIR, configFileName)
 
     if not os.path.isfile(configFilePath): 
         logger.error("Missing 'Configuration (jocelinefb.conf.json)' file")
@@ -26,15 +21,16 @@ def loadRawConfig():
 
     with open(configFilePath, 'r') as file:
         try: 
-            raw_config_data = json.loads(file.read())
+            raw_data = json.loads(file.read())
         except json.decoder.JSONDecodeError:
             logger.error("Corrupted configuration file: JSONDecodeError")
             sys.exit(0)
 
-    raw_data = raw_config_data
+    return raw_data
 
-def loadConfigInDb():
+def load_config():
     global data
+    raw_data = load_raw_config()
 
     try:
         language = raw_data["lang"]
