@@ -114,8 +114,7 @@ def saveLogs():
     if len(CRASH_LOG_RESULT) > 0: writeLog(ReportFiles.CRASH_LOG_PATH, CRASH_LOG_RESULT, ReportFiles.CRASH_REPORT_FILENAME)
 
 
-
-def modifyLogName(props_to_add):
+def save_log_as_test(props_to_add):
     ReportFiles.INFO_REPORT_FILENAME = ReportFiles.INFO_REPORT_FILENAME[:-4]
     
     ReportFiles.SAVE_ON_SERVER = (props_to_add['result'] == 'FAIL')
