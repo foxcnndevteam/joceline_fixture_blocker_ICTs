@@ -24,3 +24,4 @@ online_result.txt
 boards_to_retest.json
 /output
 /log
+/static/reports

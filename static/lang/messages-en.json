@@ -1,0 +1,40 @@
+{
+    "user": {
+        "created": "The user was created correctly",
+        "error": {
+            "password_length": "Password must be 8 characters long",
+            "user_in_db": "User already exist"
+        },
+        "login": "You must be an administrator to run this command, log in",
+        "bad_login": "Bad login"
+    },
+    "fixture": {
+        "saving_test": "Saving test info...",
+        "result_uploaded": "Uploaded result to SFC",
+        "fixture_unlocked": "The fixture was unlocked",
+        "fixture_locked": "The fixture has been blocked",
+        "max_fail_count_reached": "Max fail count reached, the fixture will be blocked"
+    },
+    "setter": {
+        "fail_count": "Fixture fail count was modified successfully",
+        "max_fail_count": "Fixture max fail count was modified successfully",
+        "block_password": "Fixture block password was modified successfully"
+    },
+    "block_view": {
+        "title": "Fixture blocked",
+        "subtitle": "Please notify a Technician/Engineer for review.",
+        "reasons": {
+            "failsLimitReached": "Max fail count has been reached (failsLimitReached)",
+            "stepsLimitReached": "Max steps count has been reached, install new Transboard V2 module (stepsLimitReached)"
+        }
+    },
+    "retest_view": {
+        "show_boards_title": "Please place the boards marked in yellow on another fixture",
+        "default_title": "Please place the board on another fixture"
+    },
+    "boards": {
+        "repeated_ids": "The 'boards' map in config have repeated IDs"
+    },
+    "unexpected_error": "An unexpected error occurred, please contact support team",
+    "view_not_exist": "The view does not exist"
+}
