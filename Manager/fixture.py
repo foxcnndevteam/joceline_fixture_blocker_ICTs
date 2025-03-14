@@ -9,6 +9,7 @@ import Db.Models as Models
 import Views.window as window
 import Manager.boards as boards
 import Manager.config as config
+import Manager.boards as boards
 
 from env import BASE_DIR
 from Views.retest import RetestWindow
@@ -25,10 +26,10 @@ def getFixtureMessages():
         logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
         sys.exit(0)
 
-def loadFixtureInfo():
+def load_fixture_info():
     global f_data
     global max_fail_count
-
+    
     try:
         f_data = Models.Local.Fixture().select().where(Models.Local.Fixture.fixture_id == "HR001").get()
     except Models.DoesNotExist:
@@ -37,6 +38,7 @@ def loadFixtureInfo():
 
 
     max_fail_count = config.getMaxFailCount()
+    boards.load_boards_info()
 
 
 # --- Setters --- #
