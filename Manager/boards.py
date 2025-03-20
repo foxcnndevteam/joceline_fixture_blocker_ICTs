@@ -6,7 +6,7 @@ import Utils.lang as lang
 import Db.Models as Models
 import Manager.config as config
 
-boards: dict[str, Models.Local.Boards] = {}
+boards: dict[str, Models.Local.Board] = {}
 
 def load_boards_info():
     global boards
@@ -27,7 +27,7 @@ def load_boards_info():
     
     for board in boards_ids:
         try:
-            boards[str(board)] = Models.Local.Boards(
+            boards[str(board)] = Models.Local.Board(
                 board_id = board,
                 board_failed = False,
                 should_board_retest = False
@@ -35,7 +35,7 @@ def load_boards_info():
             
             boards[str(board)].save()
         except peewee.IntegrityError:
-            boards[str(board)] = Models.Local.Boards().select().where(Models.Local.Boards.board_id == board).get()
+            boards[str(board)] = Models.Local.Board().select().where(Models.Local.Board.board_id == board).get()
                 
         
 # --- Getters --- #
@@ -57,7 +57,7 @@ def getBoardFailed(board_id: str):
 def getBoardsToRetest():
     boards_to_retest = []
     try:
-        raw_boards = Models.Local.Boards().select().where(Models.Local.Boards.should_board_retest == True)
+        raw_boards = Models.Local.Board().select().where(Models.Local.Board.should_board_retest == True)
         for board in raw_boards:
             if board.should_board_retest:
                 boards_to_retest.append(board.board_id)
@@ -68,8 +68,8 @@ def getBoardsToRetest():
         return boards_to_retest
     
 def someBoardFailed():
-    board: Models.Local.Boards
-    boards = Models.Local.Boards().select()
+    board: Models.Local.Board
+    boards = Models.Local.Board().select()
     some_board_faied = False
     
     for board in boards:

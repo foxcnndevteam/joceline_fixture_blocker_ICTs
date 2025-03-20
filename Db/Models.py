@@ -1,4 +1,5 @@
 import os
+import datetime
 
 from peewee import *
 from env import BASE_DIR
@@ -32,11 +33,14 @@ class Local:
         server_log_path = TextField()
         language = TextField()
         boards_on_fixture_map = TextField()
+        yield_calc_quantity = IntegerField()
+        yield_block_threshold = IntegerField()
+        test_count = IntegerField( default=0 )
 
         class Meta:
             database = LocalMetadata.localDB
     
-    class Boards(Model):
+    class Board(Model):
         board_id = IntegerField(unique=True)
         board_failed = BooleanField()
         should_board_retest = BooleanField()
@@ -44,7 +48,18 @@ class Local:
         class Meta:
             database = LocalMetadata.localDB
             
-    class Fails(Model):
+    class Test(Model):
+        serial = TextField()
+        result = TextField()
+        fail_status = IntegerField()
+        board_failed = TextField()
+        date = DateTimeField(default=datetime.datetime.now)
+        test_count = IntegerField()
+
+        class Meta:
+            database = LocalMetadata.localDB
+
+    class Fail(Model):
         fail_status = IntegerField()
         board_failed = TextField()
         iteration_failed = IntegerField()
@@ -53,4 +68,4 @@ class Local:
             database = LocalMetadata.localDB
             
     LocalMetadata.localDB.connect()
-    LocalMetadata.localDB.create_tables([Fixture, User, Config, Boards, Fails], safe=True)
+    LocalMetadata.localDB.create_tables([Fixture, User, Config, Board, Test, Fail], safe=True)

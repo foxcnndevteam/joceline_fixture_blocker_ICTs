@@ -1,8 +1,13 @@
 {
+    "lang": "es",
+
     "extern_db_path": "C:\\Users\\nesto\\source\\WORK_PROJECTS\\joceline_fixture_blocker_ICTs\\externDb.db",
     "server_log_path": "C:\\Users\\nesto\\source\\WORK_PROJECTS\\joceline_fixture_blocker_ICTs\\log\\",
-    "lang": "es",
+
     "boards_on_fixture_map":[
         [0]
-    ]
+    ],
+
+    "yield_calc_quantity": 10,
+    "yield_block_threshold": 60
 }

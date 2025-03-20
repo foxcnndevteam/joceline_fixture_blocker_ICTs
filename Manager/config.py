@@ -37,6 +37,8 @@ def load_config():
         extern_db_path = raw_data["extern_db_path"]
         server_log_path = raw_data["server_log_path"]
         boards_on_fixture_map = str(raw_data["boards_on_fixture_map"])
+        yield_calc_quantity = raw_data["yield_calc_quantity"]
+        yield_block_threshold = raw_data["yield_block_threshold"]
 
     except KeyError as e:
         logger.error(f'Corrupted configuration file: Missing key "{e.args[0]}" in configuration file')
@@ -50,7 +52,10 @@ def load_config():
             language = language,
             extern_db_path = extern_db_path,
             server_log_path = server_log_path,
-            boards_on_fixture_map = boards_on_fixture_map
+            boards_on_fixture_map = boards_on_fixture_map,
+            test_count = 0,
+            yield_calc_quantity = yield_calc_quantity,
+            yield_block_threshold = yield_block_threshold
         )
 
         data.save()
@@ -62,6 +67,8 @@ def load_config():
         data.extern_db_path = extern_db_path
         data.server_log_path = server_log_path
         data.boards_on_fixture_map = boards_on_fixture_map
+        data.yield_calc_quantity = yield_calc_quantity
+        data.yield_block_threshold = yield_block_threshold
         data.save()
 
 
@@ -88,9 +95,22 @@ def getServerLogPath():
     global data
     return data.server_log_path
 
+def get_test_count():
+    global data
+    return data.test_count
+
 def getBoardsOnFixtureMap():
     global data
     return data.boards_on_fixture_map
+
+def gey_yield_calc_qty():
+    global data
+    return data.yield_calc_quantity
+
+def get_yield_block_threshold():
+    global data
+    return data.yield_block_threshold
+
 
 # --- Setters --- #
 
@@ -102,4 +122,19 @@ def setMaxFailCount(maxFailCount: int):
 def setBlockPassword(blockPassword):
     global data
     data.block_pass = blockPassword
+    data.save()
+
+def increment_test_count():
+    global data
+    data.test_count = data.test_count + 1
+    data.save()
+    
+def set_yield_calc_qty(yield_calc_quantity: int):
+    global data
+    data.yield_calc_quantity = yield_calc_quantity
+    data.save()
+
+def set_yield_block_threshold(yield_block_threshold: int):
+    global data
+    data.yield_block_threshold = yield_block_threshold
     data.save()
