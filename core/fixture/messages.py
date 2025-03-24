@@ -19,7 +19,8 @@ def checkFixtureMessages():
             'result_uploaded': und_messages['result_uploaded'],
             'fixture_unlocked': und_messages['fixture_unlocked'],
             'fixture_locked': und_messages['fixture_locked'],
-            'max_fail_count_reached': und_messages['max_fail_count_reached']
+            'max_fail_count_reached': und_messages['max_fail_count_reached'],
+            'min_yield_reached': und_messages['min_yield_reached']
         }
     except KeyError as e:
         logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')

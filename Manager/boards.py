@@ -4,7 +4,7 @@ import logger
 import peewee
 import Utils.lang as lang
 import Db.Models as Models
-import Manager.config as config
+import core.config as config
 
 boards: dict[str, Models.Local.Board] = {}
 

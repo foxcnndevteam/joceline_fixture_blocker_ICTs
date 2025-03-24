@@ -1,4 +1,5 @@
 import threading
+from core import config
 from PyQt5.QtCore import pyqtSignal, QObject
 
 class UDPSignals(QObject):
@@ -6,5 +7,7 @@ class UDPSignals(QObject):
     stop_server = threading.Event()
 
 class ServerEnviroment():
-    HOST = '127.0.0.1'
-    PORT = 65432
+    
+    def __init__(self):
+        self.HOST = '127.0.0.1'
+        self.PORT = config.get_udp_server_port()

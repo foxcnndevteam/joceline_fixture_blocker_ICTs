@@ -2,7 +2,7 @@ import os
 import sys
 import json
 import logger
-import Manager.config as config
+import core.config as config
 
 from env import BASE_DIR
 

@@ -3,7 +3,7 @@ import logger
 from Utils.logparser import extractFailedPartsInLog
 
 import Manager.boards as boards
-import Manager.config as config
+import core.config as config
 import Manager.boards as boards
 
 import cli.views.window as window
@@ -18,7 +18,7 @@ from .status_manager import check_block_status, check_retest_status, set_fixture
 
 # --- Core --- #
 
-def procces_info(result: str, serial: str, fixture_id: str, fail_status: int):
+def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     result = result.upper()
     check_status = boards.isOnlyOneBoard()
     fixture_messages = checkFixtureMessages()
@@ -43,9 +43,6 @@ def procces_info(result: str, serial: str, fixture_id: str, fail_status: int):
                 delete_fails = boards.isOnlyOneBoard(),
                 modify_fail_count = False
             )
-        elif check_status:
-            set_fixture_online()
-        return
     else:
         if get_fail_count() == 0: set_fail_count(1)
         partsFailed = extractFailedPartsInLog(fail_status)

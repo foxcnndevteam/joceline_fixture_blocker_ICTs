@@ -1,3 +1,4 @@
+from core import config
 import logger
 
 from cli.views import window
@@ -5,7 +6,7 @@ from cli.views.retest import RetestWindow
 from cli.views.blocked import BlockedWindow
 
 from Db import Models
-from Manager import boards, config
+from Manager import boards
 from .model_manager import get_fail_count, increment_fixture_fails, reset_fail_count, set_fail_count, set_online
 from .messages import checkFixtureMessages
 
@@ -28,43 +29,70 @@ def set_fixture_online(
         else:
             reset_fail_count()
         
-    if show_unlock_message: logger.info(fixture_messages["fixture_unlocked"])
+    if show_unlock_message:
+        logger.info(fixture_messages["fixture_unlocked"])
 
 def should_check_fails():
-    some_board_failed = boards.someBoardFailed()    
+    fixture_messages = checkFixtureMessages()
+    some_board_failed = boards.someBoardFailed()
+    
     if some_board_failed and get_fail_count() == 0:
         increment_fixture_fails()
         return False
+    
     elif not some_board_failed:
-        set_fixture_online()
+        if get_fixture_yield() <= config.get_yield_block_threshold():
+            set_online(False)
+            logger.warning(fixture_messages["min_yield_reached"])
+        elif not boards.isOnlyOneBoard():
+            set_fixture_online()
+        else:
+            set_fixture_online(
+                show_unlock_message=False
+            )
         return False
     return True
 
-# def get_fixture_yield():
-#     sub_query = Models.Local.Test.select(
-#         Models.Local.Test.test_count
-#     ).distinct().order_by(
-#         Models.Local.Test.test_count.desc()
-#     ).limit()
+def get_fixture_yield():
+    sub_query = Models.Local.Test.select(
+        Models.Local.Test.test_count
+    ).distinct().order_by(
+        Models.Local.Test.test_count.desc()
+    ).limit(config.gey_yield_calc_qty())
 
-#     consulta = (TuModelo
-#                 .select()
-#                 .where(TuModelo.test_count.in_(subconsulta))
-#                 .order_by(TuModelo.test_count.desc()))
+    tests = Models.Local.Test.select(
+        Models.Local.Test.id,
+        Models.Local.Test.test_count,
+        Models.Local.Test.result
+    ).where(
+        Models.Local.Test.test_count.in_(sub_query)
+    ).order_by(Models.Local.Test.test_count.desc())
 
-#     resultados = list(consulta)
+    test_counts_checked = []
+    tests_failed = 0
+    test: Models.Local.Test
     
-#     tests = Models.Local.Test().select().order_by.limit(2)
+    for test in tests:
+        if (not (test.test_count in test_counts_checked)) and (test.result == "FAIL"):
+            tests_failed += 1
+            test_counts_checked.append(test.test_count)
+
+    yield_calc_qty = config.gey_yield_calc_qty()
+    tests_passed = yield_calc_qty - tests_failed
+    fixture_yield = (tests_passed / yield_calc_qty) * 100
     
-#     print(tests[0].id)
-#     pass
+    return int(fixture_yield)
 
 def check_block_status():
     if not should_check_fails(): return
     
-    # get_fixture_yield()
-    
     fixture_messages = checkFixtureMessages()
+    if get_fixture_yield() <= config.get_yield_block_threshold():
+        set_online(False)
+        window.show(BlockedWindow('min_yield_reached'))
+        logger.warning(fixture_messages["min_yield_reached"])
+        return
+    
     fail_finded = False
     iterations = [[] for _ in range(get_fail_count() + 1)]
 

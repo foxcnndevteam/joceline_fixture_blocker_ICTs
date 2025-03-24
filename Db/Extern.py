@@ -1,7 +1,7 @@
 import os
 import sys
 import logger
-import Manager.config as config
+import core.config as config
 
 from peewee import *
 

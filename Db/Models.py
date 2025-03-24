@@ -33,9 +33,14 @@ class Local:
         server_log_path = TextField()
         language = TextField()
         boards_on_fixture_map = TextField()
-        yield_calc_quantity = IntegerField()
-        yield_block_threshold = IntegerField()
+        yield_calc_quantity = IntegerField(
+            default=10
+        )
+        yield_block_threshold = IntegerField(
+            default=60
+        )
         test_count = IntegerField( default=0 )
+        udp_server_port = IntegerField()
 
         class Meta:
             database = LocalMetadata.localDB
@@ -55,6 +60,7 @@ class Local:
         board_failed = TextField()
         date = DateTimeField(default=datetime.datetime.now)
         test_count = IntegerField()
+        mode = TextField()
 
         class Meta:
             database = LocalMetadata.localDB

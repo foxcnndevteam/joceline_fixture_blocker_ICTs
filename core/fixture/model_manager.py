@@ -1,6 +1,6 @@
 import Db.Models as Models
 import Manager.boards as boards
-import Manager.config as config
+import core.config as config
 import Manager.boards as boards
 
 f_data: Models.Local.Fixture

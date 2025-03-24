@@ -37,8 +37,7 @@ def load_config():
         extern_db_path = raw_data["extern_db_path"]
         server_log_path = raw_data["server_log_path"]
         boards_on_fixture_map = str(raw_data["boards_on_fixture_map"])
-        yield_calc_quantity = raw_data["yield_calc_quantity"]
-        yield_block_threshold = raw_data["yield_block_threshold"]
+        udp_server_port = raw_data['udp_server_port']
 
     except KeyError as e:
         logger.error(f'Corrupted configuration file: Missing key "{e.args[0]}" in configuration file')
@@ -54,8 +53,7 @@ def load_config():
             server_log_path = server_log_path,
             boards_on_fixture_map = boards_on_fixture_map,
             test_count = 0,
-            yield_calc_quantity = yield_calc_quantity,
-            yield_block_threshold = yield_block_threshold
+            udp_server_port = udp_server_port
         )
 
         data.save()
@@ -67,8 +65,7 @@ def load_config():
         data.extern_db_path = extern_db_path
         data.server_log_path = server_log_path
         data.boards_on_fixture_map = boards_on_fixture_map
-        data.yield_calc_quantity = yield_calc_quantity
-        data.yield_block_threshold = yield_block_threshold
+        data.udp_server_port = udp_server_port
         data.save()
 
 
@@ -111,6 +108,9 @@ def get_yield_block_threshold():
     global data
     return data.yield_block_threshold
 
+def get_udp_server_port():
+    global data
+    return data.udp_server_port
 
 # --- Setters --- #
 

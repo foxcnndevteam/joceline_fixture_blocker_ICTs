@@ -8,6 +8,5 @@
         [0]
     ],
 
-    "yield_calc_quantity": 10,
-    "yield_block_threshold": 60
+    "udp_server_port": 65432
 }

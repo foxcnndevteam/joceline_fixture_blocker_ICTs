@@ -1,6 +1,6 @@
 import os
 import Db.Models as Models
-import Manager.config as config
+import core.config as config
 
 from env import BASE_DIR
 from .model_manager import is_online
@@ -15,14 +15,18 @@ def save_fail(fail_status: int, board_failed: str, iteration_failed: int):
     fail.save()
     
 def save_test(serial: str, result: str, fail_status: int, board_failed: str, iteration_failed: int):
+    mode = 'Online' if is_online() else 'Offline'
+    
     test = Models.Local.Test(
         serial = serial,
         result = result,
         fail_status = fail_status,
         board_failed = board_failed,
         iteration_failed = iteration_failed,
-        test_count = config.get_test_count()
+        test_count = config.get_test_count(),
+        mode = mode
     )
+    
     test.save()
     
 def save_retest_result_in_path(result: str):

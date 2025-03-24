@@ -7,7 +7,7 @@ import Utils.lang as lang
 
 import cli.views.window as window
 
-import Manager.config as config_manager
+import core.config as config_manager
 import Manager.user as user
 # import Manager.fixture as fixture
 import core.fixture as fixture
@@ -40,6 +40,12 @@ def setup_cli():
         pass
 
     # --------------------- Main commands --------------------- #
+    
+    '''
+    #    Command: createsuperuser
+    #    Usage: JocelineFB createsuperuser <username:str> <password:str>
+    #    Desc: Used to create admin users who can modify app settings.
+    '''
     @app.command()
     @click.argument('username')
     @click.argument('password')
@@ -47,12 +53,20 @@ def setup_cli():
         user.createSuperUser(username, password)
 
     # --------------------- Test commands --------------------- #
+    
+    '''
+    #    Command: test saveresult
+    #    Usage: JocelineFB test saveresult <result:PASS|FAIL> <serial:str> <fixtureid:str> <failstatus:int>
+    #    Desc: Used to save and process test info. Also if is only one board auto check status.
+    '''
     @test.command()
     @click.argument('result')
     @click.argument('serial')
     @click.argument('fixtureid')
     @click.argument('failstatus', type=int)
     def saveresult(result, serial, fixtureid, failstatus):
+        
+        # ~ This is an option to modify loggger settings when is executed in test.
         logger.save_log_as_test(
             props_to_add={
                 'serial': serial,
@@ -60,7 +74,9 @@ def setup_cli():
                 'fixtureid': fixtureid
             }
         )
-        fixture.procces_info(result, serial, fixtureid, failstatus)
+        
+        # ~ Send info to process
+        fixture.process_info(result, serial, fixtureid, failstatus)
 
     @test.command()
     def checkstatus():
@@ -89,7 +105,7 @@ def setup_cli():
     @get.command()
     def fixturestatus():
         fixture.save_online_result_in_path()
-        click.echo(f"[bold]Fixture online status:[/bold] {fixture.isOnline()}")
+        click.echo(f"[bold]Fixture online status:[/bold] {fixture.is_online()}")
 
     @config.command()
     @click.argument('maxfailcount', type=int)
@@ -98,6 +114,28 @@ def setup_cli():
             config_manager.setMaxFailCount(maxfailcount)
             try:
                 logger.info(lang.messages["setter"]["max_fail_count"])
+            except KeyError as e:
+                logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
+                sys.exit(0)
+                
+    @config.command()
+    @click.argument('yield_calc_quantity', type=int)
+    def yieldcalcqty(yield_calc_quantity):
+        if user.authUser() == "PASS":
+            config_manager.set_yield_calc_qty(yield_calc_quantity)
+            try:
+                logger.info(lang.messages["setter"]["yield_calc_quantity"])
+            except KeyError as e:
+                logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
+                sys.exit(0)
+
+    @config.command()
+    @click.argument('yield_block_threshold', type=int)
+    def yieldblockthr(yield_block_threshold):
+        if user.authUser() == "PASS":
+            config_manager.set_yield_block_threshold(yield_block_threshold)
+            try:
+                logger.info(lang.messages["setter"]["yield_block_threshold"])
             except KeyError as e:
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)

@@ -2,7 +2,7 @@ import os
 import shutil
 import datetime
 import traceback
-import Manager.config as config
+import core.config as config
 
 from rich import print
 from typing import List

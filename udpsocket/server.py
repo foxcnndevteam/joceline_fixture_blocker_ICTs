@@ -2,10 +2,10 @@ import asyncio
 from udpsocket import UDPSignals, ServerEnviroment
 
 class AsyncUDPServer:
-    HOST = ServerEnviroment.HOST
-    PORT = ServerEnviroment.PORT
     
     def __init__(self, signals: UDPSignals):
+        self.HOST = ServerEnviroment().HOST
+        self.PORT = ServerEnviroment().PORT
         self.signals = signals
 
     class UDPProtocol(asyncio.DatagramProtocol):

@@ -13,7 +13,8 @@
         "result_uploaded": "Uploaded result to SFC",
         "fixture_unlocked": "The fixture was unlocked",
         "fixture_locked": "The fixture has been blocked",
-        "max_fail_count_reached": "Max fail count reached, the fixture will be blocked"
+        "max_fail_count_reached": "Max fail count reached, the fixture will be blocked",
+        "min_yield_reached": "The yield is below the allowed level, the fixture will be blocked"
     },
     "setter": {
         "fail_count": "Fixture fail count was modified successfully",
@@ -25,7 +26,8 @@
         "subtitle": "Please notify a Technician/Engineer for review.",
         "reasons": {
             "failsLimitReached": "Max fail count has been reached (failsLimitReached)",
-            "stepsLimitReached": "Max steps count has been reached, install new Transboard V2 module (stepsLimitReached)"
+            "stepsLimitReached": "Max steps count has been reached, install new Transboard V2 module (stepsLimitReached)",
+            "min_yield_reached": "The yield is below the allowed level, the fixture is blocked"
         }
     },
     "retest_view": {
