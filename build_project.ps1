@@ -1,6 +1,6 @@
-rm -r .\dist
+Remove-Item -r .\dist
 
 pyinstaller .\JocelineFB.spec
 
-cp -r .\static\lang\ .\dist\
-cp -r .\static\jocelinefb.conf.json .\dist\
+Copy-Item -r .\static\lang\ .\dist\
+Copy-Item -r .\static\jocelinefb.conf.json .\dist\
