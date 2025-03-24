@@ -1,12 +1,11 @@
 import os
 import sys
 import json
-import logger
 import peewee
-import Db.Models as Models
 
 from env import BASE_DIR
-
+from utils import logger
+from core.database import Models
 
 data: Models.Local.Config
 

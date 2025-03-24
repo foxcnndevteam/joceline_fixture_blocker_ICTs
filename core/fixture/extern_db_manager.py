@@ -1,15 +1,15 @@
 def remove_serial_parts(serial: str):
-    import Db.Extern as Extern
+    from core.database import Extern
     Extern.TestInfo.delete().where(Extern.TestInfo.serial == serial).execute()
 
 def save_part_failed(result, serial, fixture_id, fail_reason = None):
-    import Db.Extern as Extern
+    from core.database import Extern
 
     testInfo = Extern.TestInfo(serial = serial, fail_reason = fail_reason, fixture_id = fixture_id)
     testInfo.save()
 
 def shouldUploadResult(serial, fixture_id, fail_reason):
-    import Db.Extern as Extern
+    from core.database import Extern
 
     fails = list(Extern.TestInfo.select(Extern.TestInfo.fixture_id, Extern.TestInfo.fail_reason).where(Extern.TestInfo.serial == serial))
     

@@ -1,4 +1,5 @@
 import threading
+
 from core import config
 from PyQt5.QtCore import pyqtSignal, QObject
 

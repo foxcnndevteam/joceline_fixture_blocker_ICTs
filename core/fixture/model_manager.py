@@ -1,7 +1,5 @@
-import Db.Models as Models
-import Manager.boards as boards
-import core.config as config
-import Manager.boards as boards
+import core.database.Models as Models
+from core import boards, config
 
 f_data: Models.Local.Fixture
 max_fail_count: int

@@ -1,7 +1,5 @@
 import sys
-import logger
-
-from Utils import lang
+from utils import logger, lang
 
 def getFixtureMessages():
     try:

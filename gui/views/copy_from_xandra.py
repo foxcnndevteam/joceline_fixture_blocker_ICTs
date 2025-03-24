@@ -1,12 +1,9 @@
 from abc import abstractmethod
-from datetime import datetime, timedelta
 from PyQt5 import QtCore, QtWidgets
 
-from PyQt5.QtChart import QChart, QChartView, QPieSeries
-from PyQt5.QtWidgets import QGraphicsWidget
 from PyQt5.QtCore import Qt
-
 from PyQt5.QtGui import QPen, QColor, QBrush
+from PyQt5.QtChart import QChart, QChartView, QPieSeries
 
 class LastLogsWindow(QtWidgets.QWidget):
     PAGE_SIZES = [10, 25, 50, 100, 200]

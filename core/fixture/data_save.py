@@ -1,8 +1,7 @@
 import os
-import Db.Models as Models
-import core.config as config
-
 from env import BASE_DIR
+from core import config
+from core.database import Models
 from .model_manager import is_online
 
 def save_fail(fail_status: int, board_failed: str, iteration_failed: int):

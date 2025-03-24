@@ -1,17 +1,10 @@
 import sys
 import click
-import logger
-import udpsocket
 
-import Utils.lang as lang
-
-import cli.views.window as window
-
-import core.config as config_manager
-import Manager.user as user
-# import Manager.fixture as fixture
-import core.fixture as fixture
-import udpsocket.client
+from utils import lang, logger
+from core import user, fixture, config as config_manager
+from cli.views import window
+from udpsocket import client
 
 # --- Main group ---- #
 @click.group()
@@ -83,7 +76,7 @@ def setup_cli():
         config_manager.increment_test_count()
         fixture.check_retest_status()
         fixture.check_block_status()
-        udpsocket.client.send_update_signal()
+        client.send_update_signal()
         window.openWindows()
 
     # --------------------- Config commands --------------------- #

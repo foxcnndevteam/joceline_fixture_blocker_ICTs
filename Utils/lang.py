@@ -1,10 +1,11 @@
 import os
 import sys
 import json
-import logger
-import core.config as config
 
 from env import BASE_DIR
+
+from core import config
+from utils import logger
 
 messages = []
 

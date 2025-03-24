@@ -1,9 +1,8 @@
 import os
 import sys
-import logger
-import core.config as config
-
 from peewee import *
+from core import config
+from utils import logger
 
 class ExternMetadata:
     extern_db_path = config.getExternDbPath()

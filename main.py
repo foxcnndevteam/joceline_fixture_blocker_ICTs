@@ -2,12 +2,9 @@ import sys
 import cli
 import gui
 import atexit
-import logger
 
-import Utils.lang as lang
-
-import core.config as config
-import core.fixture as fixture
+from utils import logger, lang
+from core import config, fixture
 
 # ~ If app doesn't get args the system up a window
 is_window: bool = (len(sys.argv) < 2)

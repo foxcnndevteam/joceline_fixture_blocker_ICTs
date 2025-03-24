@@ -3,6 +3,7 @@ import asyncio
 import threading
 
 from gui.views import MainWindow
+
 from PyQt5.QtWidgets import QApplication
 
 from udpsocket import UDPSignals

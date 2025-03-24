@@ -2,14 +2,12 @@ import os
 import shutil
 import datetime
 import traceback
-import core.config as config
 
-from rich import print
+from core import config
 from typing import List
 from env import BASE_DIR
 
 datetime_now = datetime.datetime.now()
-
 
 class ReportFiles:
     DATE: str = datetime.datetime.now().replace(microsecond=0).isoformat()[:19]
@@ -38,7 +36,7 @@ def info(message: str):
     timestamp_date = f'{datetime_now.year}-{datetime_now.month}-{datetime_now.day}'
     timestamp_time = f'{datetime_now.hour}:{datetime_now.minute}:{datetime_now.second}'
     
-    print(f'[bold]Info:[/bold] {message}')
+    print(f'Info: {message}')
     INFO_LOG_RESULT.append(
         f"[{timestamp_date}]:[{timestamp_time}]:[{Levels.INFO}]:{PROGRAM}:{message}"
     )
@@ -47,7 +45,7 @@ def debug(message: str):
     timestamp_date = f'{datetime_now.year}-{datetime_now.month}-{datetime_now.day}'
     timestamp_time = f'{datetime_now.hour}:{datetime_now.minute}:{datetime_now.second}'
     
-    print(f'[bold #949494]Debug:[/bold #949494] {message}')
+    print(f'Debug: {message}')
     INFO_LOG_RESULT.append(
         f"[{timestamp_date}]:[{timestamp_time}]:[{Levels.DEBUG}]:{PROGRAM}:{message}"
     )
@@ -56,7 +54,7 @@ def error(message: str):
     timestamp_date = f'{datetime_now.year}-{datetime_now.month}-{datetime_now.day}'
     timestamp_time = f'{datetime_now.hour}:{datetime_now.minute}:{datetime_now.second}'
 
-    print(f'[bold red]Error:[/bold red] {message}')
+    print(f'Error: {message}')
     INFO_LOG_RESULT.append(
         f"[{timestamp_date}]:[{timestamp_time}]:[{Levels.ERROR}]:{PROGRAM}:{message}"
     )
@@ -65,7 +63,7 @@ def warning(message: str):
     timestamp_date = f'{datetime_now.year}-{datetime_now.month}-{datetime_now.day}'
     timestamp_time = f'{datetime_now.hour}:{datetime_now.minute}:{datetime_now.second}'
     
-    print(f'[bold #bbc000]Warning:[/bold #bbc000] {message}')
+    print(f'Warning: {message}')
     INFO_LOG_RESULT.append(
         f"[{timestamp_date}]:[{timestamp_time}]:[{Levels.WARNING}]:{PROGRAM}:{message}"
     )

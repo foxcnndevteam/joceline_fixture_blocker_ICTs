@@ -1,7 +1,9 @@
 from core import config
-from Db.Models import Local
-from udpsocket import UDPSignals
+from core.database.Models import Local
 from core.fixture import get_fixture_yield
+
+from udpsocket import UDPSignals
+
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 
 class MainWindow(QMainWindow):

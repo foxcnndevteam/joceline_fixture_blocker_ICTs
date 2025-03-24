@@ -1,7 +1,8 @@
 import sys
-import logger
-import Utils.lang as lang
-import core.config as config
+
+from utils import lang, logger
+
+from core import config
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent

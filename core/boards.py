@@ -1,10 +1,11 @@
 import sys
 import json
-import logger
 import peewee
-import Utils.lang as lang
-import Db.Models as Models
-import core.config as config
+
+from utils import logger, lang
+
+from core import config
+from core.database import Models
 
 boards: dict[str, Models.Local.Board] = {}
 

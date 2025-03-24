@@ -1,12 +1,12 @@
-from core import config
-import logger
+from utils import logger
 
 from cli.views import window
 from cli.views.retest import RetestWindow
 from cli.views.blocked import BlockedWindow
 
-from Db import Models
-from Manager import boards
+from core.database import Models
+from core import boards, config
+
 from .model_manager import get_fail_count, increment_fixture_fails, reset_fail_count, set_fail_count, set_online
 from .messages import checkFixtureMessages
 

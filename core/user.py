@@ -1,12 +1,9 @@
 import sys
 import peewee
-import logger
 import getpass
-import Utils.lang as lang
-import Db.Models as Models
 
-from rich import print
-
+from utils import logger, lang
+from core.database import Models
 
 def getUserMessages():
     try:
@@ -70,7 +67,7 @@ def authUser():
         logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
         sys.exit(0)
 
-    print(f'[bold]{user_messages["login"]}[/bold]')
+    print(f'{user_messages["login"]}')
 
     username = input("Username: ")
     password = getpass.getpass("Password: ")

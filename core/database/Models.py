@@ -1,6 +1,5 @@
 import os
 import datetime
-
 from peewee import *
 from env import BASE_DIR
 

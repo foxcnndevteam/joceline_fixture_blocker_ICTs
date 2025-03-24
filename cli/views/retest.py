@@ -1,12 +1,12 @@
 import sys
-import logger
-import Manager.boards as boards
-import Utils.lang as lang
 
-from PyQt5.QtGui import QKeyEvent
+from utils import lang, logger
+
+from core import boards
+
 from PyQt5.QtCore import Qt, QSize
-from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QSizePolicy, QGridLayout
-
+from PyQt5.QtGui import QKeyEvent
+from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout,QSizePolicy, QGridLayout
 
 class RetestWindow(QWidget):
     show_fullscreen = True

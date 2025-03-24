@@ -1,8 +1,8 @@
 import os
 import re
 import sys
-import logger
 
+from utils import logger
 from env import BASE_DIR
 
 def extractFailedPartsInLog(fail_status: int):

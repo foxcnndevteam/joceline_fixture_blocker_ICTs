@@ -1,12 +1,9 @@
-import logger
+from utils import logger
+from utils.logparser import extractFailedPartsInLog
 
-from Utils.logparser import extractFailedPartsInLog
+from cli.views import window
 
-import Manager.boards as boards
-import core.config as config
-import Manager.boards as boards
-
-import cli.views.window as window
+from core import boards, config
 
 from udpsocket import client
 
@@ -17,7 +14,6 @@ from .data_save import save_fail, save_test, save_retest_result_in_path
 from .status_manager import check_block_status, check_retest_status, set_fixture_online
 
 # --- Core --- #
-
 def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     result = result.upper()
     check_status = boards.isOnlyOneBoard()
