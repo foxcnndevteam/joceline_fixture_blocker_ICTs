@@ -10,18 +10,25 @@ from core import config, fixture
 is_window: bool = (len(sys.argv) < 2)
 
 # --- Exit handler --- #
-# Used to save logs when app exit
+'''
+#    Function: exit_handler
+#    Usage: None
+#    Desc: Used print last line and save all logs (Crash & Info)
+'''
 def exit_handler():
     logger.saveLogs()
     print()
-    
-    
 
 # --- Initial data & Config loader --- #
+'''
+#    Function: load_inital_data
+#    Usage: None
+#    Desc: Used to load config, lang an fixture data
+'''
 def load_inital_data():
     config.load_config()
-    lang.loadMessages()
-    fixture.load_fixture_info()
+    lang.load_messages()
+    fixture.load_fixture()
     
     
     
@@ -33,7 +40,7 @@ def main():
         # ~ Alternate between window or cli mode
         if is_window:
             # ~ Execute gui and get exit code
-            exit_code = gui.execute()
+            exit_code = gui.exec_()
         else:
             # ~ Execute cli and get exit code
             exit_code = cli.exec_()

@@ -15,7 +15,7 @@ async def run_udp_server(signals):
     await server.run_server()
 
 # --- GUI & UDP Server execution --- #
-def execute():
+def exec_():
     
     # ~ Instance signals to comunicate GUI wiht UDP Server
     signals = UDPSignals()

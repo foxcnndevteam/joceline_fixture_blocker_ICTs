@@ -4,7 +4,7 @@ from core import boards, config
 f_data: Models.Local.Fixture
 max_fail_count: int
 
-def load_fixture_info():
+def load_fixture():
     global f_data
     global max_fail_count
     

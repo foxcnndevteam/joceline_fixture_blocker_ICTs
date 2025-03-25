@@ -9,7 +9,7 @@ from utils import logger
 
 messages = []
 
-def loadMessages():
+def load_messages():
     global messages
     
     messagesFileName = f'messages-{config.getLanguage()}.json'
