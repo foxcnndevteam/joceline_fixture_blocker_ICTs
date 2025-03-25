@@ -12,7 +12,6 @@ is_window: bool = (len(sys.argv) < 2)
 # --- Exit handler --- #
 '''
 #    Function: exit_handler
-#    Usage: None
 #    Desc: Used print last line and save all logs (Crash & Info)
 '''
 def exit_handler():
@@ -22,7 +21,6 @@ def exit_handler():
 # --- Initial data & Config loader --- #
 '''
 #    Function: load_inital_data
-#    Usage: None
 #    Desc: Used to load config, lang an fixture data
 '''
 def load_inital_data():
@@ -30,9 +28,11 @@ def load_inital_data():
     lang.load_messages()
     fixture.load_fixture()
     
-    
-    
 # --- Main app executer --- #
+'''
+#    Function: main
+#    Desc: Initial function of system
+'''
 def main():
     try:
         load_inital_data()

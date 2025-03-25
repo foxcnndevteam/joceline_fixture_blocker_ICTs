@@ -8,20 +8,40 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QSizePolicy
 
+'''
+#   Class: BlockedWindow
+#   Desc: This is the blocked window wich is diplayed when fixture is blocked
+'''
 class BlockedWindow(QWidget):
+    # ~ Used in all windows instance on cli to check if cli should display it in full screen
     show_fullscreen = True
 
-    def __init__(self, blocked_by: str, show_boards: bool = False, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setupGui(blocked_by, show_boards)
+
+    '''
+    #   Function: __init__        -        Class instance
+    #   Arguments:
+    #       block_reason | type:str  | Argument to get info message. You can check it in messages-{lang}.json -> block_view -> reasons)
+    '''
+    def __init__(self, block_reason: str, *args, **kwargs):
         
-    def setupGui(self, blocked_by: str, show_boards: bool):
+        super().__init__(*args, **kwargs)
+        self.setupGui(block_reason)
+    
+    
+    '''
+    #   Function: setupGui
+    #   Desc: Instance initial GUI componentes
+    #   Arguments:
+    #       block_reason | type:str  | Argument to get info message. You can check it in messages-{lang}.json -> block_view -> reasons)
+    '''
+    def setupGui(self, block_reason: str):
+        
         try:
             messages = {
                 'title': lang.messages['block_view']['title'],
                 'subtitle': lang.messages['block_view']['subtitle'],
                 'reasons': {
-                    f'{blocked_by}': lang.messages['block_view']['reasons'][blocked_by]
+                    f'{block_reason}': lang.messages['block_view']['reasons'][block_reason]
                 }
             }
         except KeyError as e:
@@ -40,7 +60,7 @@ class BlockedWindow(QWidget):
         label = QLabel(messages["subtitle"])
         label.setStyleSheet("font-size: 30px; padding: 0px; margin: 0px; font-weight: bold;")
 
-        labelReason = QLabel("Reason code: " + messages["reasons"][blocked_by])
+        labelReason = QLabel("Reason code: " + messages["reasons"][block_reason])
         labelReason.setStyleSheet("font-size: 20px; padding: 0px; margin: 0px;")
 
         self.input_text = QLineEdit()
@@ -86,12 +106,23 @@ class BlockedWindow(QWidget):
 
         self.setLayout(layout)
         self.setWindowFlags(Qt.Window | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
-        
+    
+    
+    '''
+    #   Function: onJoinPassword
+    #   Desc: Executed when join password on input and verify if is correct.
+    '''
     def onJoinPassword(self):
-        
         if self.input_text.text() == config.getBlockPassword():
             self.close()
-            
+    
+    
+    '''
+    #   Function: keyPressEvent
+    #   Desc: Detect if enter is clicked to auto send form
+    #   Arguments:
+    #       e | type:QKeyEvent  | Argument to get key event
+    '''
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key.Key_Enter or Qt.Key.Key_Return:
             self.onJoinPassword()

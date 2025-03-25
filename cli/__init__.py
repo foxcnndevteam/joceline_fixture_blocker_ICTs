@@ -32,11 +32,12 @@ def setup_cli():
     def config():
         pass
 
+
+
     # --------------------- Main commands --------------------- #
-    
     '''
     #    Command: createsuperuser
-    #    Usage: JocelineFB createsuperuser <username:str> <password:str>
+    #    Usage: JocelineFB.exe createsuperuser <username:str> <password:str>
     #    Desc: Used to create admin users who can modify app settings.
     '''
     @app.command()
@@ -45,17 +46,18 @@ def setup_cli():
     def createsuperuser(username, password):
         user.createSuperUser(username, password)
 
+
+
     # --------------------- Test commands --------------------- #
-    
     '''
     #    Command: test saveresult
-    #    Usage: JocelineFB test saveresult <result:PASS|FAIL> <serial:str> <fixtureid:str> <failstatus:int>
+    #    Usage: JocelineFB.exe test saveresult <result:PASS|FAIL> <serial:str> <fixtureid:str> <failstatus:int>
     #    Desc: Used to save and process test info. Also if is only one board auto check status.
     '''
     @test.command()
-    @click.argument('result')
-    @click.argument('serial')
-    @click.argument('fixtureid')
+    @click.argument('result', type=str)
+    @click.argument('serial', type=str)
+    @click.argument('fixtureid', type=str)
     @click.argument('failstatus', type=int)
     def saveresult(result, serial, fixtureid, failstatus):
         
@@ -71,6 +73,13 @@ def setup_cli():
         # ~ Send info to process
         fixture.process_info(result, serial, fixtureid, failstatus)
 
+
+
+    '''
+    #    Command: test checkstatus
+    #    Usage: JocelineFB.exe test checkstatus
+    #    Desc: Used to check and save fixture status when multiple boards
+    '''
     @test.command()
     def checkstatus():
         config_manager.increment_test_count()
@@ -79,9 +88,16 @@ def setup_cli():
         client.send_update_signal()
         window.openWindows()
 
+
+
     # --------------------- Config commands --------------------- #
+    '''
+    #    Command: set failcount
+    #    Usage: JocelineFB.exe set failcount <failcount:int>
+    #    Desc: Used to modify fixture fail count
+    '''
     @set.command()
-    @click.argument('failcount')
+    @click.argument('failcount', type=int)
     def failcount(failcount):
         if user.authUser() == "PASS":
             fixture.set_fail_count(failcount)
@@ -91,15 +107,36 @@ def setup_cli():
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)
 
+
+
+    '''
+    #    Command: get failcount
+    #    Usage: JocelineFB.exe get failcount
+    #    Desc: Used get current fixture fail count
+    '''
     @get.command()
     def failcount():
         click.echo(f"[bold]Fails count:[/bold] {fixture.getFailCount()}")
 
+
+
+    '''
+    #    Command: get fixturestatus
+    #    Usage: JocelineFB.exe get fixturestatus 
+    #    Desc: Used to save and display fixture status
+    '''
     @get.command()
     def fixturestatus():
         fixture.save_online_result_in_path()
         click.echo(f"[bold]Fixture online status:[/bold] {fixture.is_online()}")
 
+
+
+    '''
+    #    Command: set config maxfailcount
+    #    Usage: JocelineFB.exe set config maxfailcount <maxfailcount:int>
+    #    Desc: Used to modify fixture max fail count
+    '''
     @config.command()
     @click.argument('maxfailcount', type=int)
     def maxfailcount(maxfailcount):
@@ -110,7 +147,14 @@ def setup_cli():
             except KeyError as e:
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)
-                
+
+
+
+    '''
+    #    Command: set config yieldcalcqty
+    #    Usage: JocelineFB.exe set config yieldcalcqty <yield_calc_quantity:int>
+    #    Desc: Used to modify fixture yield calc quantity
+    '''
     @config.command()
     @click.argument('yield_calc_quantity', type=int)
     def yieldcalcqty(yield_calc_quantity):
@@ -122,6 +166,13 @@ def setup_cli():
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)
 
+
+
+    '''
+    #    Command: set config yieldblockthr
+    #    Usage: JocelineFB.exe set config yieldblockthr <yield_block_threshold:int>
+    #    Desc: Used to modify fixture yield block threshold
+    '''
     @config.command()
     @click.argument('yield_block_threshold', type=int)
     def yieldblockthr(yield_block_threshold):
@@ -133,8 +184,15 @@ def setup_cli():
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)
 
+
+
+    '''
+    #    Command: set config blockpassword
+    #    Usage: JocelineFB.exe set config blockpassword <newpassword:str>
+    #    Desc: Used to modify fixture block password
+    '''
     @config.command()
-    @click.argument('newpassword')
+    @click.argument('newpassword', type=str)
     def blockpassword(newpassword):
         if user.authUser() == "PASS":
             config_manager.setBlockPassword(newpassword)
@@ -143,6 +201,8 @@ def setup_cli():
             except KeyError as e:
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)
+
+
 
 # --- Execute CLI --- #
 def exec_():

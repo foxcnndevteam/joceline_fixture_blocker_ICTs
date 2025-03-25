@@ -8,14 +8,32 @@ from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout,QSizePolicy, QGridLayout
 
+'''
+#   Class: RetestWindow
+#   Desc: This is the retest window wich is diplayed when board/s should be retested
+'''
 class RetestWindow(QWidget):
+    # ~ Used in all windows instance on cli to check if cli should display it in full screen
     show_fullscreen = True
 
-    def __init__(self, boards_to_retest, *args, **kwargs):
+
+    '''
+    #   Function: __init__        -        Class instance
+    #   Arguments:
+    #       boards_to_retest | type:list[str]  | List to check if arr position in boards should retest
+    '''
+    def __init__(self, boards_to_retest:list[str], *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setupGui(boards_to_retest)
 
-    def setupGui(self, boards_to_retest):
+
+    '''
+    #   Function: setupGui
+    #   Desc: Instance initial GUI componentes
+    #   Arguments:
+    #       boards_to_retest | type:list[str]  | List to check if arr position in boards should retest
+    '''
+    def setupGui(self, boards_to_retest:list[str]):
         show_boards = not boards.isOnlyOneBoard()
         
         try:
@@ -56,7 +74,8 @@ class RetestWindow(QWidget):
                     font-size: 30px;
                     border: 1px solid black;
                 """
-                if int(text) in boards_to_retest: style = style + "background-color: #e5e400;"
+                if int(text) in boards_to_retest: 
+                    style = style + "background-color: #e5e400;"
 
                 label.setStyleSheet(style)
                 label.setFixedWidth(300)
@@ -98,9 +117,21 @@ class RetestWindow(QWidget):
         self.setLayout(layout)
         self.setWindowFlags(Qt.Window | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
 
+
+    '''
+    #   Function: onPress
+    #   Desc: Function called when press event that close window
+    '''
     def onPress(self):
         self.close()
-        
+    
+    
+    '''
+    #   Function: keyPressEvent
+    #   Desc: Detect if enter is clicked to auto send form
+    #   Arguments:
+    #       e | type:QKeyEvent  | Argument to get key event
+    '''
     def keyPressEvent(self, e: QKeyEvent):
         if e.key() == Qt.Key.Key_Enter or Qt.Key.Key_Return:
                 self.onPress()
