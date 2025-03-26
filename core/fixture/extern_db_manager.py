@@ -1,13 +1,38 @@
+'''
+#   Function: remove_serial_parts
+#   Desc: Remove all failed devices by PCBA serial saved in extern database 
+#   Arguments:
+#       serial | type:str | PCBA Serial
+''' 
 def remove_serial_parts(serial: str):
     from core.database import Extern
     Extern.TestInfo.delete().where(Extern.TestInfo.serial == serial).execute()
 
-def save_part_failed(result, serial, fixture_id, fail_reason = None):
+
+'''
+#   Function: save_part_failed
+#   Desc: Save a failed device of PCBA
+#   Arguments:
+#       result      | type:str | Test result of PCBA
+#       serial      | type:str | PCBA Serial
+#       fixture_id  | type:str | FixtureID where PCBA was tested
+#       fail_reason | type:str | Fail reason code
+'''
+def save_part_failed(result: str, serial: str, fixture_id: str, fail_reason: str = None):
     from core.database import Extern
 
     testInfo = Extern.TestInfo(serial = serial, fail_reason = fail_reason, fixture_id = fixture_id)
     testInfo.save()
 
+
+'''
+#   Function: shouldUploadResult
+#   Desc: Check if PCBA serial whould be failed or retested
+#   Arguments:
+#       result      | type:str | Test result of PCBA
+#       fixture_id  | type:str | FixtureID where PCBA was tested
+#       fail_reason | type:str | Fail reason code
+'''
 def shouldUploadResult(serial, fixture_id, fail_reason):
     from core.database import Extern
 

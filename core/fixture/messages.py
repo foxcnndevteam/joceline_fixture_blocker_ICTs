@@ -1,6 +1,10 @@
 import sys
 from utils import logger, lang
 
+'''
+#   Function: getFixtureMessages
+#   Desc: Get fixture header object messages.
+'''
 def getFixtureMessages():
     try:
         return lang.messages["fixture"]
@@ -8,6 +12,11 @@ def getFixtureMessages():
         logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
         sys.exit(0)
 
+
+'''
+#   Function: checkFixtureMessages
+#   Desc: Verify all messages in fixture object.
+'''
 def checkFixtureMessages():
     und_messages = getFixtureMessages()
 

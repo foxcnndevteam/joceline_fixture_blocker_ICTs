@@ -9,6 +9,10 @@ from core.database import Models
 
 boards: dict[str, Models.Local.Board] = {}
 
+'''
+#   Function: load_boards_info
+#   Desc: Loads the panel drawed in config and save that info in local database.
+'''
 def load_boards_info():
     global boards
     
@@ -40,7 +44,10 @@ def load_boards_info():
                 
         
 # --- Getters --- #
-
+'''
+#   Function: isOnlyOneBoard
+#   Desc: Checks if the length of the board list is 1, this means it is being used in single board mode.
+'''
 def isOnlyOneBoard() -> bool:
     return (len(getBoardsList()) == 1)
 
@@ -55,6 +62,11 @@ def getBoardFailed(board_id: str):
     
     return boards[board_id].board_failed
 
+
+'''
+#   Function: getBoardsToRetest
+#   Desc: Checks wich boards has te value 'should_be_retest' in True, return the value and restart it.
+'''
 def getBoardsToRetest():
     boards_to_retest = []
     try:
@@ -67,7 +79,12 @@ def getBoardsToRetest():
         return boards_to_retest
     except:
         return boards_to_retest
-    
+
+
+'''
+#   Function: someBoardFailed
+#   Desc: Checks in board panel if some board failed and return True or False.
+'''
 def someBoardFailed():
     board: Models.Local.Board
     boards = Models.Local.Board().select()
@@ -83,7 +100,6 @@ def someBoardFailed():
     
     
 # --- Setters --- #
-
 def setBoardFailed(board_id: str, board_failed: bool):
     global boards
     

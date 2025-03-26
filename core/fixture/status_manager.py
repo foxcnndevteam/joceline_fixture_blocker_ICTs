@@ -10,11 +10,20 @@ from core import boards, config
 from .model_manager import get_fail_count, increment_fixture_fails, reset_fail_count, set_fail_count, set_online
 from .messages import checkFixtureMessages
 
+'''
+#   Function: set_fixture_online
+#   Desc: Main funtion of fixture, this function process all info and events when PCBA was tested in.
+#   Arguments:
+#       delete_fails        | type:bool | Indicates if should delete fails when online.
+#       fixture_fail        | type:bool | Indicates if fixture fail.
+#       show_unlock_message | type:bool | Indicates if show unlock message when pass.
+#       modify_fail_count   | type:bool | Indicates of should modify fail count (Used in multiboard).
+'''
 def set_fixture_online(
-        delete_fails = True, 
-        fixture_fail = False, 
-        show_unlock_message = True,
-        modify_fail_count = True
+        delete_fails: bool = True, 
+        fixture_fail: bool = False, 
+        show_unlock_message: bool = True,
+        modify_fail_count: bool = True
     ):
     
     fixture_messages = checkFixtureMessages()
@@ -32,6 +41,11 @@ def set_fixture_online(
     if show_unlock_message:
         logger.info(fixture_messages["fixture_unlocked"])
 
+
+'''
+#   Function: should_check_fails
+#   Desc: Checks if fixture fail or yield is not above the threshold to indicate if should be check fails.
+'''
 def should_check_fails():
     fixture_messages = checkFixtureMessages()
     some_board_failed = boards.someBoardFailed()
@@ -53,6 +67,11 @@ def should_check_fails():
         return False
     return True
 
+
+'''
+#   Function: get_fixture_yield 
+#   Desc: Calculates the fixture yield in single board or multiboard tests.
+'''
 def get_fixture_yield():
     sub_query = Models.Local.Test.select(
         Models.Local.Test.test_count
@@ -83,6 +102,18 @@ def get_fixture_yield():
     
     return int(fixture_yield)
 
+
+'''
+#   Function: check_block_status 
+#   Desc: If should check fails and yield is above threshold this function checks 
+#         fails saved in Fail model to determinate if fixture should be blocked, 
+#         the function check the fail an iteration to verify if has a consecutive 
+#         fail, that because if use multiboard the fixture save 2 or more fails
+#         in database labeled with some iteration number, the iteration indicates 
+#         the main test itertaion number in fail because in multiboard the process_info
+#         function is executed multiple times and it save multiple subtests, the fixture 
+#         create an iteration (Like main fail id) to check where the fail was happen.
+'''
 def check_block_status():
     if not should_check_fails(): return
     
@@ -126,7 +157,12 @@ def check_block_status():
             fail.save()
             
         set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
-        
+
+
+'''
+#   Function: check_retest_status 
+#   Desc: Checks if some board should be retested to display retest window.
+'''  
 def check_retest_status():
     boards_to_retest = boards.getBoardsToRetest()
     if len(boards_to_retest) > 0:

@@ -9,6 +9,10 @@ from core.database import Models
 
 data: Models.Local.Config
 
+'''
+#   Function: load_raw_config
+#   Desc: Loads config file an checks if it exist or is corrupted.
+'''
 def load_raw_config():
     raw_data = []
     configFileName = "jocelinefb.conf.json"
@@ -27,6 +31,11 @@ def load_raw_config():
 
     return raw_data
 
+
+'''
+#   Function: load_config
+#   Desc: Gets the config json file decoded, gets and loads all config keys.
+'''
 def load_config():
     global data
     raw_data = load_raw_config()

@@ -4,6 +4,10 @@ from core import boards, config
 f_data: Models.Local.Fixture
 max_fail_count: int
 
+'''
+#   Function: load_fixture
+#   Desc: Load initial data if it does not exist.
+'''
 def load_fixture():
     global f_data
     global max_fail_count
@@ -13,13 +17,12 @@ def load_fixture():
     except Models.DoesNotExist:
         f_data = Models.Local.Fixture(fixture_id="HR001", fail_count=0, steps_count=0, pass_count=0, online=True)
         f_data.save()
-
-
+        
     max_fail_count = config.getMaxFailCount()
     boards.load_boards_info()
 
-# --- Setters --- #
 
+# --- Setters --- #
 def set_online(isOnline: bool):
     global f_data
 
@@ -43,7 +46,6 @@ def reset_fail_count():
 
 
 # --- Getters --- #
-
 def is_online():
     global f_data
 
