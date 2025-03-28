@@ -1,28 +1,31 @@
 from core import config
 from core.database.Models import Local
-from core.fixture import get_fixture_yield
+from core.fixture import get_fixture_yield, is_online
 
 from udpsocket import UDPSignals
 
 from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 
 class MainWindow(QMainWindow):
+    status_style = '''
+        font-size: 40px; 
+        font-weight: bold;
+    '''
+    
     def __init__(self, signals: UDPSignals):
         super().__init__()
         
         self.signals = signals
         
         self.setWindowTitle("JDash - ICT")
-        # self.setGeometry(100, 100, 800, 500)
+        self.setFixedSize(900, 500)
         
-        self.setFixedSize(800, 500)
-        
-        self.setup_yield_container()
+        self.setup_header_container()
         self.setup_tests_table()
         self.update_tests_table()
         
         layout = QVBoxLayout()
-        layout.addWidget(self.yield_container)
+        layout.addWidget(self.header_container)
         layout.addWidget(self.table_container)
 
         container = QWidget()
@@ -31,18 +34,36 @@ class MainWindow(QMainWindow):
 
         self.signals.update_ui.connect(self.update_ui)
         
-    def setup_yield_container(self):
-        self.yield_container = QWidget()
-        yield_layout = QHBoxLayout(self.yield_container)
+    def setup_header_container(self):
+        self.header_container = QWidget()
+        header_layout = QHBoxLayout(self.header_container)
         
+        # ~ Yield widgets ------------------------------------------------------------
         self.yield_label = QLabel('Yield:')
         self.yield_label.setStyleSheet("font-size: 30px;")
         
         self.yield_percent = QLabel(f'{int(get_fixture_yield())}%')
-        self.yield_percent.setStyleSheet("font-size: 60px; font-weight: bold;")
+        self.yield_percent.setStyleSheet("font-size: 40px; font-weight: bold;")
         
-        yield_layout.addWidget(self.yield_label)
-        yield_layout.addWidget(self.yield_percent)
+        # ~ Status widgets -----------------------------------------------------------
+        self.status_label = QLabel('Status:')
+        self.status_label.setStyleSheet("font-size: 30px;")
+        
+        self.status_value = QLabel(
+            f'Online' if is_online(get_status_from_db=True) else 'Offline'
+        )
+        self.status_value.setStyleSheet(f'''
+            {self.status_style}
+            color: {
+                'green' if is_online(get_status_from_db=True) else 'gray'
+            };
+        ''')
+        
+        # ~ Add widgets to layout
+        header_layout.addWidget(self.yield_label)
+        header_layout.addWidget(self.yield_percent)
+        header_layout.addWidget(self.status_label)
+        header_layout.addWidget(self.status_value)
         
     def setup_tests_table(self):
         self.table_container = QTableWidget()
@@ -52,8 +73,15 @@ class MainWindow(QMainWindow):
         
         self.table_container.horizontalHeader().setStretchLastSection(True) 
         self.table_container.horizontalHeader().setSectionResizeMode( 
-            QHeaderView.Stretch
+            QHeaderView.ResizeToContents
         )
+        
+        self.table_container.setStyleSheet("""
+            QTableWidget::item {
+                padding: 20px;           /* Espaciado interno */
+                text-align: center;     /* Centrar el contenido */
+            }
+        """)
         
         self.table_container.setEditTriggers(QAbstractItemView.NoEditTriggers)
         
@@ -95,6 +123,19 @@ class MainWindow(QMainWindow):
         
     def update_ui(self):
         self.yield_percent.setText(f'{int(get_fixture_yield())}%')
+        
+        
+        print(f'Online' if is_online(get_status_from_db=True) else 'Offline')
+        self.status_value.setText(
+            f'Online' if is_online(get_status_from_db=True) else 'Offline'
+        )
+        self.status_value.setStyleSheet(f'''
+            {self.status_style}
+            color: {
+                'green' if is_online(get_status_from_db=True) else 'gray'
+            };
+        ''')
+        
         self.update_tests_table()
 
     def closeEvent(self, event):
