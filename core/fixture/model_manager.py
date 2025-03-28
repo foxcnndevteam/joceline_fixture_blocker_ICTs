@@ -46,10 +46,19 @@ def reset_fail_count():
 
 
 # --- Getters --- #
-def is_online():
-    global f_data
+def is_online(get_status_from_db: bool = False):
+    if get_status_from_db:
+        try:
+            fixture = Models.Local.Fixture().select().where(Models.Local.Fixture.fixture_id == "HR001").get()
+        except Models.DoesNotExist:
+            fixture = Models.Local.Fixture(fixture_id="HR001", fail_count=0, steps_count=0, pass_count=0, online=True)
+            fixture.save()
+            
+        return fixture.online
+    else:
+        global f_data
 
-    return f_data.online
+        return f_data.online
     
 def get_fail_count():
     global f_data
