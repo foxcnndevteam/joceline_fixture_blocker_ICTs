@@ -10,11 +10,20 @@ from udpsocket import UDPSignals
 from udpsocket.server import AsyncUDPServer
 
 # --- UDP Server set up --- #
+'''
+#   Function: run_udp_server
+#   Desc: Instances UDPServer an run it. 
+#       signals      | type:UDPSignals | Siganals & Events to comunicate the Panel and UDP Server
+'''
 async def run_udp_server(signals):
     server = AsyncUDPServer(signals)
     await server.run_server()
 
 # --- GUI & UDP Server execution --- #
+'''
+#   Function: exec_
+#   Desc: Executes and starts Panel & UDPServer with threads and async. 
+'''
 def exec_():
     
     # ~ Instance signals to comunicate GUI wiht UDP Server
@@ -39,5 +48,5 @@ def exec_():
     server_thread.join()
     app.aboutToQuit.connect(lambda: app.closeAllWindows())
     
-    
+    # ~ Return app exit code
     return exit_code

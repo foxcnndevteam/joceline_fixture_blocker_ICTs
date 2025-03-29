@@ -5,6 +5,12 @@ import sys
 from utils import logger
 from env import BASE_DIR
 
+'''
+#   Function: extractFailedPartsInLog
+#   Desc: Extracts fail devices in log by fail_status
+#   Arguments:
+#       fail_status | type:int | Status code to extract devices.
+'''
 def extractFailedPartsInLog(fail_status: int):
 
     failed_parts = []
@@ -37,9 +43,17 @@ def extractFailedPartsInLog(fail_status: int):
     return failed_parts
 
 
+'''
+#   Class: DevicesFinder
+#   Desc: Contains the static methods to extract by regex var the failed devices.
+'''
 class DevicesFinder:
     RESULT_FILE_NAME = "last_result.log"
 
+    '''
+    #   Function: byOpenShort
+    #   Desc: Extracts fail devices by open or short keyword.
+    '''
     @staticmethod
     def byOpenShort():
         failed_parts = []
@@ -81,6 +95,11 @@ class DevicesFinder:
 
         return failed_parts
     
+    
+    '''
+    #   Function: byHasFailed
+    #   Desc: Extracts fail devices by has failed keyword.
+    '''
     @staticmethod
     def byHasFailed():
         failed_parts = []
@@ -97,6 +116,11 @@ class DevicesFinder:
 
         return failed_parts
 
+    
+    '''
+    #   Function: byKeyAfter
+    #   Desc: Extracts fail devices by after some keyword.
+    '''
     @staticmethod
     def byKeyAfter(strKey: str):
         failed_parts = []
