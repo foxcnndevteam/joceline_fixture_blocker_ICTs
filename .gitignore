@@ -26,3 +26,4 @@ boards_to_retest.json
 /log
 /static/reports
 /static/output
+/static/log
