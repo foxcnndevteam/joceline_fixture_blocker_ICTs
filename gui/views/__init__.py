@@ -1,4 +1,4 @@
-from .main_view import MainWindow
-
+from .MainWindow import MainWindow
+    
 # ~ Export views & windows there
 __all__ = ['MainWindow']

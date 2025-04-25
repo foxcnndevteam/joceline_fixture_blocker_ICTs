@@ -2,59 +2,44 @@ from core import config
 from core.database.Models import Local
 from core.fixture import get_fixture_yield, is_online
 
-from udpsocket import UDPSignals
+from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 
-from PyQt5.QtWidgets import QMainWindow, QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 
-'''
-#   Class: MainWindow
-#   Desc: Main fixture panel to show fixture tests table, fixture yield and fixture online status.
-'''
-class MainWindow(QMainWindow):
+class TestPanel(QWidget):
+    
     status_style = '''
         font-size: 40px; 
         font-weight: bold;
     '''
     
-    '''
-    #   Function: __init__
-    #   Desc: Main window constructor.
-    #   Arguments:
-    #       signals      | type:UDPSignals | Siganals & Events to comunicate the Panel and UDP Server
-    '''
-    def __init__(self, signals: UDPSignals):
-        super().__init__()
-        self.signals = signals
-
-        # ~ Define panel style        
-        self.setWindowTitle("JPanel - ICT")
-        self.setFixedSize(900, 500)
+    def __init__(self, parent=None):
+        super().__init__(parent)
         
         # ~ Executes functions to setup widgets
         self.setup_header_container()
         self.setup_tests_table()
         self.update_tests_table()
         
-        # ~ Generate new layout to add containers
-        layout = QVBoxLayout()
+        layout = QVBoxLayout(self)
+        
         layout.addWidget(self.header_container)
         layout.addWidget(self.table_container)
-
-        # ~ Add main layout to main container.
-        container = QWidget()
-        container.setLayout(layout)
-        self.setCentralWidget(container)
-
-        # ~ Add update function to update signal to executes it when will be activated.
-        self.signals.update_ui.connect(self.update_ui)
-    
-    
-    '''
-    #   Function: setup_header_container
-    #   Desc: Setup the header container wich contains Yield and Fixture status.
-    '''
+        layout.setContentsMargins(0, 0, 0, 0)
+                
     def setup_header_container(self):
+        '''
+        #   Function: setup_header_container
+        #   Desc: Setup the header container wich contains Yield and Fixture status.
+        '''
         self.header_container = QWidget()
+        self.header_container.setObjectName("HeaderContainer")
+        self.header_container.setStyleSheet("""
+            #HeaderContainer {
+                background-color: #dfdfdf;
+                border-radius: 5px;
+            }
+        """)
+        
         header_layout = QHBoxLayout(self.header_container)
         
         # ~ Yield widgets ------------------------------------------------------------
@@ -78,18 +63,19 @@ class MainWindow(QMainWindow):
             };
         ''')
         
+        self.header_container.setLayout(header_layout)
+        
         # ~ Add widgets to layout
         header_layout.addWidget(self.yield_label)
         header_layout.addWidget(self.yield_percent)
         header_layout.addWidget(self.status_label)
         header_layout.addWidget(self.status_value)
-    
-    
-    '''
-    #   Function: setup_tests_table
-    #   Desc: Setup the table to show the latest N tests.
-    '''
+        
     def setup_tests_table(self):
+        '''
+        #   Function: setup_tests_table
+        #   Desc: Setup the table to show the latest N tests.
+        '''
         self.table_container = QTableWidget()
         
         self.table_container.setRowCount(config.gey_yield_calc_qty() + 1)
@@ -108,12 +94,11 @@ class MainWindow(QMainWindow):
         
         self.table_container.setEditTriggers(QAbstractItemView.NoEditTriggers)
 
-
-    '''
-    #   Function: update_tests_table
-    #   Desc: Updates table values with the latests N tests.
-    '''
     def update_tests_table(self):
+        '''
+        #   Function: update_tests_table
+        #   Desc: Updates table values with the latests N tests.
+        '''
         # ~ First define table columns
         self.table_container.setItem(0, 0, QTableWidgetItem("Id"))
         self.table_container.setItem(0, 1, QTableWidgetItem("Serial"))
@@ -136,12 +121,11 @@ class MainWindow(QMainWindow):
                 self.table_container.setItem(i, 5, QTableWidgetItem(f'{tests[i - 1].board_failed}'))
                 self.table_container.setItem(i, 6, QTableWidgetItem(f'{tests[i - 1].date}'))
 
-
-    '''
-    #   Function: get_last_tests
-    #   Desc: Get the latest N tests in the database.
-    '''
     def get_last_tests(self):
+        '''
+        #   Function: get_last_tests
+        #   Desc: Get the latest N tests in the database.
+        '''
         tests = Local.Test().select(
             Local.Test.id,
             Local.Test.serial,
@@ -156,16 +140,13 @@ class MainWindow(QMainWindow):
         
         return tests
 
-
-    '''
-    #   Function: update_ui
-    #   Desc: Executes update function and update labels values.
-    '''
     def update_ui(self):
+        '''
+        #   Function: update_ui
+        #   Desc: Executes update function and update labels values.
+        '''
         self.yield_percent.setText(f'{int(get_fixture_yield())}%')
         
-        
-        print(f'Online' if is_online(get_status_from_db=True) else 'Offline')
         self.status_value.setText(
             f'Online' if is_online(get_status_from_db=True) else 'Offline'
         )
@@ -177,12 +158,3 @@ class MainWindow(QMainWindow):
         ''')
         
         self.update_tests_table()
-
-
-    '''
-    #   Function: closeEvent
-    #   Desc: Send signal to the UDPServer to stop it.
-    '''
-    def closeEvent(self, event):
-        self.signals.stop_server.set()
-        event.accept()
