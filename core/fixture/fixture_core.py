@@ -7,6 +7,8 @@ from core import boards, config
 
 from udpsocket import client
 
+from core.config import get_online_mode
+
 from .model_manager import *
 from .extern_db_manager import *
 from .messages import checkFixtureMessages
@@ -45,7 +47,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     if check_status: config.increment_test_count()
     
     if result == "PASS" or result == "PASSED":
-        if is_online():
+        if is_online() and get_online_mode():
             remove_serial_parts(serial)
             save_retest_result_in_path("False")
             logger.info(fixture_messages["result_uploaded"])
@@ -64,7 +66,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         # ~ Iterate in all failed devices like a independiente fail.
         i = 1
         for partFailed in partsFailed:
-            if is_online():
+            if is_online() and get_online_mode():
                 save_part_failed(result, serial, fixture_id, partFailed)
                 
                 if partFailed == "OTF" or shouldUploadResult(serial, fixture_id, partFailed):

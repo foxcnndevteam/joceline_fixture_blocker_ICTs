@@ -65,6 +65,8 @@ class Local:
         )
         test_count = IntegerField( default=0 )
         udp_server_port = IntegerField()
+        pause_on_fail = BooleanField()
+        online_mode = BooleanField()
 
         class Meta:
             database = LocalMetadata.localDB

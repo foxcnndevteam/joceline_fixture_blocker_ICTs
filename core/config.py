@@ -61,7 +61,9 @@ def load_config():
             server_log_path = server_log_path,
             boards_on_fixture_map = boards_on_fixture_map,
             test_count = 0,
-            udp_server_port = udp_server_port
+            udp_server_port = udp_server_port,
+            online_mode = True,
+            pause_on_fail = False
         )
 
         data.save()
@@ -120,6 +122,15 @@ def get_udp_server_port():
     global data
     return data.udp_server_port
 
+def get_pause_on_fail():
+    global data
+    return data.pause_on_fail
+
+def get_online_mode():
+    global data
+    return data.online_mode
+
+
 # --- Setters --- #
 
 def setMaxFailCount(maxFailCount: int):
@@ -145,4 +156,14 @@ def set_yield_calc_qty(yield_calc_quantity: int):
 def set_yield_block_threshold(yield_block_threshold: int):
     global data
     data.yield_block_threshold = yield_block_threshold
+    data.save()
+
+def set_pause_on_fail(pause_on_fail: bool):
+    global data
+    data.pause_on_fail = pause_on_fail
+    data.save()
+
+def set_online_mode(online_mode: bool):
+    global data
+    data.online_mode = online_mode
     data.save()

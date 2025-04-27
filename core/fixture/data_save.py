@@ -3,6 +3,7 @@ from env import BASE_DIR
 from core import config
 from core.database import Models
 from .model_manager import is_online
+from core.config import get_online_mode
 
 '''
 #   Function: save_fail
@@ -39,7 +40,7 @@ def save_fail(fail_status: int, board_failed: str, iteration_failed: int):
 #       iteration_failed    | type:int | The iteration in fail count
 '''   
 def save_test(serial: str, result: str, fail_status: int, board_failed: str, iteration_failed: int):
-    mode = 'Online' if is_online() else 'Offline'
+    mode = 'Online' if is_online() and get_online_mode() else 'Offline'
     
     test = Models.Local.Test(
         serial = serial,

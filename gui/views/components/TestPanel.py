@@ -1,7 +1,7 @@
 from core import config
 from core.database.Models import Local
 from core.fixture import get_fixture_yield, is_online
-
+from core.config import get_online_mode
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 
 
@@ -54,12 +54,12 @@ class TestPanel(QWidget):
         self.status_label.setStyleSheet("font-size: 30px;")
         
         self.status_value = QLabel(
-            f'Online' if is_online(get_status_from_db=True) else 'Offline'
+            f'Online' if is_online(get_status_from_db=True) and get_online_mode() else 'Offline'
         )
         self.status_value.setStyleSheet(f'''
             {self.status_style}
             color: {
-                'green' if is_online(get_status_from_db=True) else 'gray'
+                'green' if is_online(get_status_from_db=True) and get_online_mode() else 'gray'
             };
         ''')
         
@@ -148,12 +148,12 @@ class TestPanel(QWidget):
         self.yield_percent.setText(f'{int(get_fixture_yield())}%')
         
         self.status_value.setText(
-            f'Online' if is_online(get_status_from_db=True) else 'Offline'
+            f'Online' if is_online(get_status_from_db=True) and get_online_mode() else 'Offline'
         )
         self.status_value.setStyleSheet(f'''
             {self.status_style}
             color: {
-                'green' if is_online(get_status_from_db=True) else 'gray'
+                'green' if is_online(get_status_from_db=True) and get_online_mode() else 'gray'
             };
         ''')
         

@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QLabel, 
     QGridLayout, 
 )
-
+from core.config import get_online_mode, get_pause_on_fail, set_online_mode, set_pause_on_fail
 
 class ConfigPanel(QWidget):
     
@@ -32,7 +32,9 @@ class ConfigPanel(QWidget):
             item = ConfigOption(
                 option_type = "toggle",
                 title_string = "Online mode",
-                icon_path = "config_icon.png"
+                icon_path = "config_icon.png",
+                getter=get_online_mode,
+                setter=set_online_mode
             )
         )
         
@@ -40,7 +42,9 @@ class ConfigPanel(QWidget):
             item = ConfigOption(
                 option_type = "toggle",
                 title_string = "Pausar fallas",
-                icon_path = "config_icon.png"
+                icon_path = "config_icon.png",
+                getter=get_pause_on_fail,
+                setter=set_pause_on_fail
             )
         )
         
@@ -65,12 +69,15 @@ class FlowPanel(QWidget):
         
 class ConfigOption(QWidget):
     
-    def __init__(self, option_type: str, title_string: str, icon_path: str):
+    def __init__(self, option_type: str, title_string: str, icon_path: str, getter, setter):
         super().__init__(None)
 
         self.option_types = {
             "toggle": self.setup_animated_toggle
         }
+
+        self.getter = getter
+        self.setter = setter
 
         self.setObjectName("Option")
         self.setAttribute(Qt.WA_StyledBackground, True)
@@ -106,7 +113,10 @@ class ConfigOption(QWidget):
         animated_toggle.setStyleSheet("""
             border: 1px solid black;
         """)
-        
+        def msg(estado):
+            self.setter(estado == 2)
+        animated_toggle.stateChanged.connect(msg)
+        animated_toggle.setChecked(self.getter())
         return animated_toggle
         
     def setup_title(self, tilte_string: str):

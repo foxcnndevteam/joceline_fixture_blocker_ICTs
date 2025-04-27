@@ -73,8 +73,14 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(self.main_panel)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        self.panels.addWidget(TestPanel())
-        self.panels.addWidget(ConfigPanel())
+        test_panel = TestPanel()
+        config_panel = ConfigPanel()
+
+        self.panel_layouts['TestPanel'] = test_panel
+        self.panel_layouts['ConfigPanel'] = config_panel
+
+        self.panels.addWidget(test_panel)
+        self.panels.addWidget(config_panel)
         layout.addWidget(self.panels)
     
     def update_main_panel(self):
@@ -82,6 +88,8 @@ class MainWindow(QMainWindow):
     
     def change_panel(self, panel_index: int):
         self.panels.setCurrentIndex(panel_index)
+        if panel_index == 0:
+            self.panel_layouts['TestPanel'].update_ui()
     
     def closeEvent(self, event):
         self.signals.stop_server.set()
