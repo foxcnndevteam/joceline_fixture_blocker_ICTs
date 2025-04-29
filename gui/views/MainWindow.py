@@ -84,7 +84,8 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.panels)
     
     def update_main_panel(self):
-        self.PanelLayout.update_ui()
+        self.panel_layouts['TestPanel'].update_ui()
+        # self.panel_layouts['ConfigPanel'].update_ui()
     
     def change_panel(self, panel_index: int):
         self.panels.setCurrentIndex(panel_index)

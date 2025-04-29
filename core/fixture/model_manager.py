@@ -1,5 +1,7 @@
+from typing import Literal
+
 import core.database.Models as Models
-from core import boards, config
+from core import boards, config, fixture
 
 f_data: Models.Local.Fixture
 max_fail_count: int
@@ -64,3 +66,21 @@ def get_fail_count():
     global f_data
 
     return f_data.fail_count
+
+# functions with extra Logic
+
+def get_fixture_state() -> Literal['Online', 'Offline', 'Blocked']:
+    state = 'Online'
+
+    if not is_online() or not config.get_online_mode():
+        state = 'Offline'
+        return state
+
+    current_yield = fixture.get_fixture_yield()
+
+    if current_yield < 70 and not is_online():
+        state = 'Blocked'
+
+    return state
+
+

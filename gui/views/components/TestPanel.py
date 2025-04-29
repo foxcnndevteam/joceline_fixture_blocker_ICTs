@@ -1,7 +1,7 @@
+from typing import Literal
 from core import config
 from core.database.Models import Local
-from core.fixture import get_fixture_yield, is_online
-from core.config import get_online_mode
+from core.fixture import get_fixture_yield, get_fixture_state
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 
 
@@ -12,6 +12,18 @@ class TestPanel(QWidget):
         font-weight: bold;
     '''
     
+    def __get_text_color(self) -> Literal['green', 'gray']:
+        color = 'green'
+        fixture_state = get_fixture_state()
+
+        if fixture_state == 'Offline':
+            color = 'gray'
+
+        if fixture_state == 'Blocked':
+            color = 'red'
+
+        return color
+
     def __init__(self, parent=None):
         super().__init__(parent)
         
@@ -54,12 +66,12 @@ class TestPanel(QWidget):
         self.status_label.setStyleSheet("font-size: 30px;")
         
         self.status_value = QLabel(
-            f'Online' if is_online(get_status_from_db=True) and get_online_mode() else 'Offline'
+            get_fixture_state()
         )
         self.status_value.setStyleSheet(f'''
             {self.status_style}
             color: {
-                'green' if is_online(get_status_from_db=True) and get_online_mode() else 'gray'
+                self.__get_text_color()
             };
         ''')
         
@@ -148,12 +160,12 @@ class TestPanel(QWidget):
         self.yield_percent.setText(f'{int(get_fixture_yield())}%')
         
         self.status_value.setText(
-            f'Online' if is_online(get_status_from_db=True) and get_online_mode() else 'Offline'
+            get_fixture_state()
         )
         self.status_value.setStyleSheet(f'''
             {self.status_style}
             color: {
-                'green' if is_online(get_status_from_db=True) and get_online_mode() else 'gray'
+                self.__get_text_color()
             };
         ''')
         
