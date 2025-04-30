@@ -95,7 +95,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     if check_status:
         check_retest_status()
         check_block_status()
-        client.send_update_signal()
+    client.send_update_signal()
 
     # ~ Check the windows array to verify if some window will be executed.
     window.openWindows()
