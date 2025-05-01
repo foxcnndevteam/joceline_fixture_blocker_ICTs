@@ -70,17 +70,19 @@ def get_fail_count():
 # functions with extra Logic
 
 def get_fixture_state() -> Literal['Online', 'Offline', 'Blocked']:
-    state = 'Online'
+    state:Literal['Online', 'Offline', 'Blocked'] = 'Online'
 
-    if not is_online() or not config.get_online_mode():
+    if not config.get_online_mode() and not is_online():
+        state = 'Offline'
+        return state
+    elif not config.get_online_mode():
         state = 'Offline'
         return state
 
-    current_yield = fixture.get_fixture_yield()
-
-    if current_yield < 70 and not is_online():
-        state = 'Blocked'
-
-    return state
+    state = fixture.check_block_status()
+    if state == None:
+        return 'Blocked'
+    else: 
+        return state
 
 

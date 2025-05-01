@@ -7,7 +7,7 @@ from core import boards, config
 
 from udpsocket import client
 
-from core.config import get_online_mode
+from core.config import get_online_mode, get_pause_on_fail
 
 from .model_manager import *
 from .extern_db_manager import *
@@ -57,6 +57,9 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
                 modify_fail_count = False
             )
     else:
+        # return Non if pause fail is on
+        if get_pause_on_fail():
+            return
         # ~ In this part start the fail count if fail_count = 0
         if get_fail_count() == 0: set_fail_count(1)
         # ~ Extract failed devices of PCBA
@@ -90,6 +93,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         logger.info(f'PARTS_FAILED:')
         logger.info(f'{partsFailed}')
         boards.setBoardFailed(board_number, True)
+        client.send_update_signal()
     
     # ~ If multiboard the check_status will be executed in other command (JocelineFB.exe test checkstatus)
     if check_status:

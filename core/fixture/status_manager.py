@@ -1,3 +1,4 @@
+from typing import Literal
 from utils import logger
 
 from cli.views import window
@@ -114,15 +115,15 @@ def get_fixture_yield():
 #         function is executed multiple times and it save multiple subtests, the fixture 
 #         create an iteration (Like main fail id) to check where the fail was happen.
 '''
-def check_block_status():
-    if not should_check_fails(): return
+def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
+    if not should_check_fails(): return 'Online'
     
     fixture_messages = checkFixtureMessages()
     if get_fixture_yield() <= config.get_yield_block_threshold():
         set_online(False)
         window.show(BlockedWindow('min_yield_reached'))
         logger.warning(fixture_messages["min_yield_reached"])
-        return
+        return 'Blocked'
     
     fail_finded = False
     iterations = [[] for _ in range(get_fail_count() + 1)]
@@ -146,9 +147,11 @@ def check_block_status():
                 set_online(False)
                 window.show(BlockedWindow('failsLimitReached'))
                 logger.warning(fixture_messages["max_fail_count_reached"])
+                return 'Blocked'
                 
     if fail_finded:
         increment_fixture_fails()
+        return 'Online'
     else:
         Models.Local.Fail.delete().where(Models.Local.Fail.iteration_failed != get_fail_count()).execute()
         fails = Models.Local.Fail.select()
@@ -157,7 +160,7 @@ def check_block_status():
             fail.save()
             
         set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
-
+        return 'Online'
 
 '''
 #   Function: check_retest_status 
