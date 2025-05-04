@@ -8,7 +8,7 @@ from cli.views.blocked import BlockedWindow
 from core.database import Models
 from core import boards, config
 
-from .model_manager import get_fail_count, increment_fixture_fails, reset_fail_count, set_fail_count, set_online
+from .model_manager import get_fail_count, increment_fixture_fails, reset_fail_count, set_fail_count, set_online, is_online
 from .messages import checkFixtureMessages
 
 '''
@@ -147,11 +147,10 @@ def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
                 set_online(False)
                 window.show(BlockedWindow('failsLimitReached'))
                 logger.warning(fixture_messages["max_fail_count_reached"])
-                return 'Blocked'
+
                 
     if fail_finded:
         increment_fixture_fails()
-        return 'Online'
     else:
         Models.Local.Fail.delete().where(Models.Local.Fail.iteration_failed != get_fail_count()).execute()
         fails = Models.Local.Fail.select()
@@ -160,7 +159,72 @@ def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
             fail.save()
             
         set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
-        return 'Online'
+    return 'Online'
+
+def check_block_status_alt() -> Literal['Online', 'Offline', 'Blocked']:
+    fixture_messages = checkFixtureMessages()
+    state: Literal['Online', 'Offline', 'Blocked'] = 'Online'
+    # TODO hacer una version para determinar si es Online Blocked o Offline
+    # agregar un nuevo campo: blocked
+    # offline
+    if not config.get_online_mode():
+        state = 'Offline'
+        return state
+
+    if not is_online():
+        state = 'Blocked'
+
+    # blocked or online
+    if not is_online():
+        state = 'Blocked'
+    
+    if get_fixture_yield() <= config.get_yield_block_threshold():
+        set_online(False)
+        window.show(BlockedWindow('min_yield_reached'))
+        logger.warning(fixture_messages["min_yield_reached"])
+        state = 'Blocked'
+        return state
+
+
+    fail_finded = False
+    iterations = [[] for _ in range(get_fail_count() + 1)]
+
+    for fail in Models.Local.Fail().select(Models.Local.Fail.fail_status, Models.Local.Fail.iteration_failed):
+        if not fail.fail_status in iterations[fail.iteration_failed]:
+            iterations[fail.iteration_failed].append(fail.fail_status)
+
+    for last_fail in iterations[-1]:
+        times_finded = 1
+        
+        for next_iteration in reversed(iterations[0:-1]):
+            
+            if last_fail in next_iteration:
+                times_finded += 1
+                fail_finded = True
+            else:
+                break
+            
+            if times_finded == config.getMaxFailCount():
+                set_online(False)
+                window.show(BlockedWindow('failsLimitReached'))
+                logger.warning(fixture_messages["max_fail_count_reached"])
+                state = 'Offline'
+
+    if fail_finded:
+        increment_fixture_fails()
+    else:
+        Models.Local.Fail.delete().where(Models.Local.Fail.iteration_failed != get_fail_count()).execute()
+        fails = Models.Local.Fail.select()
+        for fail in fails:
+            fail.iteration_failed = 0
+            fail.save()
+            
+        set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
+        state = 'Online'
+    # online or whatever
+
+    return state
+
 
 '''
 #   Function: check_retest_status 
