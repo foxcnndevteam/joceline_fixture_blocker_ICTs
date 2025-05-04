@@ -116,7 +116,7 @@ def get_fixture_yield():
 #         create an iteration (Like main fail id) to check where the fail was happen.
 '''
 def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
-    if not should_check_fails(): return 'Online'
+    if not should_check_fails(): return
     
     fixture_messages = checkFixtureMessages()
     if get_fixture_yield() <= config.get_yield_block_threshold():
@@ -180,8 +180,8 @@ def check_block_status_alt() -> Literal['Online', 'Offline', 'Blocked']:
     
     if get_fixture_yield() <= config.get_yield_block_threshold():
         set_online(False)
-        window.show(BlockedWindow('min_yield_reached'))
-        logger.warning(fixture_messages["min_yield_reached"])
+        # window.show(BlockedWindow('min_yield_reached'))
+        # logger.warning(fixture_messages["min_yield_reached"])
         state = 'Blocked'
         return state
 
@@ -206,8 +206,8 @@ def check_block_status_alt() -> Literal['Online', 'Offline', 'Blocked']:
             
             if times_finded == config.getMaxFailCount():
                 set_online(False)
-                window.show(BlockedWindow('failsLimitReached'))
-                logger.warning(fixture_messages["max_fail_count_reached"])
+                # window.show(BlockedWindow('failsLimitReached'))
+                # logger.warning(fixture_messages["max_fail_count_reached"])
                 state = 'Offline'
 
     if fail_finded:

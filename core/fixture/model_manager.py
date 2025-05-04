@@ -72,17 +72,8 @@ def get_fail_count():
 def get_fixture_state() -> Literal['Online', 'Offline', 'Blocked']:
     state:Literal['Online', 'Offline', 'Blocked'] = 'Online'
 
-    if not config.get_online_mode() and not is_online():
-        state = 'Offline'
-        return state
-    elif not config.get_online_mode():
-        state = 'Offline'
-        return state
+    state = fixture.check_block_status_alt()
 
-    state = fixture.check_block_status()
-    if state == None:
-        return 'Blocked'
-    else: 
-        return state
+    return state
 
 
