@@ -116,14 +116,15 @@ def get_fixture_yield():
 #         create an iteration (Like main fail id) to check where the fail was happen.
 '''
 def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
-    if not should_check_fails(): return
+    state:Literal['Online', 'Offline', 'Blocked', None] = 'Online'
+    if not should_check_fails(): return 'Online'
     
     fixture_messages = checkFixtureMessages()
     if get_fixture_yield() <= config.get_yield_block_threshold():
         set_online(False)
         window.show(BlockedWindow('min_yield_reached'))
         logger.warning(fixture_messages["min_yield_reached"])
-        return 'Blocked'
+        state = 'Blocked'
     
     fail_finded = False
     iterations = [[] for _ in range(get_fail_count() + 1)]
@@ -147,6 +148,7 @@ def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
                 set_online(False)
                 window.show(BlockedWindow('failsLimitReached'))
                 logger.warning(fixture_messages["max_fail_count_reached"])
+                state = 'Blocked'
 
                 
     if fail_finded:
@@ -157,29 +159,27 @@ def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
         for fail in fails:
             fail.iteration_failed = 0
             fail.save()
-            
+        state = 'Online'
         set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
-    return 'Online'
+    return state
 
 def check_block_status_alt() -> Literal['Online', 'Offline', 'Blocked']:
-    fixture_messages = checkFixtureMessages()
     state: Literal['Online', 'Offline', 'Blocked'] = 'Online'
-    # TODO hacer una version para determinar si es Online Blocked o Offline
-    # agregar un nuevo campo: blocked
-    # offline
     if not config.get_online_mode():
         state = 'Offline'
         return state
+    # fixture_messages = checkFixtureMessages()
+    # TODO hacer una version para determinar si es Online Blocked o Offline
+    # Hacer Pruebas intensivas con diferentes configuraciones
+    # confiabilidad cuestionable tanto en esta funcion como la de arriba
 
-    if not is_online():
+    if not is_online() and config.get_online_mode():
         state = 'Blocked'
 
     # blocked or online
-    if not is_online():
-        state = 'Blocked'
     
     if get_fixture_yield() <= config.get_yield_block_threshold():
-        set_online(False)
+        # set_online(False)
         # window.show(BlockedWindow('min_yield_reached'))
         # logger.warning(fixture_messages["min_yield_reached"])
         state = 'Blocked'
@@ -208,7 +208,7 @@ def check_block_status_alt() -> Literal['Online', 'Offline', 'Blocked']:
                 set_online(False)
                 # window.show(BlockedWindow('failsLimitReached'))
                 # logger.warning(fixture_messages["max_fail_count_reached"])
-                state = 'Offline'
+                state = 'Blocked'
 
     if fail_finded:
         increment_fixture_fails()
