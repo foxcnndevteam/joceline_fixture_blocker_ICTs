@@ -68,7 +68,7 @@ def should_check_fails():
         return False
     return True
 
-def should_check_fails_alt():
+def should_check_fails_alt(show_Window = False):
     online = config.get_online_mode()
     state = 'Online'
     fixture_messages = checkFixtureMessages()
@@ -193,9 +193,10 @@ def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
         set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
     return state
 
-def check_block_status_alt() -> Literal['Online', 'Offline', 'Blocked']:
+def check_block_status_alt(show_window = False) -> Literal['Online', 'Offline', 'Blocked']:
+    fixture_messages = checkFixtureMessages()
     state: Literal['Online', 'Offline', 'Blocked'] = 'Online'
-    should_check_fails_r = should_check_fails_alt()
+    should_check_fails_r = should_check_fails_alt(show_window)
     if not should_check_fails_r['should']:
         return should_check_fails_r['state']
 
@@ -213,9 +214,10 @@ def check_block_status_alt() -> Literal['Online', 'Offline', 'Blocked']:
     # blocked or online
     
     if get_fixture_yield() <= config.get_yield_block_threshold():
-        # set_online(False)
-        # window.show(BlockedWindow('min_yield_reached'))
-        # logger.warning(fixture_messages["min_yield_reached"])
+        set_online(False)
+        if show_window:
+            window.show(BlockedWindow('min_yield_reached'))
+        logger.warning(fixture_messages["min_yield_reached"])
         state = 'Blocked'
         return state
 
@@ -240,8 +242,9 @@ def check_block_status_alt() -> Literal['Online', 'Offline', 'Blocked']:
             
             if times_finded == config.getMaxFailCount():
                 set_online(False)
-                # window.show(BlockedWindow('failsLimitReached'))
-                # logger.warning(fixture_messages["max_fail_count_reached"])
+                if show_window: 
+                    window.show(BlockedWindow('failsLimitReached'))
+                logger.warning(fixture_messages["max_fail_count_reached"])
                 state = 'Blocked'
 
     if fail_finded:

@@ -47,7 +47,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     if check_status: config.increment_test_count()
     
     if result == "PASS" or result == "PASSED":
-        if get_fixture_state() == 'Online':
+        if get_fixture_state(True) == 'Online':
             remove_serial_parts(serial)
             save_retest_result_in_path("False")
             logger.info(fixture_messages["result_uploaded"])
@@ -69,7 +69,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         # ~ Iterate in all failed devices like a independiente fail.
         i = 1
         for partFailed in partsFailed:
-            if get_fixture_state() == 'Online':
+            if get_fixture_state(True) == 'Online':
                 save_part_failed(result, serial, fixture_id, partFailed)
                 
                 if partFailed == "OTF" or shouldUploadResult(serial, fixture_id, partFailed):
