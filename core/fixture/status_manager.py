@@ -68,6 +68,36 @@ def should_check_fails():
         return False
     return True
 
+def should_check_fails_alt():
+    online = config.get_online_mode()
+    state = 'Online'
+    fixture_messages = checkFixtureMessages()
+    some_board_failed = boards.someBoardFailed()
+    
+    if some_board_failed and get_fail_count() == 0:
+        increment_fixture_fails()
+        return { 'should': False, 'state': None }
+    
+    elif not some_board_failed:
+        if get_fixture_yield() <= config.get_yield_block_threshold():
+            set_online(False)
+            logger.warning(fixture_messages["min_yield_reached"])
+            state = 'Blocked'
+        elif not boards.isOnlyOneBoard():
+            set_fixture_online()
+            state = 'Online'
+        else:
+            set_fixture_online(
+                show_unlock_message=False
+            )
+            state = 'Online'
+        # extra logic to determite the state
+        if not online:
+            state = 'Offline'
+        return { 'should': False, 'state': state }
+    if not online:
+        state = 'Offline'
+    return { 'should': True, 'state': state }
 
 '''
 #   Function: get_fixture_yield 
@@ -165,6 +195,10 @@ def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
 
 def check_block_status_alt() -> Literal['Online', 'Offline', 'Blocked']:
     state: Literal['Online', 'Offline', 'Blocked'] = 'Online'
+    should_check_fails_r = should_check_fails_alt()
+    if not should_check_fails_r['should']:
+        return should_check_fails_r['state']
+
     if not config.get_online_mode():
         state = 'Offline'
         return state
@@ -222,7 +256,7 @@ def check_block_status_alt() -> Literal['Online', 'Offline', 'Blocked']:
         set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
         state = 'Online'
     # online or whatever
-
+    check_block_status()
     return state
 
 
