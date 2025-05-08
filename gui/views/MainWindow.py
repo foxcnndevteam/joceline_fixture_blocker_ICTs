@@ -1,3 +1,5 @@
+from env import VERSION_PROGRAM
+
 from core import config
 from core.database.Models import Local
 from core.fixture import get_fixture_yield, is_online
@@ -45,7 +47,7 @@ class MainWindow(QMainWindow):
         self.signals = signals
 
         # ~ Define panel style        
-        self.setWindowTitle("JPanel - ICT")
+        self.setWindowTitle(f"JPanel - ICT v{VERSION_PROGRAM}")
         self.setFixedSize(1000, 600)
         self.setup_main_panel()
         
