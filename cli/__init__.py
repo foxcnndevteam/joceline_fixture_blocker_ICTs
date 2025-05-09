@@ -204,6 +204,11 @@ def setup_cli():
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)
 
+    '''
+    #    Coomand: version
+    #    Usage: JocelineFB.exe version
+    #    Desc: Show the version of the program
+    '''
     @app.command()
     def version():
         print(f"v{VERSION_PROGRAM}")
