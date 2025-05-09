@@ -1,6 +1,8 @@
 import sys
 import click
 
+from env import VERSION_PROGRAM
+
 from utils import lang, logger
 from core import user, fixture, config as config_manager
 from cli.views import window
@@ -202,6 +204,9 @@ def setup_cli():
                 logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
                 sys.exit(0)
 
+    @app.command()
+    def version():
+        print(f"v{VERSION_PROGRAM}")
 
 
 # --- Execute CLI --- #
