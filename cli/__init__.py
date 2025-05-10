@@ -205,6 +205,15 @@ def setup_cli():
                 sys.exit(0)
 
     '''
+    #    Command: shouldpause
+    #    Usage: JocelineFB.exe shouldpause
+    #    Desc: Eval if it should pause during in the test on fail
+    '''
+    @app.command()
+    def shouldpause():
+        print(fixture.get_pause_on_fail())
+
+    '''
     #    Coomand: version
     #    Usage: JocelineFB.exe version
     #    Desc: Show the version of the program

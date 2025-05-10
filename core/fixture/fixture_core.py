@@ -57,9 +57,6 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
                 modify_fail_count = False
             )
     else:
-        # return Non if pause fail is on
-        if get_pause_on_fail():
-            return
         # ~ In this part start the fail count if fail_count = 0
         if get_fail_count() == 0: set_fail_count(1)
         # ~ Extract failed devices of PCBA
