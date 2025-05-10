@@ -214,6 +214,15 @@ def setup_cli():
         print(fixture.get_pause_on_fail())
 
     '''
+    #    Command: fixturestate
+    #    Usage: JocelineFB.exe fixturestate
+    #    Desc: get the state of the fixture
+    '''
+    @app.command()
+    def fixturestate():
+        print(fixture.get_fixture_state())
+
+    '''
     #    Coomand: version
     #    Usage: JocelineFB.exe version
     #    Desc: Show the version of the program
