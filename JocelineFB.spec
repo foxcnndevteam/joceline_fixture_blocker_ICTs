@@ -5,7 +5,10 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[
+        ('static/assets/icons/config_icon.png', 'assets/icons'),
+        ('static/assets/icons/home_icon.png', 'assets/icons'),
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
