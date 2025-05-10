@@ -220,7 +220,11 @@ def setup_cli():
     '''
     @app.command()
     def fixturestate():
-        print(fixture.get_fixture_state())
+        state = fixture.get_fixture_state()
+        online = 0
+        if state == 'Online':
+            online = 1
+        print(online)
 
     '''
     #    Coomand: version
