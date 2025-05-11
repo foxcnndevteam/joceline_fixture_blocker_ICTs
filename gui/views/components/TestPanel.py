@@ -1,12 +1,29 @@
 from typing import Literal
+import json
 from core import config
 from core.database.Models import Local
 from core.fixture import get_fixture_yield, get_fixture_state
+from gui.assets import get_asset
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
+
+errors: dict
+
+def load_errors_names():
+    global errors
+    errors_names_dir = get_asset("data/errors.json")
+    with open(errors_names_dir) as fie:
+        errors = json.load(fie)
+
+def get_error_name(error_code: int):
+    global errors
+    error_name = errors.get(str(error_code))
+    if error_name == None:
+        return 'No Documentado'
+    return error_name
 
 
 class TestPanel(QWidget):
-    
+
     status_style = '''
         font-size: 40px; 
         font-weight: bold;
@@ -26,7 +43,7 @@ class TestPanel(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        
+        load_errors_names()
         # ~ Executes functions to setup widgets
         self.setup_header_container()
         self.setup_tests_table()
@@ -130,7 +147,7 @@ class TestPanel(QWidget):
                 self.table_container.setItem(i, 1, QTableWidgetItem(f'{tests[i - 1].serial}'))
                 self.table_container.setItem(i, 2, QTableWidgetItem(f'{tests[i - 1].result}'))
                 self.table_container.setItem(i, 3, QTableWidgetItem(f'{tests[i - 1].mode}'))
-                self.table_container.setItem(i, 4, QTableWidgetItem(f'unknown'))#QTableWidgetItem(f'{tests[i - 1].mode}'))
+                self.table_container.setItem(i, 4, QTableWidgetItem(f'{get_error_name(tests[i - 1].fail_status)}'))
                 self.table_container.setItem(i, 5, QTableWidgetItem(f'{tests[i - 1].fail_status}'))
                 self.table_container.setItem(i, 6, QTableWidgetItem(f'{tests[i - 1].board_failed}'))
                 self.table_container.setItem(i, 7, QTableWidgetItem(f'{tests[i - 1].date}'))

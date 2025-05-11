@@ -8,6 +8,7 @@ a = Analysis(
     datas=[
         ('static/assets/icons/config_icon.png', 'assets/icons'),
         ('static/assets/icons/home_icon.png', 'assets/icons'),
+        ('static/assets/data/errors.json', 'assets/data'),
     ],
     hiddenimports=[],
     hookspath=[],
