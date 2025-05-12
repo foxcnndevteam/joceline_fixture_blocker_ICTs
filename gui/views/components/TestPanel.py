@@ -18,7 +18,7 @@ def get_error_name(error_code: int):
     global errors
     error_name = errors.get(str(error_code))
     if error_name == None:
-        return 'No Documentado'
+        return 'undocumented'
     return error_name
 
 
@@ -133,8 +133,8 @@ class TestPanel(QWidget):
         self.table_container.setItem(0, 1, QTableWidgetItem("Serial"))
         self.table_container.setItem(0, 2, QTableWidgetItem("Result"))
         self.table_container.setItem(0, 3, QTableWidgetItem("Mode"))
-        self.table_container.setItem(0, 4, QTableWidgetItem("Fail Name"))
-        self.table_container.setItem(0, 5, QTableWidgetItem("Fail status"))
+        self.table_container.setItem(0, 4, QTableWidgetItem("Fail status"))
+        self.table_container.setItem(0, 5, QTableWidgetItem("Fail name"))
         self.table_container.setItem(0, 6, QTableWidgetItem("Board failed"))
         self.table_container.setItem(0, 7, QTableWidgetItem("Date"))
 
@@ -147,8 +147,8 @@ class TestPanel(QWidget):
                 self.table_container.setItem(i, 1, QTableWidgetItem(f'{tests[i - 1].serial}'))
                 self.table_container.setItem(i, 2, QTableWidgetItem(f'{tests[i - 1].result}'))
                 self.table_container.setItem(i, 3, QTableWidgetItem(f'{tests[i - 1].mode}'))
-                self.table_container.setItem(i, 4, QTableWidgetItem(f'{get_error_name(tests[i - 1].fail_status)}'))
-                self.table_container.setItem(i, 5, QTableWidgetItem(f'{tests[i - 1].fail_status}'))
+                self.table_container.setItem(i, 4, QTableWidgetItem(f'{tests[i - 1].fail_status}'))
+                self.table_container.setItem(i, 5, QTableWidgetItem(f'{get_error_name(tests[i - 1].fail_status)}'))
                 self.table_container.setItem(i, 6, QTableWidgetItem(f'{tests[i - 1].board_failed}'))
                 self.table_container.setItem(i, 7, QTableWidgetItem(f'{tests[i - 1].date}'))
 

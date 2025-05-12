@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
 
         # ~ Define panel style        
         self.setWindowTitle(f"JPanel - ICT v{VERSION_PROGRAM}")
-        self.setFixedSize(1000, 600)
+        self.setFixedSize(1050, 600)
         self.setup_main_panel()
         
         # ~ Generate new layout to add containers
