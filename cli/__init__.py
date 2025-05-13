@@ -7,6 +7,7 @@ from utils import lang, logger
 from core import user, fixture, config as config_manager
 from cli.views import window
 from udpsocket import client
+from utils.help_printer import get_help
 
 # --- Main group ---- #
 @click.group()
@@ -226,8 +227,18 @@ def setup_cli():
             online = 1
         print(online)
 
+
     '''
-    #    Coomand: version
+    #    Command: help
+    #    Usage: JocelineFB.exe help
+    #    Desc: show all available commands
+    '''
+    @app.command()
+    def help():
+        get_help()
+
+    '''
+    #    Command: version
     #    Usage: JocelineFB.exe version
     #    Desc: Show the version of the program
     '''

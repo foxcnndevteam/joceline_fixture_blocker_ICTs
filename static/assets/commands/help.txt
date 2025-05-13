@@ -1,0 +1,23 @@
+
+Usage: ${{ process_name }} GROUP SUBGROUP COMMAND [...Parameters]
+
+
+selection of GROUP and COMMAND:
+set failcount {new_fail_count}                                       update fail count
+get failcount                                                        get fail count
+get fixturestatus                                                    show fixture status
+set config blockpassword {new_password}                              update the password of block screen
+set config yieldblockthr {new_yieldthr}                              update the yield threshold
+set config yieldcalcqty {new_yield_calcqty}                          update fixture yield calc quantity
+set config maxfailcount {new_max_failcount}                          update the new fail count
+
+
+test checkstatus                                                     check and save fixture status when multiboards
+test saveresult {result} {serial} {fixture_id} {fail_status}         save a test data
+
+selection of Command:
+createsuperuser {user_name} {password}                               create a new super user
+fixturestate                                                         get fixture current state
+shouldpause                                                          get if should paiuse on fail
+help                                                                 show this help
+version                                                              show the version of the program
