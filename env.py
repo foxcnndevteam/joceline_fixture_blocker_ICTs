@@ -7,4 +7,4 @@ if getattr(sys, 'frozen', False):
 elif __file__:
     BASE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 
-VERSION_PROGRAM="2.61.0"
+VERSION_PROGRAM="2.61.1"
