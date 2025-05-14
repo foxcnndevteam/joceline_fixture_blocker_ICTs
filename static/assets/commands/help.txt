@@ -1,6 +1,6 @@
+JocelineFB version ${{ version }}
 
 Usage: ${{ process_name }} GROUP SUBGROUP COMMAND [...Parameters]
-
 
 selection of GROUP and COMMAND:
 set failcount {new_fail_count}                                       update fail count
@@ -10,7 +10,6 @@ set config blockpassword {new_password}                              update the 
 set config yieldblockthr {new_yieldthr}                              update the yield threshold
 set config yieldcalcqty {new_yield_calcqty}                          update fixture yield calc quantity
 set config maxfailcount {new_max_failcount}                          update the new fail count
-
 
 test checkstatus                                                     check and save fixture status when multiboards
 test saveresult {result} {serial} {fixture_id} {fail_status}         save a test data
