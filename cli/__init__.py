@@ -131,7 +131,7 @@ def setup_cli():
     @get.command()
     def fixturestatus():
         fixture.save_online_result_in_path()
-        click.echo(f"Fixture online status: {fixture.is_online()}")
+        click.echo(f"Fixture online status: {fixture.is_online() and config_manager.get_online_mode()}")
 
 
 
