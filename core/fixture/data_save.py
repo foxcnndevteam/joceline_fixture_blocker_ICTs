@@ -90,4 +90,4 @@ def save_should_pause_in_path():
     if not os.path.exists(result_path): os.makedirs(result_path)
 
     with open(os.path.join(result_path, "should_pause"), "w") as f:
-        f.write(str(is_online() and config.get_online_mode()))
+        f.write(str(config.get_pause_on_fail()))
