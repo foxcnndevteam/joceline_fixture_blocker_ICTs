@@ -10,6 +10,11 @@ from PyQt5.QtWidgets import (
     QGridLayout, 
 )
 from core.config import get_online_mode, get_pause_on_fail, set_online_mode, set_pause_on_fail
+from core.fixture import save_should_pause_in_path
+
+def set_shloud_pause(pause_on_fail:bool):
+    set_pause_on_fail(pause_on_fail)
+    save_should_pause_in_path()
 
 class ConfigPanel(QWidget):
     
@@ -44,7 +49,7 @@ class ConfigPanel(QWidget):
                 title_string = "Pausar fallas",
                 icon_path = "config_icon.png",
                 getter=get_pause_on_fail,
-                setter=set_pause_on_fail
+                setter=set_shloud_pause
             )
         )
         

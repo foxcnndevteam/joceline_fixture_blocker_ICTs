@@ -79,4 +79,15 @@ def save_online_result_in_path():
     if not os.path.exists(result_path): os.makedirs(result_path)
     
     with open(os.path.join(result_path, "fixture_status"), "w") as f:
-        f.write(str(is_online()))
+        f.write(str(is_online() and config.get_online_mode()))
+
+'''
+#   Function: save_should_pause
+#   Desc: Save if should pause on fail in an output file to be readed by testplan.
+'''
+def save_should_pause_in_path():
+    result_path = os.path.join(BASE_DIR, "output")
+    if not os.path.exists(result_path): os.makedirs(result_path)
+
+    with open(os.path.join(result_path, "should_pause"), "w") as f:
+        f.write(str(is_online() and config.get_online_mode()))
