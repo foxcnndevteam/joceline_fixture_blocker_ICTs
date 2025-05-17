@@ -92,10 +92,10 @@ class Local:
     class Test(Model):
         serial = TextField()
         result = TextField()
-        fail_status = IntegerField()
+        fail_status = IntegerField(index=True)
         board_failed = TextField()
         date = DateTimeField(default=datetime.datetime.now)
-        test_count = IntegerField()
+        test_count = IntegerField(index=True)
         mode = TextField()
 
         class Meta:

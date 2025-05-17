@@ -105,9 +105,9 @@ def should_check_fails_alt(show_Window = False):
 '''
 def get_fixture_yield():
     sub_query = Models.Local.Test.select(
-        Models.Local.Test.test_count
-    ).distinct().order_by(
-        Models.Local.Test.test_count.desc()
+        Models.Local.Test.id
+    ).order_by(
+        Models.Local.Test.date.desc()
     ).limit(config.gey_yield_calc_qty())
 
     tests = Models.Local.Test.select(
@@ -115,8 +115,8 @@ def get_fixture_yield():
         Models.Local.Test.test_count,
         Models.Local.Test.result
     ).where(
-        Models.Local.Test.test_count.in_(sub_query)
-    ).order_by(Models.Local.Test.test_count.desc())
+        Models.Local.Test.id.in_(sub_query)
+    ).order_by(Models.Local.Test.id.desc())
 
     test_counts_checked = []
     tests_failed = 0
