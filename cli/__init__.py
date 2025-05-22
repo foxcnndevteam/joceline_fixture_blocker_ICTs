@@ -87,7 +87,7 @@ def setup_cli():
     def checkstatus():
         config_manager.increment_test_count()
         fixture.check_retest_status()
-        fixture.check_block_status()
+        fixture.check_block_status_alt(False)
         client.send_update_signal()
         window.openWindows()
 
@@ -222,7 +222,7 @@ def setup_cli():
     '''
     @app.command()
     def fixturestate():
-        state = fixture.get_fixture_state()
+        state = fixture.get_fixture_state(False)
         online = 0
         if state == 'Online':
             online = 1

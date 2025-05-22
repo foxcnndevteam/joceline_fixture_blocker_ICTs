@@ -69,10 +69,9 @@ def get_fail_count():
 
 # functions with extra Logic
 
-def get_fixture_state(show_window = False) -> Literal['Online', 'Offline', 'Blocked']:
+def get_fixture_state(show_window:bool) -> Literal['Online', 'Offline', 'Blocked']:
     state:Literal['Online', 'Offline', 'Blocked'] = 'Online'
-
-    state = fixture.check_block_status_alt(show_window)
+    state = fixture.check_block_status_alt(show_window=show_window)
 
     return state
 

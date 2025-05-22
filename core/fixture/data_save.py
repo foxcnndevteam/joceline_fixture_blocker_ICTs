@@ -41,7 +41,7 @@ def save_fail(fail_status: int, board_failed: str, iteration_failed: int):
 #       iteration_failed    | type:int | The iteration in fail count
 '''   
 def save_test(serial: str, result: str, fail_status: int, board_failed: str, iteration_failed: int):
-    mode = get_fixture_state()
+    mode = get_fixture_state(False)
     
     test = Models.Local.Test(
         serial = serial,

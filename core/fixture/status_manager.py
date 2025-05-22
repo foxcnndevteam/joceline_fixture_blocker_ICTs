@@ -193,7 +193,7 @@ def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
         set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
     return state
 
-def check_block_status_alt(show_window = False) -> Literal['Online', 'Offline', 'Blocked']:
+def check_block_status_alt(show_window: bool) -> Literal['Online', 'Offline', 'Blocked']:
     fixture_messages = checkFixtureMessages()
     state: Literal['Online', 'Offline', 'Blocked'] = 'Online'
     should_check_fails_r = should_check_fails_alt(show_window)
@@ -217,7 +217,7 @@ def check_block_status_alt(show_window = False) -> Literal['Online', 'Offline', 
         set_online(False)
         if show_window:
             window.show(BlockedWindow('min_yield_reached'))
-        logger.warning(fixture_messages["min_yield_reached"])
+            logger.warning(fixture_messages["min_yield_reached"])
         state = 'Blocked'
         return state
 
@@ -242,9 +242,9 @@ def check_block_status_alt(show_window = False) -> Literal['Online', 'Offline', 
             
             if times_finded == config.getMaxFailCount():
                 set_online(False)
-                if show_window: 
+                if show_window:
                     window.show(BlockedWindow('failsLimitReached'))
-                logger.warning(fixture_messages["max_fail_count_reached"])
+                    logger.warning(fixture_messages["max_fail_count_reached"])
                 state = 'Blocked'
 
     if fail_finded:
@@ -259,7 +259,7 @@ def check_block_status_alt(show_window = False) -> Literal['Online', 'Offline', 
         set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
         state = 'Online'
     # online or whatever
-    check_block_status()
+    # check_block_status()
     return state
 
 

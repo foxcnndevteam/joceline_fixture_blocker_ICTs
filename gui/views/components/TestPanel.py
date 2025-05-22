@@ -14,7 +14,7 @@ def load_errors_names():
     with open(errors_names_dir) as fie:
         errors = json.load(fie)
 
-def get_error_name(error_code: int):
+def get_error_name(error_code: int) -> str:
     global errors
     error_name = errors.get(str(error_code))
     if error_name == None:
@@ -29,9 +29,8 @@ class TestPanel(QWidget):
         font-weight: bold;
     '''
     
-    def __get_text_color(self) -> Literal['green', 'gray']:
+    def __get_text_color(self, fixture_state: Literal['Blocked', 'Offline', 'Online']) -> Literal['green', 'gray']:
         color = 'green'
-        fixture_state = get_fixture_state()
 
         if fixture_state == 'Offline':
             color = 'gray'
@@ -82,13 +81,15 @@ class TestPanel(QWidget):
         self.status_label = QLabel('Status:')
         self.status_label.setStyleSheet("font-size: 30px;")
         
+        fixture_state = get_fixture_state(False)
+
         self.status_value = QLabel(
-            get_fixture_state()
+            fixture_state
         )
         self.status_value.setStyleSheet(f'''
             {self.status_style}
             color: {
-                self.__get_text_color()
+                self.__get_text_color(fixture_state)
             };
         ''')
         
@@ -177,14 +178,16 @@ class TestPanel(QWidget):
         #   Desc: Executes update function and update labels values.
         '''
         self.yield_percent.setText(f'{int(get_fixture_yield())}%')
-        
+
+        fixture_state = get_fixture_state(False)
+
         self.status_value.setText(
-            get_fixture_state()
+            fixture_state
         )
         self.status_value.setStyleSheet(f'''
             {self.status_style}
             color: {
-                self.__get_text_color()
+                self.__get_text_color(fixture_state)
             };
         ''')
         

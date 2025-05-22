@@ -13,7 +13,7 @@ from .model_manager import *
 from .extern_db_manager import *
 from .messages import checkFixtureMessages
 from .data_save import save_fail, save_test, save_retest_result_in_path
-from .status_manager import check_block_status, check_retest_status, set_fixture_online
+from .status_manager import check_block_status, check_retest_status, set_fixture_online, check_block_status_alt
 
 # --- Core --- #
 '''
@@ -47,7 +47,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     if check_status: config.increment_test_count()
     
     if result == "PASS" or result == "PASSED":
-        if get_fixture_state(True) == 'Online':
+        if get_fixture_state(False) == 'Online':
             remove_serial_parts(serial)
             save_retest_result_in_path("False")
             logger.info(fixture_messages["result_uploaded"])
@@ -66,7 +66,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         # ~ Iterate in all failed devices like a independiente fail.
         i = 1
         for partFailed in partsFailed:
-            if get_fixture_state(True) == 'Online':
+            if get_fixture_state(False) == 'Online':
                 save_part_failed(result, serial, fixture_id, partFailed)
                 
                 if partFailed == "OTF" or shouldUploadResult(serial, fixture_id, partFailed):
@@ -95,7 +95,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     # ~ If multiboard the check_status will be executed in other command (JocelineFB.exe test checkstatus)
     if check_status:
         check_retest_status()
-        check_block_status()
+        check_block_status_alt(True)
     client.send_update_signal()
 
     # ~ Check the windows array to verify if some window will be executed.
