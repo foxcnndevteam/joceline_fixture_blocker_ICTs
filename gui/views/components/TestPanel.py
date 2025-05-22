@@ -6,7 +6,7 @@ from core.fixture import get_fixture_yield, get_fixture_state
 from gui.assets import get_asset
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 
-errors: dict
+errors: dict[str, str]
 
 def load_errors_names():
     global errors
