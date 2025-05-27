@@ -19,7 +19,6 @@ class ReportFiles:
     # ~ Value to indicates if should be uploaded to server path.
     SAVE_ON_SERVER: bool = False
 
-    FIXTURE_ID: str = ''
     INFO_LOG_PATH: str = os.path.join(BASE_DIR, "reports")
     CRASH_LOG_PATH: str = os.path.join(BASE_DIR, "reports", "crash")
 
@@ -135,7 +134,7 @@ def crash(crash_title: str):
 #       log_result | type:List[str] | Lines will be save in log file.
 #       filename   | type:str       | File name of the log file.
 '''
-def writeLog(path: str, log_result: List[str], filename: str, sub_directory: str = ''):
+def writeLog(path: str, log_result: List[str], filename: str):
     # ~ Parses lines to add a new line between lines
     str_result = ''.join(str(f"{line}\n") for line in log_result)
 
@@ -150,18 +149,12 @@ def writeLog(path: str, log_result: List[str], filename: str, sub_directory: str
         info(f'Boards on fixture map: {config.data.boards_on_fixture_map}')
         info("-------------------------------------------------------------")
 
-        server_dir =  os.path.join(
-                config.getServerLogPath(),
-                sub_directory
-            )
-        if not os.path.exists(server_dir) and sub_directory != '':
-            os.makedirs(server_dir, exist_ok=True)
         shutil.copyfile(
             os.path.join(
                 path,
                 filename
             ),
-            os.path.join(server_dir, filename)
+            os.path.join(config.getServerLogPath(), filename)
         )    
 
 def check_reports_path():
