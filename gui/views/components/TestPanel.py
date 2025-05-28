@@ -44,7 +44,7 @@ class TestPanel(QWidget):
             dialog_log = LogDialog(log_name=log_file)
             dialog_log.exec_()
     
-    def __get_text_color(self, fixture_state: Literal['Blocked', 'Offline', 'Online']) -> Literal['green', 'gray']:
+    def __get_text_color(self, fixture_state: Literal['Blocked', 'Offline', 'Online']) -> Literal['green', 'gray', 'green']:
         color = 'green'
 
         if fixture_state == 'Offline':
