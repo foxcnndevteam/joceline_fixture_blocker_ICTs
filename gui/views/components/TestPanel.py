@@ -4,6 +4,7 @@ from core import config
 from core.database.Models import Local
 from core.fixture import get_fixture_yield, get_fixture_state
 from gui.assets import get_asset
+from gui.views.dialogs.LogViewWindow import LogDialog
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
 
 errors: dict[str, str]
@@ -28,6 +29,20 @@ class TestPanel(QWidget):
         font-size: 40px; 
         font-weight: bold;
     '''
+
+    __logs_files: dict[str, str] = {}
+
+    def __show_log(self, item):
+        fila = item.row()
+        columna = item.column()
+        if columna == 0:
+            return
+        if fila < 1:
+            return
+        log_file = self.__logs_files.get(fila)
+        if log_file != None:
+            dialog_log = LogDialog(log_name=log_file)
+            dialog_log.exec_()
     
     def __get_text_color(self, fixture_state: Literal['Blocked', 'Offline', 'Online']) -> Literal['green', 'gray']:
         color = 'green'
@@ -107,7 +122,7 @@ class TestPanel(QWidget):
         #   Desc: Setup the table to show the latest N tests.
         '''
         self.table_container = QTableWidget()
-        
+
         self.table_container.setRowCount(config.gey_yield_calc_qty() + 1)
         self.table_container.setColumnCount(8)
         
@@ -123,6 +138,8 @@ class TestPanel(QWidget):
         """)
         
         self.table_container.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        
+        self.table_container.itemClicked.connect(self.__show_log)
 
     def update_tests_table(self):
         '''
@@ -141,6 +158,8 @@ class TestPanel(QWidget):
 
         tests = self.get_last_tests()
 
+        self.__logs_files = {}
+
         # ~ If someone test add rows
         if tests:
             for i in range(1, ( len(list(tests)) + 1 )):
@@ -152,6 +171,12 @@ class TestPanel(QWidget):
                 self.table_container.setItem(i, 5, QTableWidgetItem(f'{get_error_name(tests[i - 1].fail_status)}'))
                 self.table_container.setItem(i, 6, QTableWidgetItem(f'{tests[i - 1].board_failed}'))
                 self.table_container.setItem(i, 7, QTableWidgetItem(f'{tests[i - 1].date}'))
+
+                if tests[i - 1].result == 'FAIL':
+                    # date format
+                    formated_date = tests[i - 1].date.strftime('%Y-%m-%dT%H-%M-%S') 
+                    # end date format
+                    self.__logs_files[i] = f'LOG_REPORT_{formated_date}-{tests[i - 1].serial}-{tests[i - 1].result}-{tests[i - 1].board_failed}.txt'
 
     def get_last_tests(self):
         '''
