@@ -7,13 +7,13 @@ class LogDialog(QDialog):
   def __init__(self, log_name: str = ''):
     super().__init__()
     self.setWindowTitle(f'log:{log_name}')
-    self.setFixedSize(580, 380)
+    self.setFixedSize(640, 380)
 
     # setup    
     layout = QVBoxLayout()
     layout.setContentsMargins(0, 0, 0, 0)
     log_info = QTextEdit()
-    log_info.setDisabled(True)
+    log_info.setReadOnly(True)
 
     # loading log
 
