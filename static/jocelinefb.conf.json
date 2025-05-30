@@ -6,6 +6,6 @@
     "boards_on_fixture_map":[
         [0]
     ],
-
+    "fixture_id": "AF_900B",
     "udp_server_port": 65432
 }

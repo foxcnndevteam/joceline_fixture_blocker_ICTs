@@ -3,6 +3,7 @@ import json
 from core import config
 from core.database.Models import Local
 from core.fixture import get_fixture_yield, get_fixture_state
+from core.config import get_fixture_id
 from gui.assets import get_asset
 from gui.views.dialogs.LogViewWindow import LogDialog
 from PyQt5.QtWidgets import QVBoxLayout, QWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView, QAbstractItemView
@@ -174,7 +175,7 @@ class TestPanel(QWidget):
                     # date format
                     formated_date = tests[i - 1].date.strftime('%Y-%m-%dT%H-%M-%S') 
                     # end date format
-                    self.__logs_files[i] = f'LOG_REPORT_{formated_date}-{tests[i - 1].serial}-{tests[i - 1].result}-{tests[i - 1].board_failed}.txt'
+                    self.__logs_files[i] = f'LOG_REPORT_{formated_date}-{tests[i - 1].serial}-{tests[i - 1].result}-{get_fixture_id()}_B{tests[i - 1].board_failed}.txt'
 
     def get_last_tests(self):
         '''

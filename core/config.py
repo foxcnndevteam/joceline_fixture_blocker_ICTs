@@ -9,6 +9,8 @@ from core.database import Models
 
 data: Models.Local.Config
 
+fixture_id = 'AF'
+
 '''
 #   Function: load_raw_config
 #   Desc: Loads config file an checks if it exist or is corrupted.
@@ -37,7 +39,7 @@ def load_raw_config():
 #   Desc: Gets the config json file decoded, gets and loads all config keys.
 '''
 def load_config():
-    global data
+    global data, fixture_id
     raw_data = load_raw_config()
 
     try:
@@ -50,6 +52,11 @@ def load_config():
     except KeyError as e:
         logger.error(f'Corrupted configuration file: Missing key "{e.args[0]}" in configuration file')
         sys.exit(0)
+
+    try:
+        fixture_id = raw_data['fixture_id']
+    except KeyError as e:
+        print("failed to get fixture id")
 
     try:
         data = Models.Local.Config(
@@ -81,6 +88,10 @@ def load_config():
 
 
 # --- Getters --- #
+
+def get_fixture_id() -> str:
+    global fixture_id
+    return fixture_id
 
 def getMaxFailCount():
     global data
