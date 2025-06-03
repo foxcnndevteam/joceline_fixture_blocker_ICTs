@@ -5,7 +5,7 @@ import traceback
 
 from core import config
 from typing import List
-from env import BASE_DIR
+from env import BASE_DIR, today
 
 # ~ Gets current timestamp
 datetime_now = datetime.datetime.now()
@@ -15,7 +15,7 @@ datetime_now = datetime.datetime.now()
 #   Desc: Defines the metadata of reports files.
 '''
 class ReportFiles:
-    DATE: str = datetime.datetime.now().replace(microsecond=0).isoformat()[:19]
+    DATE: str = today.replace(microsecond=0).isoformat()[:19]
     # ~ Value to indicates if should be uploaded to server path.
     SAVE_ON_SERVER: bool = False
 

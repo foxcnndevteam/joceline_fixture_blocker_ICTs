@@ -5,6 +5,7 @@ from core.database import Models
 from .model_manager import is_online
 from .model_manager import get_fixture_state
 from core.config import get_online_mode
+from env import today
 
 '''
 #   Function: save_fail
@@ -50,7 +51,8 @@ def save_test(serial: str, result: str, fail_status: int, board_failed: str, ite
         board_failed = board_failed,
         iteration_failed = iteration_failed,
         test_count = config.get_test_count(),
-        mode = mode
+        mode = mode,
+        date = today
     )
     
     test.save()

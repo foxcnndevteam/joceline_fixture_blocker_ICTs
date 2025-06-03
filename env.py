@@ -1,5 +1,8 @@
 import os
 import sys
+import datetime
+
+today = datetime.datetime.now()
 
 # ~ Alternate between frozen (.exe) or script (.py) to get program main path.
 if getattr(sys, 'frozen', False):
