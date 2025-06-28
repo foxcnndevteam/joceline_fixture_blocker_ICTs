@@ -1,5 +1,8 @@
 altgraph==0.17.4
+certifi==2025.6.15
+charset-normalizer==3.4.2
 click==8.1.8
+idna==3.10
 Markdown==3.8
 packaging==24.2
 peewee==3.17.9
@@ -12,3 +15,5 @@ PyQt5_sip==12.17.0
 pywin32-ctypes==0.2.3
 QtPy==2.4.3
 qtwidgets==1.1
+requests==2.32.4
+urllib3==2.5.0

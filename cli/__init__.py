@@ -76,7 +76,34 @@ def setup_cli():
         # ~ Send info to process
         fixture.process_info(result, serial, fixtureid, failstatus)
 
+    @test.command()
+    @click.argument('result', type=str)
+    @click.argument('serial', type=str)
+    @click.argument('fixtureid', type=str)
+    @click.argument('failstatus', type=int)
+    @click.argument('projectname', type=str)
+    @click.argument('projectmodel', type=str)
+    @click.argument('operatorid', type=str)
+    @click.argument('sku', type=str)
+    @click.argument('testname', type=str)
+    @click.argument('ipaddress', type=str)
+    @click.argument('logname', type=str)
+    @click.argument('teststarttime', type=str)
+    @click.argument('testendtime', type=str)
+    @click.argument('testdurationseconds', type=str)
+    def saveresult2(result, serial, fixtureid, failstatus, projectname, projectmodel, operatorid, sku, testname, ipaddress, logname, teststarttime, testendtime, testdurationseconds):
 
+        # ~ This is an option to modify loggger settings when is executed in test.
+        logger.save_log_as_test(
+            props_to_add={
+                'serial': serial,
+                'result': result,
+                'fixtureid': fixtureid
+            }
+        )
+        
+
+        fixture.process_info_2(result, serial, fixtureid, failstatus, projectname, projectmodel, operatorid, sku, "host", testname, "ONLINE", ipaddress, logname, teststarttime, testendtime, testdurationseconds)
 
     '''
     #    Command: test checkstatus

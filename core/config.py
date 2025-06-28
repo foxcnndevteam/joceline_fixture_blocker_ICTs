@@ -11,12 +11,14 @@ data: Models.Local.Config
 
 fixture_id = 'AF'
 
+ssh_key = None
+
 '''
 #   Function: load_raw_config
 #   Desc: Loads config file an checks if it exist or is corrupted.
 '''
 def load_raw_config():
-    raw_data = []
+    raw_data = {}
     configFileName = "jocelinefb.conf.json"
     configFilePath = os.path.join(BASE_DIR, configFileName)
 
@@ -55,6 +57,7 @@ def load_config():
 
     try:
         fixture_id = raw_data['fixture_id']
+        ssh_key = raw_data.get('ssh_key')
     except KeyError as e:
         print("failed to get fixture id")
 
