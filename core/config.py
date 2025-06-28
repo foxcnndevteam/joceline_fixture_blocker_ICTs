@@ -41,7 +41,7 @@ def load_raw_config():
 #   Desc: Gets the config json file decoded, gets and loads all config keys.
 '''
 def load_config():
-    global data, fixture_id
+    global data, fixture_id, ssh_key
     raw_data = load_raw_config()
 
     try:
