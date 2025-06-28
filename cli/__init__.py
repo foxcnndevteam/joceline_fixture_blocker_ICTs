@@ -4,7 +4,7 @@ import click
 from env import VERSION_PROGRAM
 
 from utils import lang, logger
-from core import user, fixture, config as config_manager
+from core import user, fixture, config as config_manager, api
 from cli.views import window
 from udpsocket import client
 from utils.help_printer import get_help
@@ -102,8 +102,11 @@ def setup_cli():
             }
         )
         
+        execution_mode = "ONLINE"
+        if fixture.get_fixture_state(False) == 'Offline':
+            execution_mode = "OFFLINE"
 
-        fixture.process_info_2(result, serial, fixtureid, failstatus, projectname, projectmodel, operatorid, sku, "host", testname, "ONLINE", ipaddress, logname, teststarttime, testendtime, testdurationseconds)
+        fixture.process_info_2(result, serial, fixtureid, failstatus, projectname, projectmodel, operatorid, sku, "host", testname, execution_mode, ipaddress, logname, teststarttime, testendtime, testdurationseconds)
 
     '''
     #    Command: test checkstatus
@@ -255,6 +258,13 @@ def setup_cli():
             online = 1
         print(online)
 
+
+    @app.command()
+    def sshtunnel():
+        is_alive = api.eval_tunnel_conection()
+
+        if not is_alive:
+            api.create_tunnel_ssh()
 
     '''
     #    Command: help

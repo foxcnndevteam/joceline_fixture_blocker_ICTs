@@ -54,4 +54,6 @@ def create_tunnel_ssh():
 
   ssh_key_path = os.path.join(BASE_DIR, ssh_key)
 
+  subprocess.run(['ssh', '-i', ssh_key_path, '-f', '-N', '-L', '3000:localhost:3000', 'aws@10.12.206.101'])
+
 

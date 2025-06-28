@@ -13,6 +13,7 @@ set config maxfailcount {new_max_failcount}                          update the 
 
 test checkstatus                                                     check and save fixture status when multiboards
 test saveresult {result} {serial} {fixture_id} {fail_status}         save a test data
+test saveresult2 {result} {serial} {fixture_id} {fail_status} {project_name} {project_model} {operator_id} {sku} {testname} {ipaddress} {logname} {test_start_time} {test_end_time} {test_duration_seconds}
 
 selection of Command:
 createsuperuser {user_name} {password}                               create a new super user
