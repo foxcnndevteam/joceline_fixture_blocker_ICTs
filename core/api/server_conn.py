@@ -44,6 +44,8 @@ def register_test(data: dict):
     result_response = requests.post(f"{API_URL}/records", json=data, headers={ 'Content-Type': 'application/json' })
     if result_response.status_code in [200,201]:
       print("resultado enviado")
+    else:
+      print(result_response.content)
   except requests.ConnectionError:
     print('conn error')
 
