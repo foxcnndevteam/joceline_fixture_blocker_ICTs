@@ -265,6 +265,9 @@ def setup_cli():
 
         if not is_alive:
             api.create_tunnel_ssh()
+            print("SSH tunnel created")
+        else:
+            print("SSH tunnel already created")
 
     '''
     #    Command: help
