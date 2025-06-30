@@ -132,7 +132,7 @@ def process_info_2(result: str, serial: str, fixture_id: str, fail_status: int, 
         "test_result": result,
         "execution_mode": execution_mode,
         "ip_address": ip_address,
-        "log_name": log_name,
+        "log_filename": log_name,
         "test_start_time": test_start_time,
         "test_end_time": test_end_time,
         "test_duration_seconds": test_duration_seconds
