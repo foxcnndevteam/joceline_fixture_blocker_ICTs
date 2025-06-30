@@ -2,7 +2,7 @@ import sys
 import cli
 import gui
 import atexit
-
+import requests
 from utils import logger, lang
 from core import config, fixture
 
