@@ -245,6 +245,12 @@ def setup_cli():
     def shouldpause():
         print(fixture.get_pause_on_fail())
 
+
+    @app.command()
+    @click.argument('serial', type=str)
+    def allowtest(serial):
+        fixture.save_allow_test_in_path(serial)
+
     '''
     #    Command: fixturestate
     #    Usage: JocelineFB.exe fixturestate

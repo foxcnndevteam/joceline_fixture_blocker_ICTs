@@ -58,6 +58,12 @@ def save_test(serial: str, result: str, fail_status: int, board_failed: str, ite
     test.save()
 
 
+def save_allow_test_query(serial: str):
+    tests = Models.Local.Test.select(Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial), Models.Local.Test.result.startswith('FAIL')).execute()
+    tests_num = len(tests)
+    return tests_num < 1
+
+
 '''
 #   Function: save_retest_result_in_path
 #   Desc: Save if the PCBA should be retested in an output file to be readed by testplan.
@@ -84,7 +90,7 @@ def save_online_result_in_path():
         f.write(str(is_online() and config.get_online_mode()))
 
 '''
-#   Function: save_should_pause
+#   Function: save_should_pause_in_path
 #   Desc: Save if should pause on fail in an output file to be readed by testplan.
 '''
 def save_should_pause_in_path():
@@ -93,3 +99,15 @@ def save_should_pause_in_path():
 
     with open(os.path.join(result_path, "should_pause"), "w") as f:
         f.write(str(config.get_pause_on_fail()))
+
+'''
+#   Function: allow_test_in_path
+#   Desc: Save if should allow the test if the biard in an output file to be readed by testplan.
+'''
+
+def save_allow_test_in_path(serial: str):
+    result_path = os.path.join(BASE_DIR, "output")
+    if not os.path.exists(result_path): os.makedirs(result_path)
+
+    with open(os.path.join(result_path, "allow_test"), "w") as f:
+        f.write(str(save_allow_test_query(serial)))
