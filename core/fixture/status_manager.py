@@ -268,12 +268,12 @@ def check_block_status_alt(show_window: bool) -> Literal['Online', 'Offline', 'B
 #   Function: check_retest_status 
 #   Desc: Checks if some board should be retested to display retest window.
 '''  
-def check_retest_status(serial: str = '', board_number: int = -1):
+def check_retest_status(serial: str = '', board_number: int = -1, result: Literal['PASS', 'PASSED', 'FAIL', 'FAILED'] = 'PASS'):
     boards_to_retest = boards.getBoardsToRetest()
     force_retest = save_allow_test_query(serial, board_number)
 
-    if force_retest:
+    if force_retest and result not in ['PASS', 'PASSED']:
         save_retest_result_in_path("True")
 
-    if len(boards_to_retest) > 0 or force_retest:
+    if len(boards_to_retest) > 0 or (force_retest and result not in ['PASS', 'PASSED']):
         window.show(RetestWindow(boards_to_retest))

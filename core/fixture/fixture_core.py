@@ -96,7 +96,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     
     # ~ If multiboard the check_status will be executed in other command (JocelineFB.exe test checkstatus)
     if check_status:
-        check_retest_status(serial, board_number)
+        check_retest_status(serial, board_number, result)
         check_block_status_alt(True)
     client.send_update_signal()
 
@@ -201,7 +201,7 @@ def process_info_2(result: str, serial: str, fixture_id: str, fail_status: int, 
     
     # ~ If multiboard the check_status will be executed in other command (JocelineFB.exe test checkstatus)
     if check_status:
-        check_retest_status(serial, board_number)
+        check_retest_status(serial, board_number, result)
         check_block_status_alt(True)
     client.send_update_signal()
 
