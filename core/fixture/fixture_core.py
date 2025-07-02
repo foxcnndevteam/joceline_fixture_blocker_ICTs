@@ -72,7 +72,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
                 save_part_failed(result, serial, fixture_id, partFailed)
                 
                 if partFailed == "OTF" or shouldUploadResult(serial, fixture_id, partFailed):
-                    save_retest_result_in_path("False")
+                    save_retest_result_in_path("True")
                     logger.info(fixture_messages["result_uploaded"])
                     boards.setBoardFailed(board_number, True)
                     break
@@ -96,7 +96,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     
     # ~ If multiboard the check_status will be executed in other command (JocelineFB.exe test checkstatus)
     if check_status:
-        check_retest_status()
+        check_retest_status(serial, board_number)
         check_block_status_alt(True)
     client.send_update_signal()
 
@@ -201,7 +201,7 @@ def process_info_2(result: str, serial: str, fixture_id: str, fail_status: int, 
     
     # ~ If multiboard the check_status will be executed in other command (JocelineFB.exe test checkstatus)
     if check_status:
-        check_retest_status()
+        check_retest_status(serial, board_number)
         check_block_status_alt(True)
     client.send_update_signal()
 

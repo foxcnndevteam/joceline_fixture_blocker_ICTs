@@ -58,10 +58,14 @@ def save_test(serial: str, result: str, fail_status: int, board_failed: str, ite
     test.save()
 
 
-def save_allow_test_query(serial: str):
-    tests = Models.Local.Test.select(Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial), Models.Local.Test.result.startswith('FAIL')).execute()
-    tests_num = len(tests)
-    return tests_num < 1
+def save_allow_test_query(serial: str, boardnumber: int) -> bool:
+    tests = Models.Local.Test.select(
+        Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial),
+        Models.Local.Test.result.startswith('FAIL'),
+        Models.Local.Test.board_failed.__eq__(int(boardnumber))
+    ).execute()
+    tests_num = len(list(tests))
+    return tests_num > 1
 
 
 '''
@@ -105,9 +109,9 @@ def save_should_pause_in_path():
 #   Desc: Save if should allow the test if the biard in an output file to be readed by testplan.
 '''
 
-def save_allow_test_in_path(serial: str):
+def save_allow_test_in_path(serial: str, boardnumber: int):
     result_path = os.path.join(BASE_DIR, "output")
     if not os.path.exists(result_path): os.makedirs(result_path)
 
     with open(os.path.join(result_path, "allow_test"), "w") as f:
-        f.write(str(save_allow_test_query(serial)))
+        f.write(str(save_allow_test_query(serial, boardnumber)))

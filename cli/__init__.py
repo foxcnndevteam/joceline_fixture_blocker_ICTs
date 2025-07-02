@@ -248,8 +248,9 @@ def setup_cli():
 
     @app.command()
     @click.argument('serial', type=str)
-    def allowtest(serial):
-        fixture.save_allow_test_in_path(serial)
+    @click.argument('boardnumber', type=int)
+    def allowtest(serial, boardnumber):
+        fixture.save_allow_test_in_path(serial, boardnumber)
 
     '''
     #    Command: fixturestate

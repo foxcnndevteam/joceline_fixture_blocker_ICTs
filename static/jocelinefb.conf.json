@@ -1,8 +1,8 @@
 {
     "lang": "es",
 
-    "extern_db_path": "/home/kintaro/Documents/joccelinedb/externDb.db",
-    "server_log_path": "/home/kintaro/Documents/joccelinedb/log/",
+    "extern_db_path": "C:\\Users\\Nestor_ascencio\\Documents\\jb\\externDb.db",
+    "server_log_path": " C:\\Users\\Nestor_ascencio\\Documents\\jb\\log\\",
     "boards_on_fixture_map":[
         [0]
     ],
