@@ -59,13 +59,23 @@ def save_test(serial: str, result: str, fail_status: int, board_failed: str, ite
 
 
 def save_allow_test_query(serial: str, boardnumber: int) -> bool:
-    tests = Models.Local.Test.select(
-        Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial),
-        Models.Local.Test.result.startswith('FAIL'),
-        Models.Local.Test.board_failed.__eq__(int(boardnumber))
-    ).execute()
-    tests_num = len(list(tests))
-    return tests_num > 1
+    #tests = Models.Local.Test.select(
+    #    Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial),
+    #    Models.Local.Test.result.startswith('FAIL'),
+    #    Models.Local.Test.board_failed.__eq__(int(boardnumber))
+    #).execute()
+    tests = Models.Local.Test().select(
+            Models.Local.Test.id,
+            Models.Local.Test.serial,
+            Models.Local.Test.result,
+            Models.Local.Test.fail_status,
+            Models.Local.Test.board_failed,
+            Models.Local.Test.date,
+            Models.Local.Test.mode
+        ).limit(2).order_by(
+            Models.Local.Test.date.desc()
+        )
+    return tests[1].serial == serial
 
 
 '''
