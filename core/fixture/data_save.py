@@ -58,7 +58,7 @@ def save_test(serial: str, result: str, fail_status: int, board_failed: str, ite
     test.save()
 
 
-def save_allow_test_query(serial: str, boardnumber: int) -> bool:
+def save_allow_retest_query(serial: str, boardnumber: int) -> bool:
     #tests = Models.Local.Test.select(
     #    Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial),
     #    Models.Local.Test.result.startswith('FAIL'),
@@ -80,6 +80,17 @@ def save_allow_test_query(serial: str, boardnumber: int) -> bool:
 
     return tests[1].serial == serial
 
+def save_allow_test_query(serial: str) -> bool:
+    tests = Models.Local.Test.select(
+        Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial),
+        Models.Local.Test.result.startswith('FAIL')
+    ).execute()
+
+    allow_test = len(tests) < 1
+
+    # TODO: Implementar consulta al SFC si ha sido reparada al menos 1 vez para evaluar si permitir retest o no.
+
+    return allow_test
 
 '''
 #   Function: save_retest_result_in_path

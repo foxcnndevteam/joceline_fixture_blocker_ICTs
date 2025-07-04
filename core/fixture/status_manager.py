@@ -7,7 +7,7 @@ from cli.views.blocked import BlockedWindow
 
 from core.database import Models
 from core import boards, config
-from .data_save import save_allow_test_query, save_retest_result_in_path
+from .data_save import save_allow_retest_query, save_retest_result_in_path
 
 from .model_manager import get_fail_count, increment_fixture_fails, reset_fail_count, set_fail_count, set_online, is_online
 from .messages import checkFixtureMessages
@@ -270,7 +270,7 @@ def check_block_status_alt(show_window: bool) -> Literal['Online', 'Offline', 'B
 '''  
 def check_retest_status(serial: str = '', board_number: int = -1, result: Literal['PASS', 'PASSED', 'FAIL', 'FAILED'] = 'PASS'):
     boards_to_retest = boards.getBoardsToRetest()
-    force_retest = save_allow_test_query(serial, board_number)
+    force_retest = save_allow_retest_query(serial, board_number)
 
     if force_retest and result not in ['PASS', 'PASSED']:
         save_retest_result_in_path("True")
