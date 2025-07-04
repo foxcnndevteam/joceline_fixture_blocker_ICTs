@@ -75,6 +75,9 @@ def save_allow_test_query(serial: str, boardnumber: int) -> bool:
         ).limit(2).order_by(
             Models.Local.Test.date.desc()
         )
+    if len(tests) < 2:
+        return False
+
     return tests[1].serial == serial
 
 
