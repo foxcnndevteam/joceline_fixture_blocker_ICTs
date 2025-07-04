@@ -36,7 +36,7 @@ class TestPanel(QWidget):
     def __show_log(self, item):
         fila = item.row()
         columna = item.column()
-        if columna != 1 or fila < 1:
+        if columna != 0 or fila < 1:
             return
         log_file = self.__logs_files.get(fila)
         if log_file != None:
