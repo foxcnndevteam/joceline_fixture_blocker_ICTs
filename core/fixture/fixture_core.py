@@ -4,7 +4,7 @@ from utils.logparser import extractFailedPartsInLog
 
 from cli.views import window
 
-from core import boards, config
+from core import boards, config, api
 
 from udpsocket import client
 
@@ -137,7 +137,9 @@ def process_info_2(result: str, serial: str, fixture_id: str, fail_status: int, 
         "test_end_time": test_end_time,
         "test_duration_seconds": test_duration_seconds
     }
-    print(data)
+    # tunnel_available = api.eval_tunnel_conection()
+    # if not tunnel_available:
+    #     api.create_tunnel_ssh()
     register_test(data)
 
     # ~ Add test log headers
