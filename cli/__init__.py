@@ -5,7 +5,7 @@ from env import VERSION_PROGRAM
 
 from utils import lang, logger
 from core import user, fixture, config as config_manager, api
-from cli.views import window
+from cli.views import window, noretest
 from udpsocket import client
 from utils.help_printer import get_help
 
@@ -248,9 +248,12 @@ def setup_cli():
 
     @app.command()
     @click.argument('serial', type=str)
-    @click.argument('boardnumber', type=int)
-    def allowtest(serial, boardnumber):
-        fixture.save_allow_test_in_path(serial, boardnumber)
+    def allowtest(serial):
+        allow_test = fixture.save_allow_test_query(serial)
+        fixture.save_allow_test_in_path(allow_test)
+        if not allow_test:
+            window.show(noretest.NoRetestWindow([serial]))
+        window.openWindows()
 
     '''
     #    Command: fixturestate

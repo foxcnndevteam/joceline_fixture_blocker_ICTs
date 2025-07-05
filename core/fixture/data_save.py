@@ -88,7 +88,7 @@ def save_allow_test_query(serial: str) -> bool:
 
     allow_test = len(tests) < 1
 
-    # TODO: Implementar consulta al SFC si ha sido reparada al menos 1 vez para evaluar si permitir retest o no.
+    # TODO: Implementar consulta al SFC si ha sido reparada al menos 1 vez para permitir o no la prueba.
 
     return allow_test
 
@@ -133,9 +133,9 @@ def save_should_pause_in_path():
 #   Desc: Save if should allow the test if the biard in an output file to be readed by testplan.
 '''
 
-def save_allow_test_in_path(serial: str, boardnumber: int):
+def save_allow_test_in_path(allow_test: bool):
     result_path = os.path.join(BASE_DIR, "output")
     if not os.path.exists(result_path): os.makedirs(result_path)
 
     with open(os.path.join(result_path, "allow_test"), "w") as f:
-        f.write(str(save_allow_test_query(serial, boardnumber)))
+        f.write(str(allow_test))
