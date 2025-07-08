@@ -28,5 +28,6 @@ boards_to_retest.json
 /static/reports
 /static/output
 /static/log
+/static/debug.log
 static/fru_output
 /totest

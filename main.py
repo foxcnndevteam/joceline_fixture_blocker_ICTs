@@ -5,6 +5,19 @@ import atexit
 import requests
 from utils import logger, lang
 from core import config, fixture
+import os
+from env import BASE_DIR
+import logging
+
+peewee_logger = logging.getLogger('peewee') 
+peewee_logger.setLevel(logging.CRITICAL + 1) 
+
+logging.basicConfig(
+    level=logging.DEBUG,  # Nivel mínimo de log
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename=os.path.join(BASE_DIR, "debug.log"),   # Opcional: archivo donde se guardan los logs
+    filemode='a'          # 'w' para sobrescribir cada vez, 'a' para añadir
+)
 
 # ~ If app doesn't get args the system up a window
 is_window: bool = (len(sys.argv) < 2)

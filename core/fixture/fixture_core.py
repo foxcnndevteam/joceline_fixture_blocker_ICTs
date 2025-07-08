@@ -71,7 +71,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
             if get_fixture_state(False) == 'Online':
                 save_part_failed(result, serial, fixture_id, partFailed)
                 
-                if partFailed == "OTF" or shouldUploadResult(serial, fixture_id, partFailed):
+                if shouldUploadResult(serial, fixture_id, partFailed):
                     save_retest_result_in_path("False")
                     logger.info(fixture_messages["result_uploaded"])
                     boards.setBoardFailed(board_number, True)

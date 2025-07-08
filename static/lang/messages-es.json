@@ -34,7 +34,8 @@
     },
     "retest_view": {
         "show_boards_title": "Favor de colocar la tarjetas marcadas en amarillo en otro equipo",
-        "default_title": "Favor de colocar la tarjeta en otro equipo"
+        "default_title": "Favor de colocar la tarjeta en otro equipo",
+        "test_not_allowed": "Favor de colocar la tarjeta en otro equipo, prueba cancelada"
     },
     "boards": {
         "repeated_ids": "El mapa de 'boards' en la configuracion tiene IDs repetidas"

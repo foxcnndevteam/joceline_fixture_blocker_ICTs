@@ -32,7 +32,8 @@
     },
     "retest_view": {
         "show_boards_title": "Please place the boards marked in yellow on another fixture",
-        "default_title": "Please place the board on another fixture"
+        "default_title": "Please place the board on another fixture",
+        "test_not_allowed": "Please place the board on another fixture, test cancelled"
     },
     "boards": {
         "repeated_ids": "The 'boards' map in config have repeated IDs"

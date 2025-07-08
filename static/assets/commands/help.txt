@@ -19,7 +19,7 @@ selection of Command:
 createsuperuser {user_name} {password}                               create a new super user
 fixturestate                                                         get fixture current state
 shouldpause                                                          get if should paiuse on fail
-allowtest                                                            evaluate if the board can be tested
+allowtest {serial}                                                   evaluate if the board can be tested
 sshtunnel                                                            create a ssh tunnel to a central server
 help                                                                 show this help
 version                                                              show the version of the program

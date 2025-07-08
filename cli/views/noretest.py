@@ -39,7 +39,7 @@ class NoRetestWindow(QWidget):
         try:
             messages = {
                 "show_boards_title": lang.messages["retest_view"]["show_boards_title"],
-                "default_title": lang.messages["retest_view"]["default_title"],
+                "default_title": lang.messages["retest_view"]["test_not_allowed"],
             }
         except KeyError as e:
             logger.error(f'Corrupted lang file: Missing key "{e.args[0]}" in lang file')
