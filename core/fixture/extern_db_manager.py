@@ -81,4 +81,4 @@ def shouldUploadResult(serial, fixture_id, fail_reason):
     except OperationalError:
         logging.info(f"OperationalError: Error when consulting with {serial}")
 
-    return False
+    return True

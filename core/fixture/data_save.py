@@ -1,6 +1,7 @@
 import os
 from env import BASE_DIR
 from core import config
+from core.api import SFC_check_ICT_Repair
 from core.database import Models
 from .model_manager import is_online
 from .model_manager import get_fixture_state
@@ -81,12 +82,23 @@ def save_allow_retest_query(serial: str, boardnumber: int) -> bool:
     return tests[1].serial == serial
 
 def save_allow_test_query(serial: str) -> bool:
+    ICT_Reapir_count = SFC_check_ICT_Repair(serial)
+
+    threshold = 2
+
+    if ICT_Reapir_count == 1:
+        threshold = threshold * 2
+    elif ICT_Reapir_count == 2:
+        threshold = threshold * 3
+    elif ICT_Reapir_count >= 3:
+        threshold = threshold * 4
+
     tests = Models.Local.Test.select(
         Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial),
         Models.Local.Test.result.startswith('FAIL')
     ).execute()
 
-    allow_test = len(tests) < 1
+    allow_test = len(tests) < threshold
 
     # TODO: Implementar consulta al SFC si ha sido reparada al menos 1 vez para permitir o no la prueba.
 

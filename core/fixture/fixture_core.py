@@ -210,3 +210,57 @@ def process_info_2(result: str, serial: str, fixture_id: str, fail_status: int, 
     # ~ Check the windows array to verify if some window will be executed.
     window.openWindows()
 
+
+def process_info_alt(result: str, serial: str, fixture_id: str, fail_status: int):
+    result = result.upper()
+    threshold = 2
+
+    check_status = boards.isOnlyOneBoard()
+    fixture_messages = checkFixtureMessages()
+    
+    # ~ Add test log headers
+    logger.info(fixture_messages["saving_test"])
+    logger.info(f'Serial: {serial}')
+    logger.info(f'Result: {result}')
+    logger.info(f'FixtureID: {fixture_id}')
+    
+    # ~ Get the board number by fixture_id
+    board_number = fixture_id[-1]
+    save_test(serial, result, fail_status, board_number, get_fail_count())
+    
+    # ~ This because if multiboard all subtest was like one main test.
+    if check_status: config.increment_test_count()
+    
+    if result == "PASS" or result == "PASSED":
+        if get_fixture_state(False) == 'Online':
+            remove_serial_parts(serial)
+            save_retest_result_in_path("False")
+            logger.info(fixture_messages["result_uploaded"])
+            set_fixture_online(
+                show_unlock_message = False,
+                delete_fails = boards.isOnlyOneBoard(),
+                modify_fail_count = False
+            )
+    else:
+        # ~ In this part start the fail count if fail_count = 0
+        if get_fail_count() == 0: set_fail_count(1)
+        # ~ Extract failed devices of PCBA
+        partsFailed = extractFailedPartsInLog(fail_status)
+        save_fail(fail_status, board_number, get_fail_count())
+        
+        boards.setBoardFailed(board_number, True)
+        logger.info(f'Fail Status: {fail_status}')
+        logger.info(f'PARTS_FAILED:')
+        logger.info(f'{partsFailed}')
+        boards.setBoardFailed(board_number, True)
+        client.send_update_signal()
+
+    # ~ If multiboard the check_status will be executed in other command (JocelineFB.exe test checkstatus)
+    if check_status:
+        check_retest_status(serial, board_number, result)
+        check_block_status_alt(True)
+    client.send_update_signal()
+
+    # ~ Check the windows array to verify if some window will be executed.
+    window.openWindows()
+
