@@ -14,7 +14,7 @@ from core.api import register_test
 from .model_manager import *
 from .extern_db_manager import *
 from .messages import checkFixtureMessages
-from .data_save import save_fail, save_test, save_retest_result_in_path
+from .data_save import save_fail, save_test, save_retest_result_in_path, should_retest_in_station
 from .status_manager import check_block_status, check_retest_status, set_fixture_online, check_block_status_alt
 
 # --- Core --- #
@@ -71,7 +71,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
             if get_fixture_state(False) == 'Online':
                 save_part_failed(result, serial, fixture_id, partFailed)
                 
-                if shouldUploadResult(serial, fixture_id, partFailed):
+                if shouldUploadResult(serial, fixture_id, partFailed) or not should_retest_in_station(serial):
                     save_retest_result_in_path("False")
                     logger.info(fixture_messages["result_uploaded"])
                     boards.setBoardFailed(board_number, True)
@@ -247,7 +247,27 @@ def process_info_alt(result: str, serial: str, fixture_id: str, fail_status: int
         # ~ Extract failed devices of PCBA
         partsFailed = extractFailedPartsInLog(fail_status)
         save_fail(fail_status, board_number, get_fail_count())
-        
+
+        i = 1
+        for partFailed in partsFailed:
+            if get_fixture_state(False) == 'Online':
+                save_part_failed(result, serial, fixture_id, partFailed)
+                
+                if shouldUploadResult(serial, fixture_id, partFailed):
+                    save_retest_result_in_path("False")
+                    logger.info(fixture_messages["result_uploaded"])
+                    boards.setBoardFailed(board_number, True)
+                    break
+                elif i >= len(partsFailed):
+                    save_retest_result_in_path("True")
+                    boards.saveBoardShouldRetest(board_number, True)
+
+            else:
+                logger.warning(fixture_messages["fixture_locked"])
+                break
+
+            i += 1
+
         boards.setBoardFailed(board_number, True)
         logger.info(f'Fail Status: {fail_status}')
         logger.info(f'PARTS_FAILED:')

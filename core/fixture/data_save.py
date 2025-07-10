@@ -58,6 +58,25 @@ def save_test(serial: str, result: str, fail_status: int, board_failed: str, ite
     
     test.save()
 
+def should_retest_in_station(serial: str):
+    ICT_Reapir_count = SFC_check_ICT_Repair(serial)
+
+    threshold = 2
+
+    if ICT_Reapir_count == 1:
+        threshold = threshold * 2
+    elif ICT_Reapir_count == 2:
+        threshold = threshold * 3
+    elif ICT_Reapir_count >= 3:
+        threshold = threshold * 4
+
+    tests = Models.Local.Test.select(Models.Local.Test.id).where(Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial),
+        Models.Local.Test.result.startswith('FAIL')).execute()
+
+    tests_count = len(tests)
+    
+    return tests_count < threshold
+
 
 def save_allow_retest_query(serial: str, boardnumber: int) -> bool:
     #tests = Models.Local.Test.select(
@@ -99,8 +118,6 @@ def save_allow_test_query(serial: str) -> bool:
     ).execute()
 
     allow_test = len(tests) < threshold
-
-    # TODO: Implementar consulta al SFC si ha sido reparada al menos 1 vez para permitir o no la prueba.
 
     return allow_test
 
