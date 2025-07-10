@@ -1,5 +1,6 @@
 import requests
 import re
+import logging
 
 # --- Configuración ---
 URL_LOGIN = "http://10.12.171.56:8080/EPD1SFC/System/Login.jsp"
@@ -29,31 +30,27 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
     login_success = False
 
     success = False
+    try:
+        response = session.post(URL_LOGIN, data=login_data)
 
-    response = session.post(URL_LOGIN, data=login_data)
+        if response.status_code in [200, 302]:
+            login_success = True
 
+        if login_success:
+            consulta_params = {
+                "PPID": serial_number
+            }
+            consulta_response = session.post(URL_CONSULTA, data=consulta_params)
 
-    if response.status_code in [200, 302]:
-        login_success = True
+            if consulta_response.status_code == 200:
+                text_resp = consulta_response.text
 
-    if login_success:
-        consulta_params = {
-            "PPID": serial_number
-        }
-        consulta_response = session.post(URL_CONSULTA, data=consulta_params)
-    
-        if consulta_response.status_code == 200:
-            text_resp = consulta_response.text
-
-            if STATUS_CRITERIA in text_resp:
-                
-                for i in range(0, len(text_resp)):
-                    start = i
-                    end = i + STATUS_CRITERIA_LEN
-
-                    text_chunk = text_resp[start:end]
-                    if STATUS_CRITERIA == text_chunk:
-                        ICT_Repair_found += 1
+                if STATUS_CRITERIA in text_resp:
+                    found_matches = STATUS_CRITERIA_REGEX.findall(text_resp)
+                    if found_matches != None:
+                        ICT_Repair_found = len(found_matches)
+    except requests.RequestException:
+        logging.debug(f'failed to connect to SFC and check the SN:{serial_number}')
 
     return ICT_Repair_found
 
