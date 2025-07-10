@@ -7,6 +7,7 @@ from .model_manager import is_online
 from .model_manager import get_fixture_state
 from core.config import get_online_mode
 from env import today
+import datetime 
 
 '''
 #   Function: save_fail
@@ -58,17 +59,15 @@ def save_test(serial: str, result: str, fail_status: int, board_failed: str, ite
     
     test.save()
 
-def should_retest_in_station(serial: str):
-    ICT_Reapir_count = SFC_check_ICT_Repair(serial)
-
+def should_retest_in_station(serial: str, ICT_repair_count: int = 0):
     threshold = 2
 
-    if ICT_Reapir_count == 1:
-        threshold = threshold * 2
-    elif ICT_Reapir_count == 2:
-        threshold = threshold * 3
-    elif ICT_Reapir_count >= 3:
-        threshold = threshold * 4
+    if ICT_repair_count == 1:
+        threshold = 4
+    elif ICT_repair_count == 2:
+        threshold = 6
+    elif ICT_repair_count >= 3:
+        threshold = 8
 
     tests = Models.Local.Test.select(Models.Local.Test.id).where(Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial),
         Models.Local.Test.result.startswith('FAIL')).execute()
@@ -98,7 +97,9 @@ def save_allow_retest_query(serial: str, boardnumber: int) -> bool:
     if len(tests) < 2:
         return False
 
-    return tests[1].serial == serial
+    should_retest = should_retest_in_station(serial)
+
+    return tests[1].serial == serial and should_retest
 
 def save_allow_test_query(serial: str) -> bool:
     ICT_Reapir_count = SFC_check_ICT_Repair(serial)

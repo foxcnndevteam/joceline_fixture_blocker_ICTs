@@ -40,7 +40,7 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
             consulta_params = {
                 "PPID": serial_number
             }
-            consulta_response = session.post(URL_CONSULTA, data=consulta_params)
+            consulta_response = session.post(URL_CONSULTA, data=consulta_params, timeout=1)
 
             if consulta_response.status_code == 200:
                 text_resp = consulta_response.text
@@ -50,7 +50,9 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
                     if found_matches != None:
                         ICT_Repair_found = len(found_matches)
     except requests.RequestException:
-        logging.debug(f'failed to connect to SFC and check the SN:{serial_number}')
+        logging.debug(f'consult to SFC failed; conection, tried to check the SN:{serial_number}')
+    except requests.exceptions.Timeout:
+        logging.debug(f'consult to SFC failed; timeout, tried to check the SN:{serial_number}')
 
     return ICT_Repair_found
 

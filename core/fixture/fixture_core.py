@@ -9,13 +9,15 @@ from core import boards, config, api
 from udpsocket import client
 
 from core.config import get_online_mode, get_pause_on_fail
-from core.api import register_test
+from core.api import register_test, SFC_check_ICT_Repair
 
 from .model_manager import *
 from .extern_db_manager import *
 from .messages import checkFixtureMessages
 from .data_save import save_fail, save_test, save_retest_result_in_path, should_retest_in_station
 from .status_manager import check_block_status, check_retest_status, set_fixture_online, check_block_status_alt
+
+from datetime import datetime
 
 # --- Core --- #
 '''
@@ -59,6 +61,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
                 modify_fail_count = False
             )
     else:
+        ICT_repair_count = SFC_check_ICT_Repair(serial)
         # ~ In this part start the fail count if fail_count = 0
         if get_fail_count() == 0: set_fail_count(1)
         # ~ Extract failed devices of PCBA
@@ -71,7 +74,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
             if get_fixture_state(False) == 'Online':
                 save_part_failed(result, serial, fixture_id, partFailed)
                 
-                if shouldUploadResult(serial, fixture_id, partFailed) or not should_retest_in_station(serial):
+                if shouldUploadResult(serial, fixture_id, partFailed) or not should_retest_in_station(serial, ICT_repair_count):
                     save_retest_result_in_path("False")
                     logger.info(fixture_messages["result_uploaded"])
                     boards.setBoardFailed(board_number, True)
