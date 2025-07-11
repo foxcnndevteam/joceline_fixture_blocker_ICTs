@@ -17,7 +17,7 @@ class ExternMetadata:
         logger.error('Missing \'Extern db\' file')
         sys.exit(0)
         
-    globalDB = SqliteDatabase(extern_db_path)
+    globalDB = SqliteDatabase(extern_db_path, timeout=1, check_same_thread=False)
 
 
 '''

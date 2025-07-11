@@ -32,20 +32,29 @@ def remove_serial_parts(serial: str):
 #       fail_reason | type:str | Fail reason code
 '''
 def save_part_failed(result: str, serial: str, fixture_id: str, fail_reason: str = None):
-    try:
-        from core.database import Extern
-        testInfo = Extern.TestInfo(serial = serial, fail_reason = fail_reason, fixture_id = fixture_id)
-        testInfo.save()
-        logging.info(f"External DB: fail added with serial:{serial} fixture_id:{fixture_id} fail_reason:{fail_reason}")
-
-    except DatabaseError:
-        logging.info(f"DatabaseError: Error when adding with {serial}")
-    except DataError:
-        logging.info(f"DataError: Error when adding with {serial}")
-    except InternalError:
-        logging.info(f"InternalError: Error when adding with {serial}")
-    except OperationalError:
-        logging.info(f"OperationalError: Error when adding with {serial}")
+    tries = 0
+    while (tries < 4):
+        try:
+            from core.database import Extern
+            testInfo = Extern.TestInfo(serial = serial, fail_reason = fail_reason, fixture_id = fixture_id)
+            testInfo.save()
+            logging.info(f"External DB: fail added with serial:{serial} fixture_id:{fixture_id} fail_reason:{fail_reason}")
+            break
+        except DatabaseError:
+            logging.info(f"DatabaseError: Error when adding with {serial}")
+            tries += 1
+        except DataError:
+            logging.info(f"DataError: Error when adding with {serial}")
+            tries += 1
+        except InternalError:
+            logging.info(f"InternalError: Error when adding with {serial}")
+            tries += 1
+        except OperationalError:
+            logging.info(f"OperationalError: Error when adding with {serial}")
+            tries += 1
+        except TimeoutError:
+            logging.info(f"Timeout Error: Error when adding with {serial}")
+            tries += 1
 
 
 '''
