@@ -49,7 +49,7 @@ class NoRetestWindow(QWidget):
         #    view_background = 'rgb(240, 240, 240)'
         #     title = messages["show_boards_title"]
         # else:
-        view_background = '#e5e400'
+        view_background = '#f79616'
         title = messages["default_title"]
 
         self.setStyleSheet(f'background-color: {view_background};')
