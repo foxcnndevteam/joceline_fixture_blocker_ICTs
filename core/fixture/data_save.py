@@ -60,7 +60,7 @@ def save_test(serial: str, result: str, fail_status: int, board_failed: str, ite
     test.save()
 
 def should_retest_in_station(serial: str, ICT_repair_count: int = 0):
-    threshold = 2
+    threshold = 3
 
     if ICT_repair_count == 1:
         threshold = 4
@@ -102,25 +102,29 @@ def save_allow_retest_query(serial: str, boardnumber: int) -> bool:
     return tests[1].serial == serial and should_retest
 
 def save_allow_test_query(serial: str) -> bool:
-    ICT_Reapir_count = SFC_check_ICT_Repair(serial)
+    # ICT_Reapir_count = SFC_check_ICT_Repair(serial)
 
-    threshold = 2
+    # threshold = 2
 
-    if ICT_Reapir_count == 1:
-        threshold = threshold * 2
-    elif ICT_Reapir_count == 2:
-        threshold = threshold * 3
-    elif ICT_Reapir_count >= 3:
-        threshold = threshold * 4
+    # if ICT_Reapir_count == 1:
+    #     threshold = threshold * 2
+    # elif ICT_Reapir_count == 2:
+    #     threshold = threshold * 3
+    # elif ICT_Reapir_count >= 3:
+    #     threshold = threshold * 4
 
-    tests = Models.Local.Test.select(
-        Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial),
-        Models.Local.Test.result.startswith('FAIL')
-    ).execute()
+    # tests = Models.Local.Test.select(
+    #     Models.Local.Test.serial).where(Models.Local.Test.serial.__eq__(serial),
+    #     Models.Local.Test.result.startswith('FAIL')
+    # ).execute()
 
-    allow_test = len(tests) < threshold
+    # allow_test = len(tests) < threshold
 
-    return allow_test
+    tests = list(Models.Local.Test.select(Models.Local.Test.serial).limit(1).order_by(Models.Local.Test.date.desc()).execute())
+
+    allow_test = tests[0].serial == serial
+
+    return not allow_test
 
 '''
 #   Function: save_retest_result_in_path
