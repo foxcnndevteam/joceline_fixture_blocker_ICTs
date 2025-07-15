@@ -122,6 +122,9 @@ def save_allow_test_query(serial: str) -> bool:
 
     tests = list(Models.Local.Test.select(Models.Local.Test.serial).limit(1).order_by(Models.Local.Test.date.desc()).execute())
 
+    if len(tests) == 0:
+        return True
+
     allow_test = tests[0].serial == serial
 
     return not allow_test
