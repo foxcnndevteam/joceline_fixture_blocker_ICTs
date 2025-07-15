@@ -75,8 +75,8 @@ def shouldUploadResult(serial, fixture_id, fail_reason):
         fails_found = len(fails)
 
         logging.info(f"External DB:{fails_found} fails found with serial {serial} ")
-        print(f"fails: {len(fails)}")
-        return len(fails) > 3 
+        should_uplaod = len(fails) > 2
+        return  should_uplaod
     except DatabaseError:
         logging.info(f"DatabaseError: Error when consulting with {serial}")
     except DataError:
