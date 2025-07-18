@@ -101,6 +101,14 @@ class Local:
         class Meta:
             database = LocalMetadata.localDB
 
+    # TODO: agregar el listado de fallas para hacer un historial de ellas para su visualizacion
+    class FailsHistory(Model):
+        fixture_id = TextField()
+        fails = TextField()
+        date = DateTimeField(default=datetime.datetime.now)
+
+        class Meta:
+            database = LocalMetadata.localDB
 
     '''
     #   Class: Fail

@@ -33,6 +33,21 @@ def save_fail(fail_status: int, board_failed: str, iteration_failed: int):
     fail.save()
 
 
+def save_failed_parts(fixture_id: str, parts_failed: list[str]):
+    parts_failed_str = ''
+
+    for part in parts_failed:
+        if parts_failed_str != '':
+            parts_failed_str += ','
+        parts_failed_str += part
+
+    part_f = Models.Local.FailsHistory(
+        fixture_id = fixture_id,
+        fails = parts_failed_str
+    )
+
+    part_f.save()
+
 '''
 #   Function: save_test
 #   Desc: Save test info in local database

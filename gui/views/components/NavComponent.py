@@ -4,6 +4,8 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import QSize, Qt
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton
 
+# TODO: agregar un boton para mostrar el listado de fallas en un dialogo
+
 class Panel:
     TestPanelIndex = 0
     ConfigPanelIndex = 1

@@ -14,7 +14,7 @@ from core.api import register_test, SFC_check_ICT_Repair
 from .model_manager import *
 from .extern_db_manager import *
 from .messages import checkFixtureMessages
-from .data_save import save_fail, save_test, save_retest_result_in_path, should_retest_in_station
+from .data_save import save_fail, save_test, save_retest_result_in_path, save_failed_parts
 from .status_manager import check_block_status, check_retest_status, set_fixture_online, check_block_status_alt
 
 from datetime import datetime
@@ -66,7 +66,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         # ~ Extract failed devices of PCBA
         partsFailed = extractFailedPartsInLog(fail_status)
         save_fail(fail_status, board_number, get_fail_count())
-
+        save_failed_parts(fixture_id, partsFailed)
         # ~ Iterate in all failed devices like a independiente fail.
         i = 1
         for partFailed in partsFailed:
