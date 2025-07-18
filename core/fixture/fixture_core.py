@@ -83,6 +83,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
                     boards.saveBoardShouldRetest(board_number, True)
 
             else:
+                save_retest_result_in_path("True")
                 logger.warning(fixture_messages["fixture_locked"])
                 break
 
