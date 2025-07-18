@@ -1,5 +1,6 @@
 import logging
 from peewee import DataError, DatabaseError, InternalError, OperationalError
+from core.api import SFC_check_ICT_Repair
 
 '''
 #   Function: remove_serial_parts
@@ -69,13 +70,16 @@ def shouldUploadResult(serial, fixture_id, fail_reason):
     from core.database import Extern
 
     try:
+        ict_repair_count = SFC_check_ICT_Repair(serial)
+
+        threshold = 2 * (1 + ict_repair_count)
 
         fails = list(Extern.TestInfo.select(Extern.TestInfo.fixture_id, Extern.TestInfo.fail_reason).where(Extern.TestInfo.serial == serial))
     
         fails_found = len(fails)
 
         logging.info(f"External DB:{fails_found} fails found with serial {serial} ")
-        should_uplaod = len(fails) > 2
+        should_uplaod = len(fails) > threshold
         return  should_uplaod
     except DatabaseError:
         logging.info(f"DatabaseError: Error when consulting with {serial}")
