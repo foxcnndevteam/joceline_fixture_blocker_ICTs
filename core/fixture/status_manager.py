@@ -80,7 +80,7 @@ def should_check_fails_alt(show_Window = False):
         return { 'should': False, 'state': None }
     
     elif not some_board_failed:
-        if get_fixture_yield() <= config.get_yield_block_threshold():
+        if get_consecutive_fails() >= config.getMaxFailCount():
             set_online(False)
             logger.warning(fixture_messages["min_yield_reached"])
             state = 'Blocked'
@@ -134,6 +134,29 @@ def get_fixture_yield():
     
     return int(fixture_yield)
 
+def get_consecutive_fails() -> int:
+    consecutive_fails = 0
+    sub_query = Models.Local.Test.select(
+        Models.Local.Test.id
+    ).order_by(
+        Models.Local.Test.date.desc()
+    ).limit(config.gey_yield_calc_qty())
+
+    tests = list(Models.Local.Test.select(
+        Models.Local.Test.id,
+        Models.Local.Test.test_count,
+        Models.Local.Test.result
+    ).where(
+        Models.Local.Test.id.in_(sub_query)
+    ).order_by(Models.Local.Test.id.desc()))
+
+    for test in tests:
+        if test.result == 'FAIL':
+            consecutive_fails += 1
+        else:
+            break
+
+    return consecutive_fails
 
 '''
 #   Function: check_block_status 
@@ -197,9 +220,9 @@ def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
 def check_block_status_alt(show_window: bool) -> Literal['Online', 'Offline', 'Blocked']:
     fixture_messages = checkFixtureMessages()
     state: Literal['Online', 'Offline', 'Blocked'] = 'Online'
-    should_check_fails_r = should_check_fails_alt(show_window)
-    if not should_check_fails_r['should']:
-        return should_check_fails_r['state']
+    # should_check_fails_r = should_check_fails_alt(show_window)
+    # if not should_check_fails_r['should']:
+    #     return should_check_fails_r['state']
 
     if not config.get_online_mode():
         state = 'Offline'
@@ -210,55 +233,55 @@ def check_block_status_alt(show_window: bool) -> Literal['Online', 'Offline', 'B
     # confiabilidad cuestionable tanto en esta funcion como la de arriba
 
     if not is_online() and config.get_online_mode():
-        state = 'Blocked'
+        state = 'Online'
 
     # blocked or online
-    
-    if get_fixture_yield() <= config.get_yield_block_threshold():
+    # if get_fixture_yield() <= config.get_yield_block_threshold():
+    if get_consecutive_fails() >= config.getMaxFailCount():
         set_online(False)
         if show_window:
-            window.show(BlockedWindow('min_yield_reached'))
-            logger.warning(fixture_messages["min_yield_reached"])
+            window.show(BlockedWindow('failsLimitReached'))
+            logger.warning(fixture_messages["max_fail_count_reached"])
         state = 'Blocked'
         return state
+    set_online(True)
 
+    # fail_finded = False
+    # iterations = [[] for _ in range(get_fail_count() + 1)]
 
-    fail_finded = False
-    iterations = [[] for _ in range(get_fail_count() + 1)]
+    # for fail in Models.Local.Fail().select(Models.Local.Fail.fail_status, Models.Local.Fail.iteration_failed):
+    #     if not fail.fail_status in iterations[fail.iteration_failed]:
+    #         iterations[fail.iteration_failed].append(fail.fail_status)
 
-    for fail in Models.Local.Fail().select(Models.Local.Fail.fail_status, Models.Local.Fail.iteration_failed):
-        if not fail.fail_status in iterations[fail.iteration_failed]:
-            iterations[fail.iteration_failed].append(fail.fail_status)
-
-    for last_fail in iterations[-1]:
-        times_finded = 1
+    # for last_fail in iterations[-1]:
+    #     times_finded = 1
         
-        for next_iteration in reversed(iterations[0:-1]):
+    #     for next_iteration in reversed(iterations[0:-1]):
             
-            if last_fail in next_iteration:
-                times_finded += 1
-                fail_finded = True
-            else:
-                break
+    #         if last_fail in next_iteration:
+    #             times_finded += 1
+    #             fail_finded = True
+    #         else:
+    #             break
             
-            if times_finded == config.getMaxFailCount():
-                set_online(False)
-                if show_window:
-                    window.show(BlockedWindow('failsLimitReached'))
-                    logger.warning(fixture_messages["max_fail_count_reached"])
-                state = 'Blocked'
+    #         if times_finded == config.getMaxFailCount():
+    #             set_online(False)
+    #             if show_window:
+    #                 window.show(BlockedWindow('failsLimitReached'))
+    #                 logger.warning(fixture_messages["max_fail_count_reached"])
+    #             state = 'Blocked'
 
-    if fail_finded:
-        increment_fixture_fails()
-    else:
-        Models.Local.Fail.delete().where(Models.Local.Fail.iteration_failed != get_fail_count()).execute()
-        fails = Models.Local.Fail.select()
-        for fail in fails:
-            fail.iteration_failed = 0
-            fail.save()
+    # if fail_finded:
+    #     increment_fixture_fails()
+    # else:
+    #     Models.Local.Fail.delete().where(Models.Local.Fail.iteration_failed != get_fail_count()).execute()
+    #     fails = Models.Local.Fail.select()
+    #     for fail in fails:
+    #         fail.iteration_failed = 0
+    #         fail.save()
             
-        set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
-        state = 'Online'
+    #     set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
+    #     state = 'Online'
     # online or whatever
     # check_block_status()
     return state

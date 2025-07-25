@@ -48,7 +48,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     save_test(serial, result, fail_status, board_number, get_fail_count())
     
     # ~ This because if multiboard all subtest was like one main test.
-    if check_status: config.increment_test_count()
+    # if check_status: config.increment_test_count()
     
     if result == "PASS" or result == "PASSED":
         if get_fixture_state(False) == 'Online':
@@ -62,7 +62,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
             )
     else:
         # ~ In this part start the fail count if fail_count = 0
-        if get_fail_count() == 0: set_fail_count(1)
+        # if get_fail_count() == 0: set_fail_count(1)
         # ~ Extract failed devices of PCBA
         partsFailed = extractFailedPartsInLog(fail_status)
         save_fail(fail_status, board_number, get_fail_count())
@@ -70,8 +70,10 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         # ~ Iterate in all failed devices like a independiente fail.
         i = 1
         for partFailed in partsFailed:
-            if get_fixture_state(False) == 'Online':
+            fixture_state = get_fixture_state(False)
+            if fixture_state in ['Online', 'Offline']:
                 save_part_failed(result, serial, fixture_id, partFailed)
+            if fixture_state == 'Online':
                 
                 if shouldUploadResult(serial, fixture_id, partFailed): #  or not should_retest_in_station(serial, ICT_repair_count):
                     save_retest_result_in_path("False")
@@ -83,6 +85,9 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
                     boards.saveBoardShouldRetest(board_number, True)
 
             else:
+                if not shouldUploadResult(serial, fixture_id, partFailed) and fixture_state != 'Offline':
+                    save_retest_result_in_path("True")
+                    boards.saveBoardShouldRetest(board_number, True)
                 logger.warning(fixture_messages["fixture_locked"])
                 break
 

@@ -64,7 +64,7 @@ def load_config():
     try:
         data = Models.Local.Config(
             config_id = 0, 
-            max_fail_count = 2, 
+            max_fail_count = 3, 
             block_pass = "R!ser2",
             language = language,
             extern_db_path = extern_db_path,
