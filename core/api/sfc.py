@@ -16,11 +16,7 @@ login_data = {
     "Pwd": PASSWORD
 }
 
-STATUS_CRITERIA_REGEX = re.compile(r'ICT(_| )REPAIR')
-
-STATUS_CRITERIA = "ICT REPAIR"
-
-STATUS_CRITERIA_LEN = len(STATUS_CRITERIA)
+STATUS_CRITERIA_REGEX = re.compile(r'ICT(_| )(REPAIR|R)')
 
 def SFC_check_ICT_Repair(serial_number: str) -> int:
     ICT_Repair_found = 0
@@ -45,7 +41,7 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
             if consulta_response.status_code == 200:
                 text_resp = consulta_response.text
 
-                if STATUS_CRITERIA in text_resp:
+                if STATUS_CRITERIA_REGEX.match(text_resp) != None:
                     found_matches = STATUS_CRITERIA_REGEX.findall(text_resp)
                     if found_matches != None:
                         ICT_Repair_found = len(found_matches)
