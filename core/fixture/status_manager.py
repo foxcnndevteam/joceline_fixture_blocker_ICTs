@@ -105,26 +105,19 @@ def should_check_fails_alt(show_Window = False):
 #   Desc: Calculates the fixture yield in single board or multiboard tests.
 '''
 def get_fixture_yield():
-    sub_query = Models.Local.Test.select(
-        Models.Local.Test.id
-    ).order_by(
-        Models.Local.Test.date.desc()
-    ).limit(config.gey_yield_calc_qty())
 
     tests = Models.Local.Test.select(
         Models.Local.Test.id,
         Models.Local.Test.test_count,
         Models.Local.Test.result
-    ).where(
-        Models.Local.Test.id.in_(sub_query)
-    ).order_by(Models.Local.Test.id.desc())
+    ).order_by(Models.Local.Test.id.desc()).limit(config.gey_yield_calc_qty())
 
     test_counts_checked = []
     tests_failed = 0
     test: Models.Local.Test
     
     for test in tests:
-        if (not (test.test_count in test_counts_checked)) and (test.result == "FAIL"):
+        if (test.result == "FAIL"):
             tests_failed += 1
             test_counts_checked.append(test.test_count)
 
