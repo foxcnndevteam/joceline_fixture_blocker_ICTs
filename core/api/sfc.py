@@ -41,10 +41,9 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
             if consulta_response.status_code == 200:
                 text_resp = consulta_response.text
 
-                if STATUS_CRITERIA_REGEX.match(text_resp) != None:
-                    found_matches = STATUS_CRITERIA_REGEX.findall(text_resp)
-                    if found_matches != None:
-                        ICT_Repair_found = len(found_matches)
+                found_matches = STATUS_CRITERIA_REGEX.findall(text_resp)
+                if found_matches != None:
+                    ICT_Repair_found = len(found_matches)
     except requests.RequestException:
         logging.debug(f'consult to SFC failed; conection, tried to check the SN:{serial_number}')
     except requests.exceptions.Timeout:
