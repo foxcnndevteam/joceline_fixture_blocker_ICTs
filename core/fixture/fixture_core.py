@@ -69,7 +69,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
 
         # ~ Iterate in all failed devices like a independiente fail.
         i = 1
-        save_part_failed(result, serial, fixture_id, partFailed)
+        save_part_failed(result, serial, fixture_id, str(partsFailed))
         for partFailed in partsFailed:
             fixture_state = get_fixture_state(False)
             if fixture_state == 'Online':
