@@ -69,10 +69,9 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
 
         # ~ Iterate in all failed devices like a independiente fail.
         i = 1
+        save_part_failed(result, serial, fixture_id, partFailed)
         for partFailed in partsFailed:
             fixture_state = get_fixture_state(False)
-            if fixture_state in ['Online', 'Offline']:
-                save_part_failed(result, serial, fixture_id, partFailed)
             if fixture_state == 'Online':
                 
                 if shouldUploadResult(serial, fixture_id, partFailed): #  or not should_retest_in_station(serial, ICT_repair_count):
