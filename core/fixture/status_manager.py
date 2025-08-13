@@ -210,12 +210,15 @@ def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
         set_fixture_online(delete_fails = False, fixture_fail = True, show_unlock_message = False)
     return state
 
-def check_block_status_alt(show_window: bool) -> Literal['Online', 'Offline', 'Blocked']:
+def check_block_status_alt(show_window: bool) -> Literal['Online', 'Offline', 'Blocked', 'RMA']:
     fixture_messages = checkFixtureMessages()
     state: Literal['Online', 'Offline', 'Blocked'] = 'Online'
     # should_check_fails_r = should_check_fails_alt(show_window)
     # if not should_check_fails_r['should']:
     #     return should_check_fails_r['state']
+
+    if config.get_rma_mode():
+        return 'RMA'
 
     if not config.get_online_mode():
         state = 'Offline'

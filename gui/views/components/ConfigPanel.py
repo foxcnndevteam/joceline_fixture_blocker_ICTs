@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
     QLabel, 
     QGridLayout, 
 )
-from core.config import get_online_mode, get_pause_on_fail, set_online_mode, set_pause_on_fail
+from core.config import get_online_mode, get_pause_on_fail, set_online_mode, set_pause_on_fail, get_rma_mode, set_rma_mode
 from core.fixture import save_should_pause_in_path
 
 def set_shloud_pause(pause_on_fail:bool):
@@ -50,6 +50,16 @@ class ConfigPanel(QWidget):
                 icon_path = "config_icon.png",
                 getter=get_pause_on_fail,
                 setter=set_shloud_pause
+            )
+        )
+
+        self.config_table.addItem(
+            item = ConfigOption(
+                option_type="toggle",
+                title_string="Modo RMA",
+                icon_path= "rma_mode.png",
+                getter=get_rma_mode,
+                setter=set_rma_mode
             )
         )
         

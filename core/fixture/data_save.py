@@ -1,13 +1,10 @@
 import os
 from env import BASE_DIR
 from core import config
-from core.api import SFC_check_ICT_Repair
 from core.database import Models
 from .model_manager import is_online
 from .model_manager import get_fixture_state
-from core.config import get_online_mode
 from env import today
-import datetime 
 
 '''
 #   Function: save_fail
@@ -152,7 +149,7 @@ def save_online_result_in_path():
     if not os.path.exists(result_path): os.makedirs(result_path)
     
     with open(os.path.join(result_path, "fixture_status"), "w") as f:
-        f.write(str(is_online() and config.get_online_mode()))
+        f.write(str(is_online() and config.get_online_mode() and config.get_operation_mode() == 'DEFAULT'))
 
 '''
 #   Function: save_should_pause_in_path
@@ -175,4 +172,4 @@ def save_allow_test_in_path(allow_test: bool):
     if not os.path.exists(result_path): os.makedirs(result_path)
 
     with open(os.path.join(result_path, "allow_test"), "w") as f:
-        f.write(str(allow_test))
+        f.write(str(allow_test or config.get_operation_mode() == 'RMA'))

@@ -29,6 +29,8 @@ from .status_manager import check_block_status, check_retest_status, set_fixture
 #       fail_status | type:str | Fail reason code
 '''
 def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
+    if config.get_operation_mode() == 'RMA':
+        return
     # ~ Upper the test result
     result = result.upper()
     

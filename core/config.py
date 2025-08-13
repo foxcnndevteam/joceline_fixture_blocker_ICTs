@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import peewee
+from typing import Literal, Any
 
 from env import BASE_DIR
 from utils import logger
@@ -11,13 +12,15 @@ data: Models.Local.Config
 
 fixture_id = 'AF'
 
+operation_mode:Literal['DEFAULT', 'RMA'] = 'DEFAULT'
+
 ssh_key = None
 
 '''
 #   Function: load_raw_config
 #   Desc: Loads config file an checks if it exist or is corrupted.
 '''
-def load_raw_config():
+def load_raw_config() -> dict:
     raw_data = {}
     configFileName = "jocelinefb.conf.json"
     configFilePath = os.path.join(BASE_DIR, configFileName)
@@ -32,16 +35,41 @@ def load_raw_config():
         except json.decoder.JSONDecodeError:
             logger.error("Corrupted configuration file: JSONDecodeError")
             sys.exit(0)
+        file.close()
 
     return raw_data
 
+def set_raw_config(key: str, value: Any):
+    error: None | str = None
+    raw_data = {}
+    configFileName = "jocelinefb.conf.json"
+    configFilePath = os.path.join(BASE_DIR, configFileName)
+
+    if not os.path.isfile(configFilePath): 
+        error = "config file not found"
+        return error
+
+    with open(configFilePath, 'r') as filer:
+        try: 
+            raw_data = json.loads(filer.read())
+        except json.decoder.JSONDecodeError:
+            error = "Corrupted configuration file: JSONDecodeError"
+            # sys.exit(0)
+        filer.close()
+
+    raw_data[key] = value
+
+    with open(configFilePath, 'w') as filew:
+        json.dump(raw_data, filew, indent=4, separators=(',', ': '))
+        filew.close()
+    return error
 
 '''
 #   Function: load_config
 #   Desc: Gets the config json file decoded, gets and loads all config keys.
 '''
 def load_config():
-    global data, fixture_id, ssh_key
+    global data, fixture_id, ssh_key, operation_mode
     raw_data = load_raw_config()
 
     try:
@@ -58,6 +86,11 @@ def load_config():
     try:
         fixture_id = raw_data['fixture_id']
         ssh_key = raw_data.get('ssh_key')
+        rma_mode = raw_data.get('rma_mode')
+        if rma_mode == True:
+            operation_mode = 'RMA'
+        else:
+            operation_mode = 'DEFAULT'
     except KeyError as e:
         print("failed to get fixture id")
 
@@ -144,6 +177,13 @@ def get_online_mode():
     global data
     return data.online_mode
 
+def get_operation_mode() -> Literal['DEFAULT', 'RMA']:
+    global operation_mode
+    return operation_mode
+
+def get_rma_mode() -> bool:
+    global operation_mode
+    return operation_mode == 'RMA'
 
 # --- Setters --- #
 
@@ -181,3 +221,7 @@ def set_online_mode(online_mode: bool):
     global data
     data.online_mode = online_mode
     data.save()
+
+def set_rma_mode(new_value: bool):
+    set_raw_config('rma_mode', new_value)
+    load_config()
