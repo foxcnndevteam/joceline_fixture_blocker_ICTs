@@ -128,28 +128,22 @@ def get_fixture_yield():
     return int(fixture_yield)
 
 def get_consecutive_fails() -> int:
-    consecutive_fails = 0
     sub_query = Models.Local.Test.select(
         Models.Local.Test.id
     ).order_by(
         Models.Local.Test.date.desc()
-    ).limit(config.gey_yield_calc_qty())
+    ).limit(config.getMaxFailCount())
 
     tests = list(Models.Local.Test.select(
         Models.Local.Test.id,
         Models.Local.Test.test_count,
         Models.Local.Test.result
     ).where(
-        Models.Local.Test.id.in_(sub_query)
+        Models.Local.Test.id.in_(sub_query),
+        Models.Local.Test.result == 'FAIL'
     ).order_by(Models.Local.Test.id.desc()))
 
-    for test in tests:
-        if test.result == 'FAIL':
-            consecutive_fails += 1
-        else:
-            break
-
-    return consecutive_fails
+    return len(tests)
 
 '''
 #   Function: check_block_status 
