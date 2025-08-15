@@ -5,6 +5,7 @@ from utils.logparser import extractFailedPartsInLog
 from cli.views import window
 
 from core import boards, config
+from core.api import SFC_check_ICT_Repair
 
 from udpsocket import client
 
@@ -32,6 +33,13 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     if config.get_operation_mode() == 'RMA':
         return
     # ~ Upper the test result
+    # add sfc check repair
+    fixture_state = get_fixture_state(False)
+    r_ict_count = SFC_check_ICT_Repair(serial)
+
+    if fixture_state == 'Offline' and r_ict_count > 0:
+        return
+
     result = result.upper()
     
     # ~ If multiboard check_status = False
@@ -69,29 +77,21 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         save_fail(fail_status, board_number, get_fail_count())
         save_part_failed(result, serial, fixture_id, str(partsFailed))
         # ~ Iterate in all failed devices like a independiente fail.
-        i = 1
 
-        for partFailed in partsFailed:
-            fixture_state = get_fixture_state(False)
-            if fixture_state == 'Online':
-                
-                if shouldUploadResult(serial, fixture_id, partFailed): #  or not should_retest_in_station(serial, ICT_repair_count):
-                    save_retest_result_in_path("False")
-                    logger.info(fixture_messages["result_uploaded"])
-                    boards.setBoardFailed(board_number, True)
-                    break
-                elif i >= len(partsFailed):
-                    save_retest_result_in_path("True")
-                    boards.saveBoardShouldRetest(board_number, True)
-
+        if fixture_state == 'Online':
+            if shouldUploadResult(serial, fixture_id, r_ict_count): #  or not should_retest_in_station(serial, ICT_repair_count):
+                save_retest_result_in_path("False")
+                logger.info(fixture_messages["result_uploaded"])
+                boards.setBoardFailed(board_number, True)
             else:
-                if not shouldUploadResult(serial, fixture_id, partFailed) and fixture_state != 'Offline':
-                    save_retest_result_in_path("True")
-                    boards.saveBoardShouldRetest(board_number, True)
-                logger.warning(fixture_messages["fixture_locked"])
-                break
+                save_retest_result_in_path("True")
+                boards.saveBoardShouldRetest(board_number, True)
 
-            i += 1
+        else:
+            if not shouldUploadResult(serial, fixture_id, r_ict_count) and fixture_state != 'Offline':
+                save_retest_result_in_path("True")
+                boards.saveBoardShouldRetest(board_number, True)
+            logger.warning(fixture_messages["fixture_locked"])
 
         # ~ Add test log footer info
         boards.setBoardFailed(board_number, True)
@@ -185,7 +185,7 @@ def process_info_2(result: str, serial: str, fixture_id: str, fail_status: int, 
             if get_fixture_state(False) == 'Online':
                 save_part_failed(result, serial, fixture_id, partFailed)
                 
-                if partFailed == "OTF" or shouldUploadResult(serial, fixture_id, partFailed):
+                if partFailed == "OTF" or shouldUploadResult(serial, fixture_id):
                     save_retest_result_in_path("False")
                     logger.info(fixture_messages["result_uploaded"])
                     boards.setBoardFailed(board_number, True)

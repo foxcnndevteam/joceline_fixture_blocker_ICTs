@@ -67,12 +67,15 @@ def save_part_failed(result: str, serial: str, fixture_id: str, fail_reason: str
 #       fixture_id  | type:str | FixtureID where PCBA was tested
 #       fail_reason | type:str | Fail reason code
 '''
-def shouldUploadResult(serial, fixture_id, fail_reason):
+def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
     from core.database import Extern
 
     try:
-
-        ict_repair_count = SFC_check_ICT_Repair(serial)
+        ict_repair_count = 0
+        if r_ict_count == None:
+            ict_repair_count = SFC_check_ICT_Repair(serial)
+        else:
+            ict_repair_count = r_ict_count
         if ict_repair_count > 2:
             ict_repair_count = 2
         threshold = 3 * (1 + ict_repair_count)

@@ -16,7 +16,7 @@ login_data = {
     "Pwd": PASSWORD
 }
 
-STATUS_CRITERIA_REGEX = re.compile(r'ICT(_| )(REPAIR|R)')
+STATUS_CRITERIA_REGEX = re.compile(r'(ICT(_| )(REPAIR|R)|R_ICT)')
 
 def SFC_check_ICT_Repair(serial_number: str) -> int:
     ICT_Repair_found = 0
