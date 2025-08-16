@@ -40,7 +40,7 @@ def save_fail(fail_status: int, board_failed: str, iteration_failed: int):
 #       board_failed        | type:str | The board where PCB failed
 #       iteration_failed    | type:int | The iteration in fail count
 '''   
-def save_test(serial: str, result: str, fail_status: int, board_failed: str, iteration_failed: int):
+def save_test(serial: str, result: str, fail_status: int, board_failed: str, iteration_failed: int, r_ict: int = 0):
     mode = get_fixture_state(False)
     
     test = Models.Local.Test(
@@ -49,7 +49,9 @@ def save_test(serial: str, result: str, fail_status: int, board_failed: str, ite
         fail_status = fail_status,
         board_failed = board_failed,
         iteration_failed = iteration_failed,
-        test_count = config.get_test_count(),
+        # solia ser test_count pero ahora es el conteo de ict repair, no se ha cambiado el nombre del campo por cuestiones de compatibilidad
+        # test_count = config.get_test_count(),
+        test_count = r_ict,
         mode = mode,
         date = today
     )

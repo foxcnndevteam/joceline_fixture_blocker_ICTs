@@ -136,11 +136,12 @@ def get_consecutive_fails() -> int:
 
     tests = list(Models.Local.Test.select(
         Models.Local.Test.id,
-        Models.Local.Test.test_count,
-        Models.Local.Test.result
+        # Models.Local.Test.test_count,
+        # Models.Local.Test.result
     ).where(
         Models.Local.Test.id.in_(sub_query),
-        Models.Local.Test.result == 'FAIL'
+        Models.Local.Test.result == 'FAIL',
+        Models.Local.Test.test_count == 0
     ).order_by(Models.Local.Test.id.desc()))
 
     return len(tests)
@@ -206,7 +207,7 @@ def check_block_status() -> Literal['Online', 'Offline', 'Blocked', None]:
 
 def check_block_status_alt(show_window: bool) -> Literal['Online', 'Offline', 'Blocked', 'RMA']:
     fixture_messages = checkFixtureMessages()
-    state: Literal['Online', 'Offline', 'Blocked'] = 'Online'
+    state: Literal['Online', 'Offline', 'Blocked', 'RMA'] = 'Online'
     # should_check_fails_r = should_check_fails_alt(show_window)
     # if not should_check_fails_r['should']:
     #     return should_check_fails_r['state']

@@ -95,6 +95,7 @@ class Local:
         fail_status = IntegerField(index=True)
         board_failed = TextField()
         date = DateTimeField(default=datetime.datetime.now)
+        # solia ser test_count pero ahora es el conteo de ict repair, no se ha cambiado el nombre del campo por cuestiones de compatibilidad
         test_count = IntegerField(index=True)
         mode = TextField()
 

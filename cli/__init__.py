@@ -162,7 +162,7 @@ def setup_cli():
     def fixturestatus():
         fixture.save_online_result_in_path()
         fixture.save_should_pause_in_path()
-        click.echo(f"Fixture online status: {fixture.is_online() and config_manager.get_online_mode()}")
+        click.echo(f"Fixture online status: {fixture.is_online() and config_manager.get_online_mode() and config_manager.get_operation_mode() == 'DEFAULT'}")
 
 
 

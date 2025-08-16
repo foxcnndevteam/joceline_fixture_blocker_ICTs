@@ -54,7 +54,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     
     # ~ Get the board number by fixture_id
     board_number = fixture_id[-1]
-    save_test(serial, result, fail_status, board_number, get_fail_count())
+    save_test(serial, result, fail_status, board_number, get_fail_count(), r_ict_count)
     
     # ~ This because if multiboard all subtest was like one main test.
     # if check_status: config.increment_test_count()
