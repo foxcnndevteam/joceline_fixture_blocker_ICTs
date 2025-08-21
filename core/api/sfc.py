@@ -5,6 +5,8 @@ import logging
 # --- Configuración ---
 URL_LOGIN = "http://10.12.171.56:8080/EPD1SFC/System/Login.jsp"
 URL_CONSULTA = "http://10.12.171.56:8080/EPD1SFC/L6_Report/PPID_Wip_Tracking.jsp"
+URL_LOGOUT = 'http://10.12.171.56:8080/EPD1SFC/System/Main.jsp?Logout=true'
+
 
 USERNAME = "SFC"
 PASSWORD = "Newuser01"
@@ -31,6 +33,8 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
 
         if response.status_code in [200, 302]:
             login_success = True
+            cookies = session.cookies.get_dict()
+            jsessionid = cookies.get('JSESSIONID')
 
         if login_success:
             consulta_params = {
@@ -44,6 +48,7 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
                 found_matches = STATUS_CRITERIA_REGEX.findall(text_resp)
                 if found_matches != None:
                     ICT_Repair_found = len(found_matches)
+        session.get(f'{URL_LOGOUT};jsessionid={jsessionid}')
     except requests.RequestException:
         logging.debug(f'consult to SFC failed; conection, tried to check the SN:{serial_number}')
     except requests.exceptions.Timeout:
