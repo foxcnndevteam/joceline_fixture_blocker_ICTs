@@ -2,6 +2,7 @@ import logging
 from core.database import Models
 from peewee import DataError, DatabaseError, InternalError, OperationalError
 from core.api import SFC_check_ICT_Repair
+from core.config import get_max_tries
 
 '''
 #   Function: remove_serial_parts
@@ -78,7 +79,7 @@ def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
             ict_repair_count = r_ict_count
         if ict_repair_count > 1:
             ict_repair_count = 1
-        threshold = 3 * (1 + ict_repair_count)
+        threshold = get_max_tries() * (1 + ict_repair_count)
         if threshold == 6:
             threshold -= 1
         elif threshold > 6:
