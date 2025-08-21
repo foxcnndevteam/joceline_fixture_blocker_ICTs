@@ -79,6 +79,10 @@ def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
         if ict_repair_count > 1:
             ict_repair_count = 1
         threshold = 3 * (1 + ict_repair_count)
+        if threshold == 6:
+            threshold -= 1
+        elif threshold > 6:
+            threshold = 5
 
         fails = list(Extern.TestInfo.select(Extern.TestInfo.fixture_id, Extern.TestInfo.fail_reason).where(Extern.TestInfo.serial == serial))
     
