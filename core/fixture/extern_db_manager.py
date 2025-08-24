@@ -74,7 +74,7 @@ def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
     try:
         ict_repair_count = 0
         if r_ict_count == None:
-            ict_repair_count = SFC_check_ICT_Repair(serial)
+            ict_repair_count = SFC_check_ICT_Repair(serial)[0]
         else:
             ict_repair_count = r_ict_count
         if ict_repair_count > 1:

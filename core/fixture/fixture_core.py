@@ -35,7 +35,8 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     # ~ Upper the test result
     # add sfc check repair
     fixture_state = get_fixture_state(False)
-    r_ict_count = SFC_check_ICT_Repair(serial)
+    # sfc_result 
+    r_ict_count, thershold = SFC_check_ICT_Repair(serial)
 
     if fixture_state == 'Offline' and r_ict_count > 0:
         return
@@ -79,7 +80,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         # ~ Iterate in all failed devices like a independiente fail.
 
         if fixture_state == 'Online':
-            if shouldUploadResult(serial, fixture_id, r_ict_count): #  or not should_retest_in_station(serial, ICT_repair_count):
+            if shouldUploadResult(serial, fixture_id, thershold): #  or not should_retest_in_station(serial, ICT_repair_count):
                 save_retest_result_in_path("False")
                 logger.info(fixture_messages["result_uploaded"])
                 boards.setBoardFailed(board_number, True)
