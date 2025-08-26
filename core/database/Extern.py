@@ -26,8 +26,9 @@ class ExternMetadata:
 '''
 class TestInfo(Model):
     id = AutoField()
-    serial = TextField()
+    serial = TextField(index=True)
     fail_reason = TextField()
+    result = TextField(index=True)
     fixture_id = TextField()
 
     class Meta:

@@ -20,12 +20,12 @@ login_data = {
 
 STATUS_CRITERIA_REGEX = re.compile(r'(ICT(_| )(REPAIR|R)|R_ICT)')
 
-R_FBT_REGEX = re.compile(r'R_FBT')
+# R_FBT_REGEX = re.compile(r'R_FBT')
 
-def SFC_check_ICT_Repair(serial_number: str) -> tuple[int, int]:
-    threshold = 0
+def SFC_check_ICT_Repair(serial_number: str) -> int:
+    # threshold = 0
     ICT_Repair_found = 0
-    R_FBT_found = 0
+    # R_FBT_found = 0
 
     session = requests.Session()
 
@@ -50,21 +50,22 @@ def SFC_check_ICT_Repair(serial_number: str) -> tuple[int, int]:
                 text_resp = consulta_response.text
 
                 found_matches_r_ict = STATUS_CRITERIA_REGEX.findall(text_resp)
-                found_matches_r_fbt = R_FBT_REGEX.findall(text_resp)
+                # found_matches_r_fbt = R_FBT_REGEX.findall(text_resp)
                 if found_matches_r_ict != None:
                     ICT_Repair_found = len(found_matches_r_ict)
-                if found_matches_r_fbt != None:
-                    R_FBT_found = len(found_matches_r_fbt)
+                # if found_matches_r_fbt != None:
+                #     R_FBT_found = len(found_matches_r_fbt)
         session.get(f'{URL_LOGOUT};jsessionid={jsessionid}')
     except requests.RequestException:
         logging.debug(f'consult to SFC failed; conection, tried to check the SN:{serial_number}')
     except requests.exceptions.Timeout:
         logging.debug(f'consult to SFC failed; timeout, tried to check the SN:{serial_number}')
 
-    threshold = ICT_Repair_found - R_FBT_found
+    # threshold = ICT_Repair_found - R_FBT_found
 
-    if threshold < 0:
-        threshold = 0
+    # if threshold < 0:
+    #    threshold = 0
 
-    return [ICT_Repair_found, threshold]
+    # return [ICT_Repair_found, threshold]
+    return ICT_Repair_found
 

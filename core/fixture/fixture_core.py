@@ -36,7 +36,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     # add sfc check repair
     fixture_state = get_fixture_state(False)
     # sfc_result 
-    r_ict_count, thershold = SFC_check_ICT_Repair(serial)
+    r_ict_count = SFC_check_ICT_Repair(serial)
 
     if fixture_state == 'Offline' and r_ict_count > 0:
         return
@@ -62,7 +62,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     
     if result == "PASS" or result == "PASSED":
         if get_fixture_state(False) == 'Online':
-            remove_serial_parts(serial)
+            save_test_result_ext(result, serial, fixture_id, '[]')
             save_retest_result_in_path("False")
             logger.info(fixture_messages["result_uploaded"])
             set_fixture_online(
@@ -76,11 +76,11 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         # ~ Extract failed devices of PCBA
         partsFailed = extractFailedPartsInLog(fail_status)
         save_fail(fail_status, board_number, get_fail_count())
-        save_part_failed(result, serial, fixture_id, str(partsFailed))
+        save_test_result_ext(result, serial, fixture_id, str(partsFailed))
         # ~ Iterate in all failed devices like a independiente fail.
 
         if fixture_state == 'Online':
-            if shouldUploadResult(serial, fixture_id, thershold): #  or not should_retest_in_station(serial, ICT_repair_count):
+            if shouldUploadResult(serial, fixture_id, r_ict_count): #  or not should_retest_in_station(serial, ICT_repair_count):
                 save_retest_result_in_path("False")
                 logger.info(fixture_messages["result_uploaded"])
                 boards.setBoardFailed(board_number, True)
@@ -184,7 +184,7 @@ def process_info_2(result: str, serial: str, fixture_id: str, fail_status: int, 
         i = 1
         for partFailed in partsFailed:
             if get_fixture_state(False) == 'Online':
-                save_part_failed(result, serial, fixture_id, partFailed)
+                save_test_result_ext(result, serial, fixture_id, partFailed)
                 
                 if partFailed == "OTF" or shouldUploadResult(serial, fixture_id):
                     save_retest_result_in_path("False")
@@ -259,7 +259,7 @@ def process_info_alt(result: str, serial: str, fixture_id: str, fail_status: int
         i = 1
         for partFailed in partsFailed:
             if get_fixture_state(False) == 'Online':
-                save_part_failed(result, serial, fixture_id, partFailed)
+                save_test_result_ext(result, serial, fixture_id, partFailed)
                 
                 if shouldUploadResult(serial, fixture_id, partFailed):
                     save_retest_result_in_path("False")

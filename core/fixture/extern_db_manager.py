@@ -34,14 +34,14 @@ def remove_serial_parts(serial: str):
 #       fixture_id  | type:str | FixtureID where PCBA was tested
 #       fail_reason | type:str | Fail reason code
 '''
-def save_part_failed(result: str, serial: str, fixture_id: str, fail_reason: str = None):
+def save_test_result_ext(result: str, serial: str, fixture_id: str, fail_reason: str = None):
     tries = 0
     while (tries < 4):
         try:
             from core.database import Extern
-            testInfo = Extern.TestInfo(serial = serial, fail_reason = fail_reason, fixture_id = fixture_id)
+            testInfo = Extern.TestInfo(serial = serial, fail_reason = fail_reason, fixture_id = fixture_id, result = result)
             testInfo.save()
-            logging.info(f"External DB: fail added with serial:{serial} fixture_id:{fixture_id} fail_reason:{fail_reason}")
+            logging.info(f"External DB: test info added with serial:{serial} fixture_id:{fixture_id} fail_reason:{fail_reason} result: {result}")
             break
         except DatabaseError:
             logging.info(f"DatabaseError: Error when adding with {serial}")
@@ -74,21 +74,24 @@ def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
     try:
         ict_repair_count = 0
         if r_ict_count == None:
-            ict_repair_count = SFC_check_ICT_Repair(serial)[0]
+            ict_repair_count = SFC_check_ICT_Repair(serial)
         else:
             ict_repair_count = r_ict_count
-        if ict_repair_count > 1:
-            ict_repair_count = 1
-        threshold = get_max_tries() * (1 + ict_repair_count)
-        if threshold == 6:
-            threshold -= 1
-        elif threshold > 6:
-            threshold = 5
-
-        fails = list(Extern.TestInfo.select(Extern.TestInfo.fixture_id, Extern.TestInfo.fail_reason).where(Extern.TestInfo.serial == serial))
-    
-        fails_found = len(fails)
-
+        threshold = get_max_tries()
+        # threshold = get_max_tries() * (1 + ict_repair_count)
+        fails_found = 0
+        
+        last_pass = list(Extern.TestInfo.select(Extern.TestInfo.id).where(Extern.TestInfo.result == 'PASS', Extern.TestInfo.serial == serial).limit(1).order_by(Extern.TestInfo.id.asc()))
+        
+        pass_count = len(last_pass)
+        
+        if ict_repair_count > 0:
+            if pass_count > 0:
+                fails_behind = list(Extern.TestInfo.select(Extern.TestInfo.id).where(Extern.TestInfo.result == 'FAIL', Extern.TestInfo.serial == serial, Extern.TestInfo.id < last_pass[0].id).order_by(Extern.TestInfo.id.asc()))
+                threshold = get_max_tries() + len(fails_behind)
+            else:
+                threshold = get_max_tries() * (1+ict_repair_count)
+        fails_found = len(list(Extern.TestInfo.select(Extern.TestInfo.fixture_id, Extern.TestInfo.fail_reason).where(Extern.TestInfo.serial == serial, Extern.TestInfo.result == 'FAIL')))
         logging.info(f"External DB:{fails_found} fails found with serial {serial} ")
         should_uplaod = fails_found >= threshold
         return  should_uplaod

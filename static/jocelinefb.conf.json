@@ -1,6 +1,5 @@
 {
     "lang": "es",
-    "rma_mode": true,
     "extern_db_path": "C:\\Users\\Nestor_ascencio\\Documents\\jb\\externDb.db",
     "server_log_path": "C:\\Users\\Nestor_ascencio\\Documents\\jb\\log\\",
     "boards_on_fixture_map": [
@@ -9,5 +8,7 @@
         ]
     ],
     "fixture_id": "AF-1-1",
-    "udp_server_port": 65432
+    "udp_server_port": 65432,
+    "rma_mode": false,
+    "m_tries": 1
 }
