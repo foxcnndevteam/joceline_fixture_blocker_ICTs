@@ -3,6 +3,8 @@ from core.database import Models
 from peewee import DataError, DatabaseError, InternalError, OperationalError
 from core.api import SFC_check_ICT_Repair
 from core.config import get_max_tries
+import json
+from env import today
 
 '''
 #   Function: remove_serial_parts
@@ -39,7 +41,7 @@ def save_test_result_ext(result: str, serial: str, fixture_id: str, fail_reason:
     while (tries < 4):
         try:
             from core.database import Extern
-            testInfo = Extern.TestInfo(serial = serial, fail_reason = fail_reason, fixture_id = fixture_id, result = result)
+            testInfo = Extern.TestInfo(serial = serial, fail_reason = fail_reason, fixture_id = fixture_id, result = result, date=today)
             testInfo.save()
             logging.info(f"External DB: test info added with serial:{serial} fixture_id:{fixture_id} fail_reason:{fail_reason} result: {result}")
             break
@@ -60,6 +62,22 @@ def save_test_result_ext(result: str, serial: str, fixture_id: str, fail_reason:
             tries += 1
 
 
+def same_fails(test1: str, test2: str) -> bool:
+    coincidences = 0
+
+    test1_json = json.loads(test1.replace("'", '"'))
+    test2_json = json.loads(test2.replace("'", '"'))
+
+    test1_obj = {}
+    for test in test1_json:
+        test1_obj[test] = test
+
+    for test2 in test2_json:
+        if test1_obj.get(test2):
+            coincidences += 1
+
+    return coincidences > 0
+
 '''
 #   Function: shouldUploadResult
 #   Desc: Check if PCBA serial whould be failed or retested
@@ -78,22 +96,33 @@ def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
         else:
             ict_repair_count = r_ict_count
         threshold = get_max_tries()
-        # threshold = get_max_tries() * (1 + ict_repair_count)
-        fails_found = 0
+
+        fails_found = []
+        repair_info_list = list(Extern.RepairInfo.select(Extern.RepairInfo.date).where(Extern.RepairInfo.serial == serial).limit(1).order_by(Extern.RepairInfo.date.desc()))
+
+        if len(repair_info_list) != 0:
+            date_filter = repair_info_list[0].date
+            fails_list = list(Extern.TestInfo.select(Extern.TestInfo.fixture_id, Extern.TestInfo.fail_reason).where(Extern.TestInfo.serial == serial, Extern.TestInfo.result == 'FAIL', Extern.TestInfo.date >= date_filter))
+        else:
+            fails_list = list(Extern.TestInfo.select(Extern.TestInfo.fixture_id, Extern.TestInfo.fail_reason).where(Extern.TestInfo.serial == serial, Extern.TestInfo.result == 'FAIL'))
+        fails_found = len(fails_list)
+
+        if fails_found < 2:
+            return False
         
-        last_pass = list(Extern.TestInfo.select(Extern.TestInfo.id).where(Extern.TestInfo.result == 'PASS', Extern.TestInfo.serial == serial).limit(1).order_by(Extern.TestInfo.id.asc()))
-        
-        pass_count = len(last_pass)
-        
-        if ict_repair_count > 0:
-            if pass_count > 0:
-                fails_behind = list(Extern.TestInfo.select(Extern.TestInfo.id).where(Extern.TestInfo.result == 'FAIL', Extern.TestInfo.serial == serial, Extern.TestInfo.id < last_pass[0].id).order_by(Extern.TestInfo.id.asc()))
-                threshold = get_max_tries() + len(fails_behind)
+        if fails_found == 2:
+            fail_reason1 = fails_list[0].fail_reason
+            fail_reason2 = fails_list[1].fail_reason
+            if same_fails(fail_reason1, fail_reason2):
+                Extern.RepairInfo(serial=serial, date=today).save()
+                return True
             else:
-                threshold = get_max_tries() * (1+ict_repair_count)
-        fails_found = len(list(Extern.TestInfo.select(Extern.TestInfo.fixture_id, Extern.TestInfo.fail_reason).where(Extern.TestInfo.serial == serial, Extern.TestInfo.result == 'FAIL')))
+                return False
+
         logging.info(f"External DB:{fails_found} fails found with serial {serial} ")
-        should_uplaod = fails_found >= threshold
+        should_uplaod = fails_found >= 3
+        if should_uplaod:
+            Extern.RepairInfo(serial=serial, date=today).save()
         return  should_uplaod
     except DatabaseError:
         logging.info(f"DatabaseError: Error when consulting with {serial}")

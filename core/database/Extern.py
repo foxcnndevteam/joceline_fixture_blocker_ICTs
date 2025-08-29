@@ -3,6 +3,7 @@ import sys
 from peewee import *
 from core import config
 from utils import logger
+import datetime
 
 '''
 #   Class: ExternMetadata
@@ -30,9 +31,18 @@ class TestInfo(Model):
     fail_reason = TextField()
     result = TextField(index=True)
     fixture_id = TextField()
+    date = DateTimeField(default=datetime.datetime.now)
+
+    class Meta:
+        database = ExternMetadata.globalDB
+
+class RepairInfo(Model):
+    id = AutoField()
+    serial = TextField(index=True)
+    date = DateTimeField(default=datetime.datetime.now)
 
     class Meta:
         database = ExternMetadata.globalDB
 
 ExternMetadata.globalDB.connect()
-ExternMetadata.globalDB.create_tables([TestInfo], safe=True)
+ExternMetadata.globalDB.create_tables([TestInfo, RepairInfo], safe=True)
