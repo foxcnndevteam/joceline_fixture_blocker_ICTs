@@ -102,7 +102,7 @@ def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
 
         if len(repair_info_list) != 0:
             date_filter = repair_info_list[0].date
-            fails_list = list(Extern.TestInfo.select(Extern.TestInfo.fixture_id, Extern.TestInfo.fail_reason).where(Extern.TestInfo.serial == serial, Extern.TestInfo.result == 'FAIL', Extern.TestInfo.date >= date_filter))
+            fails_list = list(Extern.TestInfo.select(Extern.TestInfo.fixture_id, Extern.TestInfo.fail_reason).where(Extern.TestInfo.serial == serial, Extern.TestInfo.result == 'FAIL', Extern.TestInfo.date > date_filter))
         else:
             fails_list = list(Extern.TestInfo.select(Extern.TestInfo.fixture_id, Extern.TestInfo.fail_reason).where(Extern.TestInfo.serial == serial, Extern.TestInfo.result == 'FAIL'))
         fails_found = len(fails_list)
