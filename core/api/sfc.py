@@ -5,7 +5,7 @@ import logging
 # --- Configuración ---
 URL_LOGIN = "http://10.12.171.56:8080/EPD1SFC/System/Login.jsp"
 URL_CONSULTA = "http://10.12.171.56:8080/EPD1SFC/L6_Report/PPID_Wip_Tracking.jsp"
-URL_LOGOUT = 'http://10.12.171.56:8080/EPD1SFC/System/Main.jsp?Logout=true'
+URL_LOGOUT = "http://10.12.171.56:8080/EPD1SFC/System/Main.jsp?Logout=true"
 
 
 USERNAME = "SFC"
@@ -55,11 +55,13 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
                     ICT_Repair_found = len(found_matches_r_ict)
                 # if found_matches_r_fbt != None:
                 #     R_FBT_found = len(found_matches_r_fbt)
-        session.get(f'{URL_LOGOUT};jsessionid={jsessionid}')
+        session.post(f'{URL_LOGOUT}')
     except requests.RequestException:
         logging.debug(f'consult to SFC failed; conection, tried to check the SN:{serial_number}')
     except requests.exceptions.Timeout:
         logging.debug(f'consult to SFC failed; timeout, tried to check the SN:{serial_number}')
+    finally:
+        session.post(f'{URL_LOGOUT}')
 
     # threshold = ICT_Repair_found - R_FBT_found
 
@@ -68,4 +70,3 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
 
     # return [ICT_Repair_found, threshold]
     return ICT_Repair_found
-

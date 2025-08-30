@@ -14,7 +14,7 @@ fixture_id = 'AF'
 
 operation_mode:Literal['DEFAULT', 'RMA'] = 'DEFAULT'
 
-max_tries = 3
+max_tries = 2
 
 ssh_key = None
 

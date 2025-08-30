@@ -95,7 +95,7 @@ def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
             ict_repair_count = SFC_check_ICT_Repair(serial)
         else:
             ict_repair_count = r_ict_count
-        threshold = get_max_tries()
+        # threshold = get_max_tries()
 
         fails_found = []
         repair_info_list = list(Extern.RepairInfo.select(Extern.RepairInfo.date).where(Extern.RepairInfo.serial == serial).limit(1).order_by(Extern.RepairInfo.date.desc()))
