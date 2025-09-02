@@ -215,12 +215,14 @@ class ModeOption(QWidget):
             case 'Online':
                 set_online_mode(True)
                 set_rma_mode(False)
+                set_pause_on_fail(False)
             case 'Offline':
                 set_online_mode(False)
                 set_rma_mode(False)
+                set_pause_on_fail(True)
             case 'RMA':
                 set_rma_mode(True)
-        
+                set_pause_on_fail(True)
 
     def setup_select_box(self):
         self.combobox = QComboBox()
