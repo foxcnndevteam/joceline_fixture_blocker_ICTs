@@ -3,6 +3,7 @@ from core.database import Models
 from peewee import DataError, DatabaseError, InternalError, OperationalError
 from core.api import SFC_check_ICT_Repair
 from core.config import get_max_tries
+from .log_retest_manager import FailLogFile
 import json
 from env import today
 
@@ -36,8 +37,14 @@ def remove_serial_parts(serial: str):
 #       fixture_id  | type:str | FixtureID where PCBA was tested
 #       fail_reason | type:str | Fail reason code
 '''
-def save_test_result_ext(result: str, serial: str, fixture_id: str, fail_reason: str = None):
+def save_test_result_ext(result: str, serial: str, fixture_id: str, fail_reason: str = None, fail_reason_json: list[str] = []):
     tries = 0
+    retest_file = FailLogFile(serial)
+    if result == 'FAIL':
+        retest_file.add_fail(fail_reason_json)
+    else:
+        retest_file.remove_file()
+
     while (tries < 4):
         try:
             from core.database import Extern
@@ -97,7 +104,7 @@ def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
             ict_repair_count = r_ict_count
         # threshold = get_max_tries()
 
-        fails_found = []
+        fails_found = 0
         repair_info_list = list(Extern.RepairInfo.select(Extern.RepairInfo.date).where(Extern.RepairInfo.serial == serial).limit(1).order_by(Extern.RepairInfo.date.desc()))
 
         if len(repair_info_list) != 0:
@@ -134,3 +141,13 @@ def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
         logging.info(f"OperationalError: Error when consulting with {serial}")
 
     return False
+
+def allow_retest(serial:str):
+    log_file = FailLogFile(serial)
+
+    retest = log_file.allow_retest()
+
+    if not retest:
+        log_file.remove_file()
+
+    return retest

@@ -76,11 +76,11 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         # ~ Extract failed devices of PCBA
         partsFailed = extractFailedPartsInLog(fail_status)
         save_fail(fail_status, board_number, get_fail_count())
-        save_test_result_ext(result, serial, fixture_id, str(partsFailed))
-        # ~ Iterate in all failed devices like a independiente fail.
+        save_test_result_ext(result, serial, fixture_id, str(partsFailed), partsFailed)
 
         if fixture_state == 'Online':
-            if shouldUploadResult(serial, fixture_id, r_ict_count): #  or not should_retest_in_station(serial, ICT_repair_count):
+            # if shouldUploadResult(serial, fixture_id, r_ict_count): #  or not should_retest_in_station(serial, ICT_repair_count):
+            if not allow_retest(serial):
                 save_retest_result_in_path("False")
                 logger.info(fixture_messages["result_uploaded"])
                 boards.setBoardFailed(board_number, True)
@@ -89,9 +89,8 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
                 boards.saveBoardShouldRetest(board_number, True)
 
         else:
-            if not shouldUploadResult(serial, fixture_id, r_ict_count) and fixture_state != 'Offline':
-                save_retest_result_in_path("True")
-                boards.saveBoardShouldRetest(board_number, True)
+            save_retest_result_in_path("True")
+            boards.saveBoardShouldRetest(board_number, True)
             logger.warning(fixture_messages["fixture_locked"])
 
         # ~ Add test log footer info
