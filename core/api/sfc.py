@@ -39,7 +39,7 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
             login_success = True
             cookies = session.cookies.get_dict()
             jsessionid = cookies.get('JSESSIONID')
-
+            print(jsessionid)
         if login_success:
             consulta_params = {
                 "PPID": serial_number
@@ -55,13 +55,13 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
                     ICT_Repair_found = len(found_matches_r_ict)
                 # if found_matches_r_fbt != None:
                 #     R_FBT_found = len(found_matches_r_fbt)
-        session.post(f'{URL_LOGOUT}')
+        session.get(f'{URL_LOGOUT}')
     except requests.RequestException:
         logging.debug(f'consult to SFC failed; conection, tried to check the SN:{serial_number}')
     except requests.exceptions.Timeout:
         logging.debug(f'consult to SFC failed; timeout, tried to check the SN:{serial_number}')
     finally:
-        session.post(f'{URL_LOGOUT}')
+        session.get(f'{URL_LOGOUT}')
 
     # threshold = ICT_Repair_found - R_FBT_found
 
