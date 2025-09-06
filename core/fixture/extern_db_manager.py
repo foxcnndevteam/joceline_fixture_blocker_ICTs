@@ -148,6 +148,8 @@ def allow_retest(serial:str):
     retest = log_file.allow_retest()
 
     if not retest:
+        from core.database import Extern
+        Extern.RepairInfo(serial=serial, date=today).save()
         log_file.remove_file()
 
     return retest
