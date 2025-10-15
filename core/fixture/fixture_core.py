@@ -1,6 +1,6 @@
 from env import today
 from utils import logger
-from utils.logparser import extractFailedPartsInLog
+from utils.logparser import extractFailedPartsInLog, is_fru_correct
 
 from cli.views import window
 
@@ -59,9 +59,9 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     
     # ~ This because if multiboard all subtest was like one main test.
     # if check_status: config.increment_test_count()
-    
+    correct_fru_result = is_fru_correct(serial)
     if result == "PASS" or result == "PASSED":
-        if get_fixture_state(False) == 'Online':
+        if get_fixture_state(False) == 'Online' :
             save_test_result_ext(result, serial, fixture_id, '[]')
             save_retest_result_in_path("False")
             logger.info(fixture_messages["result_uploaded"])
@@ -80,7 +80,8 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
 
         if fixture_state == 'Online':
             # if shouldUploadResult(serial, fixture_id, r_ict_count): #  or not should_retest_in_station(serial, ICT_repair_count):
-            if not allow_retest(serial):
+            
+            if not allow_retest(serial) and correct_fru_result["is_correct"]:
                 save_retest_result_in_path("False")
                 logger.info(fixture_messages["result_uploaded"])
                 boards.setBoardFailed(board_number, True)

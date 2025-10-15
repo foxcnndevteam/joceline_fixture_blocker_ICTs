@@ -31,15 +31,11 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
 
     login_success = False
 
-    success = False
     try:
         response = session.post(URL_LOGIN, data=login_data)
 
         if response.status_code in [200, 302]:
             login_success = True
-            cookies = session.cookies.get_dict()
-            jsessionid = cookies.get('JSESSIONID')
-            print(jsessionid)
         if login_success:
             consulta_params = {
                 "PPID": serial_number

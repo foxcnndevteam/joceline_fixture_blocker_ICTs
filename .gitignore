@@ -31,3 +31,4 @@ boards_to_retest.json
 /static/debug.log
 static/fru_output
 /totest
+fru.txt

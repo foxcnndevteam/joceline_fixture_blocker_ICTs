@@ -1,9 +1,59 @@
 import os
 import re
 import sys
+from pathlib import Path
 
 from utils import logger
 from env import BASE_DIR
+
+def read_hex_byte(char: str):
+    char_byte = bytes.fromhex(char)
+    try:
+        return char_byte.decode("UTF-8")
+    except UnicodeDecodeError:
+        return '.'
+
+def read_memory(content: str, serial:str) -> bool:
+    serial_mem_regex = re.compile(r'0x000[0-1][0-9A-F]0 [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2}')
+    exclude_mem_addresses = re.compile(r'[A-F0-9]{2}')
+
+    
+    memory_raw = ""
+    memory_raw_search = serial_mem_regex.findall(content)
+    for mem_r in memory_raw_search:
+        memory_raw += re.sub(r'0x000[0-1][0-9A-F]0', "", mem_r)+"\n"
+    memory = exclude_mem_addresses.findall(memory_raw)
+    
+    serial_fru_mem = ""
+    caracter = 0
+    len_str = len(serial)
+    for byte in memory:
+        decoded = read_hex_byte(byte)
+        if caracter == len_str:
+            break
+        if decoded == serial[caracter]:
+            serial_fru_mem = serial_fru_mem + decoded
+            caracter += 1
+        else:
+            serial_fru_mem = ""
+            caracter = 0
+    
+    return serial_fru_mem == serial
+
+def is_fru_correct(serial: str) -> dict:
+    serial_fru = ""
+    serial_fru_regex = re.compile(r'Serial :[0-9A-Z]{17}')
+
+    file_path = os.path.join(BASE_DIR, "fru.txt")
+    if not Path(file_path).exists():
+        return { "is_correct": serial == serial_fru, "found": False }
+    with open(file_path, "r") as f:
+        content = f.read()
+        search_serial_fru = serial_fru_regex.findall(content)
+        serial_fru = search_serial_fru[0].split(":")[1]
+        serial_fru_correct = serial == serial_fru
+        fru_found_memory = read_memory(content, serial)
+        return { "is_correct": serial_fru_correct and fru_found_memory, "found": True }
 
 '''
 #   Function: extractFailedPartsInLog
