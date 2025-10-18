@@ -1,4 +1,5 @@
 import sys
+from cli.views.failauthorization import FailAuthorizationWindow
 from PyQt5.QtWidgets import QApplication, QWidget
 
 app = QApplication(sys.argv)
@@ -20,6 +21,10 @@ def openWindows():
     # ~ If is one or more window instances in list, execute app.
     if len(windows_to_show) > 0: app.exec_()
 
+def openWindowAuth(on_set_fail, message = ""):
+    win = FailAuthorizationWindow(on_set_fail, message)
+    win.showFullScreen()
+    app.exec_()
 
 '''
 #   Function: show

@@ -13,16 +13,16 @@ def read_hex_byte(char: str):
     except UnicodeDecodeError:
         return '.'
 
-def read_memory(content: str, serial:str) -> bool:
+def read_memory_fru(content: str, serial:str) -> bool:
     serial_mem_regex = re.compile(r'0x000[0-1][0-9A-F]0 [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2}')
-    exclude_mem_addresses = re.compile(r'[A-F0-9]{2}')
+    byte_hex_regex = re.compile(r'[A-F0-9]{2}')
 
     
     memory_raw = ""
     memory_raw_search = serial_mem_regex.findall(content)
     for mem_r in memory_raw_search:
         memory_raw += re.sub(r'0x000[0-1][0-9A-F]0', "", mem_r)+"\n"
-    memory = exclude_mem_addresses.findall(memory_raw)
+    memory = byte_hex_regex.findall(memory_raw)
     
     serial_fru_mem = ""
     caracter = 0
@@ -49,11 +49,57 @@ def is_fru_correct(serial: str) -> dict:
         return { "is_correct": serial == serial_fru, "found": False }
     with open(file_path, "r") as f:
         content = f.read()
+        f.close()
         search_serial_fru = serial_fru_regex.findall(content)
         serial_fru = search_serial_fru[0].split(":")[1]
         serial_fru_correct = serial == serial_fru
-        fru_found_memory = read_memory(content, serial)
+        fru_found_memory = read_memory_fru(content, serial)
+        # os.remove(file_path)
         return { "is_correct": serial_fru_correct and fru_found_memory, "found": True }
+
+def read_mac_memory(content: str, mac:str) -> bool:
+    serial_mem_regex = re.compile(r'0x[A-F0-9]{6} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2}')
+    byte_hex_regex = re.compile(r'[A-F0-9]{2}')
+
+    memory_raw = ""
+    memory_raw_search = serial_mem_regex.findall(content)
+    for mem_r in memory_raw_search:
+        memory_raw += re.sub(r'0x[A-F0-9]{6}', "", mem_r)+"\n"
+    memory_arr = byte_hex_regex.findall(memory_raw)
+    memory = ""
+    for byte in memory_arr:
+        memory = memory + byte
+    return memory.startswith(mac)
+
+def is_mac_correct() -> dict:
+    mac = ""
+    serial_fru_regex = re.compile(r'Serial :[0-9A-Z]{17}_[A-F0-9]{12}')
+    
+    file_path = os.path.join(BASE_DIR, "mac.txt")
+    if not Path(file_path).exists():
+        return { "is_correct": False, "found": False }
+    with open(file_path, "r") as f:
+        content = f.read()
+        serial_mac = serial_fru_regex.findall(content)
+        mac = serial_mac[0].split("_")[1]
+        mac_correct = read_mac_memory(content, mac)
+        # os.remove(file_path)
+        return { "is_correct": mac_correct, "found": True }
+
+def is_mac_fru_valid(serial: str) -> bool:
+    fru_result = is_fru_correct(serial)
+    mac_result = is_mac_correct()
+
+    if fru_result["found"] and mac_result["found"]:
+        return fru_result["is_correct"] and mac_result["is_correct"]
+
+    if fru_result["found"]:
+        return fru_result["is_correct"]
+
+    if mac_result["found"]:
+        return mac_result["is_correct"]
+
+    return True
 
 '''
 #   Function: extractFailedPartsInLog

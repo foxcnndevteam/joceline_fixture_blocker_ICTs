@@ -1,6 +1,6 @@
 from env import today
 from utils import logger
-from utils.logparser import extractFailedPartsInLog, is_fru_correct
+from utils.logparser import extractFailedPartsInLog, is_fru_correct, is_mac_fru_valid
 
 from cli.views import window
 
@@ -59,17 +59,23 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
     
     # ~ This because if multiboard all subtest was like one main test.
     # if check_status: config.increment_test_count()
-    correct_fru_result = is_fru_correct(serial)
     if result == "PASS" or result == "PASSED":
-        if get_fixture_state(False) == 'Online' :
+        if get_fixture_state(False) == 'Online':
             save_test_result_ext(result, serial, fixture_id, '[]')
-            save_retest_result_in_path("False")
-            logger.info(fixture_messages["result_uploaded"])
-            set_fixture_online(
-                show_unlock_message = False,
-                delete_fails = boards.isOnlyOneBoard(),
-                modify_fail_count = False
-            )
+            # TODO: funcion para validar fru y mac antes de poner en False el retest
+            mac_fru_correct = is_mac_fru_valid(serial)
+            if mac_fru_correct:
+                save_retest_result_in_path("False")
+                logger.info(fixture_messages["result_uploaded"])
+                set_fixture_online(
+                    show_unlock_message = False,
+                    delete_fails = boards.isOnlyOneBoard(),
+                    modify_fail_count = False
+                )
+            else:
+                boards.saveBoardShouldRetest(board_number, True)
+                save_retest_result_in_path("True")
+            
     else:
         # ~ In this part start the fail count if fail_count = 0
         # if get_fail_count() == 0: set_fail_count(1)
@@ -81,7 +87,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         if fixture_state == 'Online':
             # if shouldUploadResult(serial, fixture_id, r_ict_count): #  or not should_retest_in_station(serial, ICT_repair_count):
             
-            if not allow_retest(serial) and correct_fru_result["is_correct"]:
+            if not allow_retest(serial, partsFailed):
                 save_retest_result_in_path("False")
                 logger.info(fixture_messages["result_uploaded"])
                 boards.setBoardFailed(board_number, True)

@@ -32,3 +32,4 @@ boards_to_retest.json
 static/fru_output
 /totest
 fru.txt
+mac.txt

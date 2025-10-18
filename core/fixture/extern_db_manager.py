@@ -5,6 +5,8 @@ from core.api import SFC_check_ICT_Repair
 from core.config import get_max_tries
 from .log_retest_manager import FailLogFile
 import json
+from utils.logparser import is_mac_fru_valid
+from cli.views import window
 from env import today
 
 '''
@@ -142,7 +144,10 @@ def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
 
     return False
 
-def allow_retest(serial:str):
+def allow_retest(serial:str, failed_parts = []):
+    # TODO: agregado la ventana para fallar o no fallar la tarjeta
+    # base de datos de usuarios con numero de emplead y contraseña para la ventana
+    # agregar la validacion de componentes que deben evitar que se suba el resultao a SFC
     log_file = FailLogFile(serial)
 
     retest = log_file.allow_retest()
@@ -152,4 +157,6 @@ def allow_retest(serial:str):
         Extern.RepairInfo(serial=serial, date=today).save()
         log_file.remove_file()
 
-    return retest
+    fru_correct_result = is_mac_fru_valid(serial)
+
+    return retest and fru_correct_result
