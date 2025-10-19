@@ -27,7 +27,8 @@
         "reasons": {
             "failsLimitReached": "Max fail count has been reached (failsLimitReached)",
             "stepsLimitReached": "Max steps count has been reached, install new Transboard V2 module (stepsLimitReached)",
-            "min_yield_reached": "The yield is below the allowed level, the fixture is blocked"
+            "min_yield_reached": "The yield is below the allowed level, the fixture is blocked",
+            "wrong_fru_mac": "Wrong FRU or MAC"
         }
     },
     "retest_view": {

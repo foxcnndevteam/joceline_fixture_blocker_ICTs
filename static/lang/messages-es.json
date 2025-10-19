@@ -29,7 +29,8 @@
         "reasons": {
             "failsLimitReached": "Límite de fallas alcanzado (failsLimitReached)",
             "stepsLimitReached": "Límite de steps alcanzado, cambiar la Transboard V2 (stepsLimitReached)",
-            "min_yield_reached": "El porcentaje de yield está por debajo del permitido, el equipo será bloqueado"
+            "min_yield_reached": "El porcentaje de yield está por debajo del permitido, el equipo será bloqueado",
+            "wrong_fru_mac": "FRU o MAC equivocados"
         }
     },
     "retest_view": {

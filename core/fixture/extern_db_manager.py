@@ -7,6 +7,7 @@ from .log_retest_manager import FailLogFile
 import json
 from utils.logparser import is_mac_fru_valid
 from cli.views import window
+from cli.views.blocked import BlockedWindow
 from env import today
 
 '''
@@ -157,6 +158,9 @@ def allow_retest(serial:str, failed_parts = []):
         Extern.RepairInfo(serial=serial, date=today).save()
         log_file.remove_file()
 
-    fru_correct_result = is_mac_fru_valid(serial)
+    fru_mac_correct_result = is_mac_fru_valid(serial)
 
-    return retest and fru_correct_result
+    if not fru_mac_correct_result:
+        window.show(BlockedWindow("wrong_fru_mac"))
+
+    return retest and not fru_mac_correct_result

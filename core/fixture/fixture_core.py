@@ -73,6 +73,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
                     modify_fail_count = False
                 )
             else:
+                window.show(BlockedWindow("wrong_fru_mac"))
                 boards.saveBoardShouldRetest(board_number, True)
                 save_retest_result_in_path("True")
             

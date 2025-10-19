@@ -2,6 +2,8 @@
     "lang": "es",
     "extern_db_path": "C:\\Users\\Nestor_ascencio\\Documents\\jb\\externDb.db",
     "server_log_path": "C:\\Users\\Nestor_ascencio\\Documents\\jb\\log\\",
+    "external_config": "C:\\Users\\Nestor_ascencio\\Documents\\jb\\config.json",
+    "station": "AWS112",
     "boards_on_fixture_map": [
         [
             0

@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import peewee
+from pathlib import Path
 from typing import Literal, Any
 
 from env import BASE_DIR
@@ -12,11 +13,35 @@ data: Models.Local.Config
 
 fixture_id = 'AF'
 
+station="anon"
+
 operation_mode:Literal['DEFAULT', 'RMA'] = 'DEFAULT'
 
 max_tries = 2
 
 ssh_key = None
+
+external_config=""
+
+config_g = {
+    "unlock": 1,
+    "block": 2,
+    "ask_on_fail_mode": "no"
+}
+
+def load_external_config():
+    global external_config, config_g, station
+    path_ext_config = Path(external_config)
+    if external_config == "" or not path_ext_config.exists():
+        return
+    
+    with open(external_config, "r") as f:
+        configs = json.load(f)
+
+        station_config = configs.get(station)
+        if station_config != None:
+            config_g = station_config
+        f.close()
 
 '''
 #   Function: load_raw_config
@@ -71,20 +96,24 @@ def set_raw_config(key: str, value: Any):
 #   Desc: Gets the config json file decoded, gets and loads all config keys.
 '''
 def load_config():
-    global data, fixture_id, ssh_key, operation_mode, max_tries
+    global data, fixture_id, ssh_key, operation_mode, max_tries, external_config, station
     raw_data = load_raw_config()
 
     try:
         language = raw_data["lang"]
         extern_db_path = raw_data["extern_db_path"]
         server_log_path = raw_data["server_log_path"]
+        external_config = raw_data["external_config"]
         boards_on_fixture_map = str(raw_data["boards_on_fixture_map"])
         udp_server_port = raw_data['udp_server_port']
 
     except KeyError as e:
         logger.error(f'Corrupted configuration file: Missing key "{e.args[0]}" in configuration file')
         sys.exit(0)
-
+    try:
+        station = raw_data["station"]
+    except KeyError as e:
+        print("station not setted")
     try:
         fixture_id = raw_data['fixture_id']
         ssh_key = raw_data.get('ssh_key')
@@ -130,18 +159,23 @@ def load_config():
         data.boards_on_fixture_map = boards_on_fixture_map
         data.udp_server_port = udp_server_port
         data.save()
+    load_external_config()
 
 
 
 # --- Getters --- #
+
+def get_station() -> str:
+    global station
+    return station
 
 def get_fixture_id() -> str:
     global fixture_id
     return fixture_id
 
 def getMaxFailCount():
-    global data
-    return data.max_fail_count
+    global data, config_g
+    return config_g["block"]
     
 def getBlockPassword():
     global data
