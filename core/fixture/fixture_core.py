@@ -9,7 +9,7 @@ from core.api import SFC_check_ICT_Repair
 
 from udpsocket import client
 
-from core.config import get_online_mode, get_pause_on_fail
+from core.config import get_online_mode, get_pause_on_fail, get_ask_fail_mode, get_station
 from core.api import register_test
 
 from .model_manager import *
@@ -87,7 +87,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
 
         if fixture_state == 'Online':
             # if shouldUploadResult(serial, fixture_id, r_ict_count): #  or not should_retest_in_station(serial, ICT_repair_count):
-            
+            # ask_fail = get_ask_fail_mode() in ["partial", "full"]
             if not allow_retest(serial, partsFailed):
                 save_retest_result_in_path("False")
                 logger.info(fixture_messages["result_uploaded"])

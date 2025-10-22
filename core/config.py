@@ -8,6 +8,13 @@ from typing import Literal, Any
 from env import BASE_DIR
 from utils import logger
 from core.database import Models
+from pydantic import BaseModel, ValidationError
+
+class ExternalConfigSchema(BaseModel):
+    unlock: int
+    block: int
+    ask_on_fail_mode: Literal["no", "partial", "full"]
+    parts: str
 
 data: Models.Local.Config
 
@@ -26,7 +33,8 @@ external_config=""
 config_g = {
     "unlock": 1,
     "block": 2,
-    "ask_on_fail_mode": "no"
+    "ask_on_fail_mode": "no",
+    "parts": ""
 }
 
 def load_external_config():
@@ -40,7 +48,11 @@ def load_external_config():
 
         station_config = configs.get(station)
         if station_config != None:
-            config_g = station_config
+            try:
+                val_schema = ExternalConfigSchema(station_config)
+                config_g = json.loads(val_schema.model_dump_json())
+            except ValidationError as e:
+                print("invalid external config")
         f.close()
 
 '''
@@ -172,6 +184,10 @@ def get_station() -> str:
 def get_fixture_id() -> str:
     global fixture_id
     return fixture_id
+
+def get_ask_fail_mode() -> str:
+    global config_g
+    return config_g["ask_on_fail_mode"]
 
 def getMaxFailCount():
     global data, config_g
