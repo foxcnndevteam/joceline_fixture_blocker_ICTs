@@ -8,11 +8,11 @@ from typing import Literal, Any
 from env import BASE_DIR
 from utils import logger
 from core.database import Models
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, PositiveInt, Field
 
 class ExternalConfigSchema(BaseModel):
-    unlock: int
-    block: int
+    unlock: PositiveInt = Field(gt=1, lt=5)
+    block: PositiveInt = Field(ge=1, lt=5)
     ask_on_fail_mode: Literal["no", "partial", "full"]
     parts: str
 

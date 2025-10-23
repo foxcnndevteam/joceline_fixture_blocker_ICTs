@@ -54,7 +54,7 @@ def is_fru_correct(serial: str) -> dict:
         serial_fru = search_serial_fru[0].split(":")[1]
         serial_fru_correct = serial == serial_fru
         fru_found_memory = read_memory_fru(content, serial)
-        # os.remove(file_path)
+        os.remove(file_path)
         return { "is_correct": serial_fru_correct and fru_found_memory, "found": True }
 
 def read_mac_memory(content: str, mac:str) -> bool:
@@ -80,10 +80,11 @@ def is_mac_correct() -> dict:
         return { "is_correct": False, "found": False }
     with open(file_path, "r") as f:
         content = f.read()
+        f.close()
         serial_mac = serial_fru_regex.findall(content)
         mac = serial_mac[0].split("_")[1]
         mac_correct = read_mac_memory(content, mac)
-        # os.remove(file_path)
+        os.remove(file_path)
         return { "is_correct": mac_correct, "found": True }
 
 def is_mac_fru_valid(serial: str) -> bool:
