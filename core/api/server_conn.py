@@ -4,7 +4,7 @@ from env import BASE_DIR
 from core.config import ssh_key
 import subprocess
 
-URL_BASE="http://localhost:3000"
+URL_BASE="http://localhost:5000"
 
 API_URL=f"{URL_BASE}/api"
 
@@ -19,6 +19,18 @@ def eval_tunnel_conection():
     is_tunnel_alive = False
 
   return is_tunnel_alive
+
+def get_config(station: str) -> dict | None:
+
+  try:
+    resp = requests.get(f"{API_URL}/config/{station}")
+    if resp.status_code == 200:
+      return resp.json()
+    return None
+  except requests.ConnectionError as ce:
+    return None
+  except requests.JSONDecodeError as je:
+    return None
 
 def eval_retest(sn: str):
   result_final = { 'success': False, 'retest': True }
@@ -56,6 +68,6 @@ def create_tunnel_ssh():
 
   ssh_key_path = os.path.join(BASE_DIR, ssh_key)
 
-  subprocess.run(['ssh', '-i', ssh_key_path, '-f', '-N', '-L', '3000:localhost:3000', 'aws@10.12.206.101'])
+  subprocess.run(['ssh', '-i', ssh_key_path, '-f', '-N', '-L', '5000:localhost:5000', 'kintaro@10.12.206.101'])
 
 

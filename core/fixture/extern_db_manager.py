@@ -2,7 +2,7 @@ import logging
 from core.database import Models
 from peewee import DataError, DatabaseError, InternalError, OperationalError
 from core.api import SFC_check_ICT_Repair
-from core.config import get_max_tries
+from core.config import get_max_tries, get_ask_fail_mode, get_parts
 from .log_retest_manager import FailLogFile
 import json
 from utils.logparser import is_mac_fru_valid
@@ -145,10 +145,48 @@ def shouldUploadResult(serial, fixture_id, r_ict_count: int = None):
 
     return False
 
-def allow_retest(serial:str, failed_parts = []):
+class BoolContainer:
+    fail: bool
+    def __init__(self):
+        self.fail = True
+
+    def set_val(self, new_val:bool):
+        self.fail = new_val
+
+def eval_show_auth_window() -> bool:
+    current_config = get_ask_fail_mode()
+    
+    if current_config in ["partial", "full"]:
+        return True
+
+    return False
+
+def should_show_window(parts_failed: list[str] = []) -> bool:
+    current_config = get_ask_fail_mode()
+
+    if current_config == "full" and len(parts_failed) > 0:
+        return True
+
+    if current_config == "partial" and len(parts_failed) > 0:
+        parts_list = get_parts().split(",")
+        
+        for part_failed in parts_failed:
+            for part in parts_list:
+                if part in part_failed:
+                    return True
+
+    return False
+
+def allow_retest(serial:str, failed_parts = [], result = "PASS"):
     # TODO: agregado la ventana para fallar o no fallar la tarjeta
     # base de datos de usuarios con numero de emplead y contraseña para la ventana
     # agregar la validacion de componentes que deben evitar que se suba el resultao a SFC
+    
+    if eval_show_auth_window() and should_show_window(failed_parts) and result != "PASS":
+        fcontainer = BoolContainer()
+        window.openWindowAuth(fcontainer.set_val, f"failed parts: {failed_parts}")
+        return not fcontainer.fail
+
     log_file = FailLogFile(serial)
 
     retest = log_file.allow_retest()

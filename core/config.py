@@ -39,21 +39,16 @@ config_g = {
 
 def load_external_config():
     global external_config, config_g, station
-    path_ext_config = Path(external_config)
-    if external_config == "" or not path_ext_config.exists():
-        return
-    
-    with open(external_config, "r") as f:
-        configs = json.load(f)
-
-        station_config = configs.get(station)
-        if station_config != None:
-            try:
-                val_schema = ExternalConfigSchema(station_config)
-                config_g = json.loads(val_schema.model_dump_json())
-            except ValidationError as e:
-                print("invalid external config")
-        f.close()
+    try:
+        from core.api.server_conn import get_config
+        station_config = get_config(station)
+        if station_config == None:
+            return
+        val_schema = ExternalConfigSchema(station_config)
+        config_g = json.loads(val_schema.model_dump_json())
+    except ValidationError as e:
+        print("invalid external config")
+        
 
 '''
 #   Function: load_raw_config
@@ -188,6 +183,14 @@ def get_fixture_id() -> str:
 def get_ask_fail_mode() -> str:
     global config_g
     return config_g["ask_on_fail_mode"]
+
+def get_parts() -> str:
+    global config_g
+    return config_g["parts"]
+
+def get_unlock_quantity():
+    global config_g
+    return config_g["unlock"]
 
 def getMaxFailCount():
     global data, config_g

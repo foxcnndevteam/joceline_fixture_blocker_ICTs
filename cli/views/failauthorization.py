@@ -40,7 +40,7 @@ class FailAuthorizationWindow(QWidget):
         labelTitle.setStyleSheet("font-size: 30px; padding: 0px; margin: 0px; font-weight: bold;")
         
         label_message = QLabel(self.message)
-        label_message.setStyleSheet("font-size: 30px; padding: 0px; margin: 0px; font-weight: bold;")
+        label_message.setStyleSheet("font-size: 15px; padding: 0px; margin: 0px; font-weight: bold;")
 
 
         self.employ_number = QLineEdit()
