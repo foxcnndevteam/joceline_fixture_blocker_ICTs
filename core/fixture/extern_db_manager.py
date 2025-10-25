@@ -3,6 +3,7 @@ from core.database import Models
 from peewee import DataError, DatabaseError, InternalError, OperationalError
 from core.api import SFC_check_ICT_Repair
 from core.config import get_max_tries, get_ask_fail_mode, get_parts
+from utils import logger
 from .log_retest_manager import FailLogFile
 import json
 from utils.logparser import is_mac_fru_valid
@@ -178,10 +179,7 @@ def should_show_window(parts_failed: list[str] = []) -> bool:
     return False
 
 def allow_retest(serial:str, failed_parts = [], result = "PASS"):
-    # TODO: agregado la ventana para fallar o no fallar la tarjeta
-    # base de datos de usuarios con numero de emplead y contraseña para la ventana
-    # agregar la validacion de componentes que deben evitar que se suba el resultao a SFC
-    
+
     if eval_show_auth_window() and should_show_window(failed_parts) and result != "PASS":
         fcontainer = BoolContainer()
         window.openWindowAuth(fcontainer.set_val, f"failed parts: {failed_parts}")
@@ -199,6 +197,7 @@ def allow_retest(serial:str, failed_parts = [], result = "PASS"):
     fru_mac_correct_result = is_mac_fru_valid(serial)
 
     if not fru_mac_correct_result:
+        logger.info(f"FRU and/or MAC incorrect")
         window.show(BlockedWindow("wrong_fru_mac"))
 
     return retest and not fru_mac_correct_result

@@ -32,7 +32,7 @@ external_config=""
 
 config_g = {
     "unlock": 1,
-    "block": 2,
+    "block": 3,
     "ask_on_fail_mode": "no",
     "parts": ""
 }
