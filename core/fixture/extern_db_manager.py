@@ -199,5 +199,6 @@ def allow_retest(serial:str, failed_parts = [], result = "PASS"):
     if not fru_mac_correct_result:
         logger.info(f"FRU and/or MAC incorrect")
         window.show(BlockedWindow("wrong_fru_mac"))
+        return False
 
-    return retest and not fru_mac_correct_result
+    return retest
