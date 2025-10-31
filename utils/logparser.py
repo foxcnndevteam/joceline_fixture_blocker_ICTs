@@ -87,20 +87,20 @@ def is_mac_correct() -> dict:
         os.remove(file_path)
         return { "is_correct": mac_correct, "found": True }
 
-def is_mac_fru_valid(serial: str) -> bool:
+def is_mac_fru_valid(serial: str) -> dict:
     fru_result = is_fru_correct(serial)
     mac_result = is_mac_correct()
 
     if fru_result["found"] and mac_result["found"]:
-        return fru_result["is_correct"] and mac_result["is_correct"]
+        return { "result": fru_result["is_correct"] and mac_result["is_correct"], "found": fru_result["found"] and mac_result["found"]}
 
     if fru_result["found"]:
-        return fru_result["is_correct"]
+        return { "result": fru_result["is_correct"], "found": fru_result["found"] }
 
     if mac_result["found"]:
-        return mac_result["is_correct"]
+        return { "result": mac_result["is_correct"], "found": mac_result["found"] }
 
-    return True
+    return { "result": True, "found": False }
 
 '''
 #   Function: extractFailedPartsInLog

@@ -63,8 +63,8 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         if get_fixture_state(False) == 'Online':
             save_test_result_ext(result, serial, fixture_id, '[]')
             # TODO: funcion para validar fru y mac antes de poner en False el retest
-            mac_fru_correct = is_mac_fru_valid(serial)
-            if mac_fru_correct:
+            mac_fru_correct_result = is_mac_fru_valid(serial)
+            if mac_fru_correct_result["result"]:
                 save_retest_result_in_path("False")
                 logger.info(fixture_messages["result_uploaded"])
                 set_fixture_online(
