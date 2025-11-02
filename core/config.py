@@ -11,8 +11,8 @@ from core.database import Models
 from pydantic import BaseModel, ValidationError, PositiveInt, Field
 
 class ExternalConfigSchema(BaseModel):
-    unlock: PositiveInt = Field(gt=1, lt=5)
-    block: PositiveInt = Field(ge=1, lt=5)
+    unlock: PositiveInt = Field(gt=1, lt=6)
+    block: PositiveInt = Field(ge=1, lt=6)
     ask_on_fail_mode: Literal["no", "partial", "full"]
     parts: str
 
@@ -38,13 +38,14 @@ config_g = {
 }
 
 def load_external_config():
-    global external_config, config_g, station
+    global external_config, config_g, station, ssh_key
+
     try:
         from core.api.server_conn import get_config
-        station_config = get_config(station)
+        station_config = get_config(station, ssh_key)
         if station_config == None:
             return
-        val_schema = ExternalConfigSchema(station_config)
+        val_schema = ExternalConfigSchema(**station_config)
         config_g = json.loads(val_schema.model_dump_json())
     except ValidationError as e:
         print("invalid external config")

@@ -1,7 +1,6 @@
 import requests
 import os
 from env import BASE_DIR
-from core.config import ssh_key
 import subprocess
 
 URL_BASE="http://localhost:5000"
@@ -20,7 +19,12 @@ def eval_tunnel_conection():
 
   return is_tunnel_alive
 
-def get_config(station: str) -> dict | None:
+def get_config(station: str, ssh_key = None) -> dict | None:
+  tunnel_alive = eval_tunnel_conection()
+  if not tunnel_alive:
+    created = create_tunnel_ssh(ssh_key)
+    if created:
+      return None
 
   try:
     resp = requests.get(f"{API_URL}/config/{station}")
@@ -31,6 +35,17 @@ def get_config(station: str) -> dict | None:
     return None
   except requests.JSONDecodeError as je:
     return None
+
+def send_fixture_state(station: str, state: str, yield_rate: int):
+  try:
+    resp = requests.post(f"{API_URL}/state/{station}", json={ "state": state, "yield": yield_rate })
+
+    if resp.status_code in [200, 201]:
+      print("status sended successfully")
+  except requests.ConnectionError as ce:
+    pass
+  except requests.JSONDecodeError as je:
+    pass
 
 def eval_retest(sn: str):
   result_final = { 'success': False, 'retest': True }
@@ -61,13 +76,14 @@ def register_test(data: dict):
   except requests.ConnectionError:
     print('conn error')
 
-def create_tunnel_ssh():
+def create_tunnel_ssh(ssh_key = None) -> bool:
   if ssh_key == None:
     print("conection failed: missing private key")
-    return
+    return False
 
   ssh_key_path = os.path.join(BASE_DIR, ssh_key)
 
-  subprocess.run(['ssh', '-i', ssh_key_path, '-f', '-N', '-L', '5000:localhost:5000', 'kintaro@10.12.206.101'])
+  subprocess.Popen(['ssh', '-i', ssh_key_path, '-f', '-N', '-L', '5000:localhost:5000', 'kintaro@10.12.206.101']) #, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
+  return True
 

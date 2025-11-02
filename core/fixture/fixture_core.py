@@ -6,6 +6,7 @@ from cli.views import window
 
 from core import boards, config
 from core.api import SFC_check_ICT_Repair
+from core.api import server_conn
 
 from udpsocket import client
 
@@ -16,7 +17,7 @@ from .model_manager import *
 from .extern_db_manager import *
 from .messages import checkFixtureMessages
 from .data_save import save_fail, save_test, save_retest_result_in_path, should_retest_in_station
-from .status_manager import check_block_status, check_retest_status, set_fixture_online, check_block_status_alt
+from .status_manager import check_block_status, check_retest_status, set_fixture_online, check_block_status_alt, get_fixture_yield
 
 
 # --- Core --- #
@@ -115,6 +116,7 @@ def process_info(result: str, serial: str, fixture_id: str, fail_status: int):
         check_retest_status(serial, board_number, result)
         check_block_status_alt(True)
     client.send_update_signal()
+    send_state_server()
 
     # ~ Check the windows array to verify if some window will be executed.
     window.openWindows()
@@ -300,3 +302,8 @@ def process_info_alt(result: str, serial: str, fixture_id: str, fail_status: int
     # ~ Check the windows array to verify if some window will be executed.
     window.openWindows()
 
+
+def send_state_server():
+    state = get_fixture_state(False)
+    yield_rate = get_fixture_yield()
+    server_conn.send_fixture_state(config.station, state, yield_rate)
