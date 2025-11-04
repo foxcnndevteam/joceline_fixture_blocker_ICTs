@@ -33,3 +33,5 @@ static/fru_output
 /totest
 fru.txt
 mac.txt
+key
+key.pub

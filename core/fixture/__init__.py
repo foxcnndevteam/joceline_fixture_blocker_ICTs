@@ -1,4 +1,4 @@
-from .fixture_core import process_info, get_pause_on_fail, process_info_2
+from .fixture_core import process_info, get_pause_on_fail, process_info_2, send_state_server
 from .data_save import save_online_result_in_path, save_should_pause_in_path, save_allow_test_in_path, save_allow_test_query, should_retest_in_station
 from .status_manager import get_fixture_yield, check_retest_status, check_block_status, check_block_status_alt
 from .model_manager import get_fail_count, set_fail_count, is_online, load_fixture, get_fixture_state
@@ -8,6 +8,7 @@ from .model_manager import get_fail_count, set_fail_count, is_online, load_fixtu
 __all__ = [
     'process_info',
     'process_info_2',
+    'send_state_server',
     
     'check_retest_status',
     'check_block_status',

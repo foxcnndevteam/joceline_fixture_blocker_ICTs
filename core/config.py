@@ -28,8 +28,6 @@ max_tries = 2
 
 ssh_key = None
 
-external_config=""
-
 config_g = {
     "unlock": 1,
     "block": 3,
@@ -38,7 +36,7 @@ config_g = {
 }
 
 def load_external_config():
-    global external_config, config_g, station, ssh_key
+    global config_g, station, ssh_key
 
     try:
         from core.api.server_conn import get_config
@@ -104,14 +102,14 @@ def set_raw_config(key: str, value: Any):
 #   Desc: Gets the config json file decoded, gets and loads all config keys.
 '''
 def load_config():
-    global data, fixture_id, ssh_key, operation_mode, max_tries, external_config, station
+    global data, fixture_id, ssh_key, operation_mode, max_tries, station
     raw_data = load_raw_config()
 
     try:
         language = raw_data["lang"]
         extern_db_path = raw_data["extern_db_path"]
         server_log_path = raw_data["server_log_path"]
-        external_config = raw_data["external_config"]
+
         boards_on_fixture_map = str(raw_data["boards_on_fixture_map"])
         udp_server_port = raw_data['udp_server_port']
 
