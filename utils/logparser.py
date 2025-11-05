@@ -15,7 +15,7 @@ def read_hex_byte(char: str):
 
 serial_fru_regex = re.compile(r'Serial :[0-9A-Z]{17}')
 serial_mem_regex = re.compile(r'0x[A-F0-9]{6} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2}')
-byte_hex_regex = re.compile(r'[A-F0-9]{2}')
+# byte_hex_regex = re.compile(r'[A-F0-9]{2}')
 serial_fru_regex_mac = re.compile(r'Serial :[0-9A-Z]{17}_[A-F0-9]{12}')
 
 def read_memory_fru(content: str, serial:str) -> bool:
@@ -23,14 +23,14 @@ def read_memory_fru(content: str, serial:str) -> bool:
     memory_raw = ""
     memory_raw_search = serial_mem_regex.findall(content)
     for mem_r in memory_raw_search:
-        memory_raw += re.sub(r'0x000[0-1][0-9A-F]0', "", mem_r)+"\n"
-    memory = byte_hex_regex.findall(memory_raw)
-    
+        memory_raw += re.sub(r'0x000[0-1][0-9A-F]0', "", mem_r)
+    memory = memory_raw.split(" ")
+
     serial_fru_mem = ""
     caracter = 0
     len_str = len(serial)
     for byte in memory:
-        decoded = read_hex_byte(byte)
+        decoded = read_hex_byte(byte.replace(" ", ""))
         if caracter == len_str:
             break
         if decoded == serial[caracter]:
@@ -63,8 +63,9 @@ def read_mac_memory(content: str, mac:str) -> bool:
     memory_raw = ""
     memory_raw_search = serial_mem_regex.findall(content)
     for mem_r in memory_raw_search:
-        memory_raw += re.sub(r'0x[A-F0-9]{6}', "", mem_r)+"\n"
-    memory_arr = byte_hex_regex.findall(memory_raw)
+        memory_raw += re.sub(r'0x[A-F0-9]{6}', "", mem_r)
+    memory_arr = memory_raw.split(" ")
+
     memory = ""
     for byte in memory_arr:
         memory = memory + byte
