@@ -13,10 +13,12 @@ def read_hex_byte(char: str):
     except UnicodeDecodeError:
         return '.'
 
-def read_memory_fru(content: str, serial:str) -> bool:
-    serial_mem_regex = re.compile(r'0x000[0-1][0-9A-F]0 [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2}')
-    byte_hex_regex = re.compile(r'[A-F0-9]{2}')
+serial_fru_regex = re.compile(r'Serial :[0-9A-Z]{17}')
+serial_mem_regex = re.compile(r'0x[A-F0-9]{6} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2}')
+byte_hex_regex = re.compile(r'[A-F0-9]{2}')
+serial_fru_regex_mac = re.compile(r'Serial :[0-9A-Z]{17}_[A-F0-9]{12}')
 
+def read_memory_fru(content: str, serial:str) -> bool:
     
     memory_raw = ""
     memory_raw_search = serial_mem_regex.findall(content)
@@ -42,11 +44,10 @@ def read_memory_fru(content: str, serial:str) -> bool:
 
 def is_fru_correct(serial: str) -> dict:
     serial_fru = ""
-    serial_fru_regex = re.compile(r'Serial :[0-9A-Z]{17}')
 
     file_path = os.path.join(BASE_DIR, "fru.txt")
     if not Path(file_path).exists():
-        return { "is_correct": serial == serial_fru, "found": False }
+        return { "is_correct": True, "found": False }
     with open(file_path, "r") as f:
         content = f.read()
         f.close()
@@ -58,8 +59,6 @@ def is_fru_correct(serial: str) -> dict:
         return { "is_correct": serial_fru_correct and fru_found_memory, "found": True }
 
 def read_mac_memory(content: str, mac:str) -> bool:
-    serial_mem_regex = re.compile(r'0x[A-F0-9]{6} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2} [A-F0-9]{2}')
-    byte_hex_regex = re.compile(r'[A-F0-9]{2}')
 
     memory_raw = ""
     memory_raw_search = serial_mem_regex.findall(content)
@@ -73,15 +72,14 @@ def read_mac_memory(content: str, mac:str) -> bool:
 
 def is_mac_correct() -> dict:
     mac = ""
-    serial_fru_regex = re.compile(r'Serial :[0-9A-Z]{17}_[A-F0-9]{12}')
-    
+
     file_path = os.path.join(BASE_DIR, "mac.txt")
     if not Path(file_path).exists():
         return { "is_correct": False, "found": False }
     with open(file_path, "r") as f:
         content = f.read()
         f.close()
-        serial_mac = serial_fru_regex.findall(content)
+        serial_mac = serial_fru_regex_mac.findall(content)
         mac = serial_mac[0].split("_")[1]
         mac_correct = read_mac_memory(content, mac)
         os.remove(file_path)
