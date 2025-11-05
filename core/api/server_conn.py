@@ -1,6 +1,7 @@
 import requests
 import os
 from env import BASE_DIR
+from threading import Thread
 import subprocess
 
 URL_BASE="http://localhost:5000"
@@ -9,27 +10,25 @@ API_URL=f"{URL_BASE}/api"
 
 def eval_tunnel_conection():
   is_tunnel_alive = False
-
+  print("eval tunel")
   try:
-    response_result = requests.get(f"{URL_BASE}")
-    if response_result.status_code == 200:
-      is_tunnel_alive = True
+    response_result = requests.get(f"{URL_BASE}", timeout=50)
+    is_tunnel_alive = True
   except requests.ConnectionError:
     is_tunnel_alive = False
 
   return is_tunnel_alive
 
 def get_config(station: str, ssh_key = None) -> dict | None:
-  tunnel_alive = eval_tunnel_conection()
-  if not tunnel_alive:
-    created = create_tunnel_ssh(ssh_key)
-    if created:
-      return None
-
+  created = create_tunnel_ssh(ssh_key)
+  if not created:
+    return None
   try:
-    resp = requests.get(f"{API_URL}/config/{station}")
+    resp = requests.get(f"{API_URL}/config/{station}", timeout=50)
     if resp.status_code == 200:
       return resp.json()
+    return None
+  except requests.Timeout:
     return None
   except requests.ConnectionError as ce:
     return None
@@ -76,14 +75,26 @@ def register_test(data: dict):
   except requests.ConnectionError:
     print('conn error')
 
+def start_tunel(ssh_key_path):
+  subprocess.Popen(['ssh', '-i', ssh_key_path, '-f', '-N', '-L', '5000:localhost:5000', 'kintaro@10.12.206.101'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
 def create_tunnel_ssh(ssh_key = None) -> bool:
   if ssh_key == None:
     print("conection failed: missing private key")
     return False
 
+  resultado = os.system("ping -n 2 10.12.206.101")
+  if resultado != 0:
+    return False
+
+  tunnel_alive = eval_tunnel_conection()
+  if tunnel_alive:
+    return True
+
   ssh_key_path = os.path.join(BASE_DIR, ssh_key)
-
-  subprocess.Popen(['ssh', '-i', ssh_key_path, '-f', '-N', '-L', '5000:localhost:5000', 'kintaro@10.12.206.101']) #, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
+  print("tunel start")
+  thr = Thread(target=start_tunel, args=(ssh_key_path,))
+  thr.start()
+  print("tunel started")
   return True
 
