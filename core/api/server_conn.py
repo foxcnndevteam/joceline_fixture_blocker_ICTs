@@ -10,13 +10,19 @@ API_URL=f"{URL_BASE}/api"
 
 def eval_tunnel_conection():
   is_tunnel_alive = False
-  print("eval tunel")
+  
+  result_ping = os.system(f"ping 10.12.206.101 -n 1 -w 100")
+  if result_ping != 0:
+    is_tunnel_alive = False
+    return is_tunnel_alive
+
   try:
-    response_result = requests.get(f"{URL_BASE}", timeout=50)
+    response_result = requests.get(f"{URL_BASE}", timeout=(1,1))
     is_tunnel_alive = True
   except requests.ConnectionError:
     is_tunnel_alive = False
-
+  except requests.exceptions.Timeout:
+    is_tunnel_alive = False
   return is_tunnel_alive
 
 def get_config(station: str, ssh_key = None) -> dict | None:
@@ -35,15 +41,17 @@ def get_config(station: str, ssh_key = None) -> dict | None:
   except requests.JSONDecodeError as je:
     return None
 
-def send_fixture_state(station: str, state: str, yield_rate: int):
+def send_fixture_state(station: str, state: str, yield_rate):
   try:
-    resp = requests.post(f"{API_URL}/state/{station}", json={ "state": state, "yield": yield_rate })
+    resp = requests.post(f"{API_URL}/state/{station}", timeout=(1, 1), json={ "state": state, "yield": yield_rate })
 
     if resp.status_code in [200, 201]:
       print("status sended successfully")
   except requests.ConnectionError as ce:
     pass
   except requests.JSONDecodeError as je:
+    pass
+  except requests.exceptions.Timeout:
     pass
 
 def eval_retest(sn: str):

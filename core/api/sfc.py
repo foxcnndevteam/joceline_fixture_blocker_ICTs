@@ -57,7 +57,12 @@ def SFC_check_ICT_Repair(serial_number: str) -> int:
     except requests.exceptions.Timeout:
         logging.debug(f'consult to SFC failed; timeout, tried to check the SN:{serial_number}')
     finally:
-        session.get(f'{URL_LOGOUT}')
+        try:
+            session.get(f'{URL_LOGOUT}')
+        except requests.RequestException:
+            pass
+        except requests.exceptions.Timeout:
+            pass
 
     # threshold = ICT_Repair_found - R_FBT_found
 

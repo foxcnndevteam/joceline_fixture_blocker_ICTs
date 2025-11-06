@@ -305,5 +305,7 @@ def process_info_alt(result: str, serial: str, fixture_id: str, fail_status: int
 
 def send_state_server():
     state = get_fixture_state(False)
-    yield_rate = get_fixture_yield()
-    server_conn.send_fixture_state(config.station, state, yield_rate)
+    alive = server_conn.eval_tunnel_conection()
+    if alive:
+        yield_rate = get_fixture_yield()
+        server_conn.send_fixture_state(config.station, state, yield_rate)
