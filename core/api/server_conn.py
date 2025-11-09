@@ -30,7 +30,7 @@ def get_config(station: str, ssh_key = None) -> dict | None:
   if not created:
     return None
   try:
-    resp = requests.get(f"{API_URL}/config/{station}", timeout=50)
+    resp = requests.get(f"{API_URL}/config/{station}", timeout=(1,1))
     if resp.status_code == 200:
       return resp.json()
     return None
@@ -89,10 +89,6 @@ def start_tunel(ssh_key_path):
 def create_tunnel_ssh(ssh_key = None) -> bool:
   if ssh_key == None:
     print("conection failed: missing private key")
-    return False
-
-  resultado = os.system("ping -n 2 10.12.206.101")
-  if resultado != 0:
     return False
 
   tunnel_alive = eval_tunnel_conection()

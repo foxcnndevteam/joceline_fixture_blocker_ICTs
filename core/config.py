@@ -8,13 +8,13 @@ from typing import Literal, Any
 from env import BASE_DIR
 from utils import logger
 from core.database import Models
-# from pydantic import BaseModel, ValidationError, PositiveInt, Field
+from pydantic import BaseModel, ValidationError, PositiveInt, Field
 
-# class ExternalConfigSchema(BaseModel):
-#     unlock: PositiveInt = Field(gt=1, lt=6)
-#     block: PositiveInt = Field(ge=1, lt=6)
-#     ask_on_fail_mode: Literal["no", "partial", "full"]
-#     parts: str
+class ExternalConfigSchema(BaseModel):
+    unlock: PositiveInt = Field(gt=1, lt=6)
+    block: PositiveInt = Field(ge=1, lt=6)
+    ask_on_fail_mode: Literal["no", "partial", "full"]
+    parts: str
 
 data: Models.Local.Config
 
@@ -35,18 +35,18 @@ config_g = {
     "parts": ""
 }
 
-# def load_external_config():
-#     global config_g, station, ssh_key
+def load_external_config():
+    global config_g, station, ssh_key
 
-#     try:
-#         from core.api.server_conn import get_config
-#         station_config = get_config(station, ssh_key)
-#         if station_config == None:
-#             return
-#         val_schema = ExternalConfigSchema(**station_config)
-#         config_g = json.loads(val_schema.model_dump_json())
-#     except ValidationError as e:
-#         print("invalid external config")
+    try:
+        from core.api.server_conn import get_config
+        station_config = get_config(station, ssh_key)
+        if station_config == None:
+            return
+        val_schema = ExternalConfigSchema(**station_config)
+        config_g = json.loads(val_schema.model_dump_json())
+    except ValidationError as e:
+        print("invalid external config")
         
 
 '''
@@ -165,7 +165,7 @@ def load_config():
         data.boards_on_fixture_map = boards_on_fixture_map
         data.udp_server_port = udp_server_port
         data.save()
-    # load_external_config()
+    load_external_config()
 
 
 
