@@ -119,7 +119,7 @@ def save_allow_test_query(serial: str) -> bool:
 
     # allow_test = len(tests) < threshold
 
-    tests = list(Models.Local.Test.select(Models.Local.Test.serial, Models.Local.Test.result).limit(1).order_by(Models.Local.Test.date.desc()).execute())
+    tests = list(Models.Local.Test.select(Models.Local.Test.serial, Models.Local.Test.result).limit(config.gey_yield_calc_qty()).order_by(Models.Local.Test.date.desc()).execute())
 
     if len(tests) == 0:
         return True
