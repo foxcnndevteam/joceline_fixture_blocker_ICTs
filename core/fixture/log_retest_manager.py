@@ -79,18 +79,19 @@ class FailLogFile:
 
   def allow_retest(self) -> bool:
     self.__read_lines()
+    t3 = config.get_force_3t()
 
     if self.lines_num <= 1:
       return True
 
-    if self.lines_num == 2 and not config.get_force_3t():
+    if self.lines_num == 2 and not t3:
       same_fails = self.__count_same_fails()
       if same_fails > 0:
         return False
       else:
         return True
-
-    if self.lines_num >= 3:
-      return False
+      
+    if self.lines_num == 2 and t3:
+      return True
 
     return False
