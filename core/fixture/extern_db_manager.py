@@ -2,7 +2,7 @@ import logging
 from core.database import Models
 from peewee import DataError, DatabaseError, InternalError, OperationalError
 from core.api import SFC_check_ICT_Repair
-from core.config import get_max_tries, get_ask_fail_mode, get_parts
+from core.config import get_force_3t, get_ask_fail_mode, get_parts
 from utils import logger
 from .log_retest_manager import FailLogFile
 import json

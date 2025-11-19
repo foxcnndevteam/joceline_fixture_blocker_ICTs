@@ -83,7 +83,7 @@ class FailLogFile:
     if self.lines_num <= 1:
       return True
 
-    if self.lines_num == 2:
+    if self.lines_num == 2 and not config.get_force_3t():
       same_fails = self.__count_same_fails()
       if same_fails > 0:
         return False

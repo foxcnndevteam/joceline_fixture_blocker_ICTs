@@ -24,7 +24,7 @@ station="anon"
 
 operation_mode:Literal['DEFAULT', 'RMA'] = 'DEFAULT'
 
-max_tries = 2
+t3 = False
 
 ssh_key = None
 
@@ -102,7 +102,7 @@ def set_raw_config(key: str, value: Any):
 #   Desc: Gets the config json file decoded, gets and loads all config keys.
 '''
 def load_config():
-    global data, fixture_id, ssh_key, operation_mode, max_tries, station
+    global data, fixture_id, ssh_key, operation_mode, t3, station
     raw_data = load_raw_config()
 
     try:
@@ -128,14 +128,12 @@ def load_config():
             operation_mode = 'RMA'
         else:
             operation_mode = 'DEFAULT'
-        m_tries = raw_data.get('m_tries')
-        if m_tries != None:
+        t3j = raw_data.get('3t')
+        if t3j != None:
             try:
-                if int(m_tries) > 1 and int(m_tries) < 4:
-                    print(f"m_tries:{m_tries}")
-                    max_tries = int(m_tries)
+                t3 = bool(t3j)
             except ValueError:
-                print("bad value in m_tries")
+                print("bad value in t3")
     except KeyError as e:
         print("failed to get fixture id")
 
@@ -247,9 +245,9 @@ def get_rma_mode() -> bool:
     global operation_mode
     return operation_mode == 'RMA'
 
-def get_max_tries() -> int:
-    global max_tries
-    return max_tries
+def get_force_3t() -> bool:
+    global t3
+    return t3
 
 # --- Setters --- #
 
