@@ -1,7 +1,7 @@
 import requests
-import os
-from env import BASE_DIR
-from threading import Thread
+# import os
+# from env import BASE_DIR
+# from threading import Thread
 import subprocess
 
 URL_BASE="http://localhost:5000"
@@ -11,10 +11,10 @@ API_URL=f"{URL_BASE}/api"
 def eval_tunnel_conection():
   is_tunnel_alive = False
   
-  result_ping = os.system(f"ping 10.12.206.101 -n 1 -w 100")
-  if result_ping != 0:
-    is_tunnel_alive = False
-    return is_tunnel_alive
+  # result_ping = os.system(f"ping 10.12.206.101 -n 1 -w 100")
+  # if result_ping != 0:
+  #   is_tunnel_alive = False
+  #   return is_tunnel_alive
 
   try:
     response_result = requests.get(f"{URL_BASE}", timeout=(1,1))
@@ -26,9 +26,9 @@ def eval_tunnel_conection():
   return is_tunnel_alive
 
 def get_config(station: str, ssh_key = None) -> dict | None:
-  created = create_tunnel_ssh(ssh_key)
-  if not created:
-    return None
+  # created = create_tunnel_ssh(ssh_key)
+  # if not created:
+  #   return None
   try:
     resp = requests.get(f"{API_URL}/config/{station}", timeout=(1,1))
     if resp.status_code == 200:
@@ -96,10 +96,10 @@ def create_tunnel_ssh(ssh_key = None) -> bool:
   if tunnel_alive:
     return True
 
-  ssh_key_path = os.path.join(BASE_DIR, ssh_key)
-  print("tunel start")
-  thr = Thread(target=start_tunel, args=(ssh_key_path,))
-  thr.start()
-  print("tunel started")
+  # ssh_key_path = os.path.join(BASE_DIR, ssh_key)
+  # print("tunel start")
+  # thr = Thread(target=start_tunel, args=(ssh_key_path,))
+  # thr.start()
+  # print("tunel started")
   return True
 
