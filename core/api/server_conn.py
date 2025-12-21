@@ -54,6 +54,24 @@ def send_fixture_state(station: str, state: str, yield_rate):
   except requests.exceptions.Timeout:
     pass
 
+def auth_user(user: str, password: str) -> bool:
+  try:
+    
+    json_body = {
+      "user": user,
+      "password": password
+    }
+
+    resp = requests.post(f"{API_URL}/users/auth", json=json_body, timeout=(1, 1))
+
+    return resp.content.decode(encoding="utf-8") == "1"
+  except requests.ConnectionError as ce:
+    return False
+  except requests.JSONDecodeError as je:
+    return False
+  except requests.exceptions.Timeout:
+    return False
+
 def eval_retest(sn: str):
   result_final = { 'success': False, 'retest': True }
 

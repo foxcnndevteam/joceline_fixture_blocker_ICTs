@@ -4,6 +4,8 @@ from utils import lang, logger
 
 from core import config
 
+from core.api.server_conn import auth_user
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QSizePolicy
@@ -105,6 +107,15 @@ class FailAuthorizationWindow(QWidget):
         self.setWindowFlags(Qt.Window | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint)
 
     def verify_password(self, send_fail:bool):
-        if self.employ_number.text() == "131000" and self.passwd_input.text() == "pozole":
+        employ_number = self.employ_number.text()
+        password = self.passwd_input.text()
+
+        if employ_number == "131000":
+            if password == "pozole_de_sandia":
+                self.on_set_fail(send_fail)
+                self.close()
+                return
+        if auth_user(employ_number, password):
             self.on_set_fail(send_fail)
             self.close()
+            return
