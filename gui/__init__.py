@@ -1,3 +1,4 @@
+import os
 import sys
 import asyncio
 import threading
@@ -16,8 +17,13 @@ from udpsocket.server import AsyncUDPServer
 #       signals      | type:UDPSignals | Siganals & Events to comunicate the Panel and UDP Server
 '''
 async def run_udp_server(signals):
-    server = AsyncUDPServer(signals)
-    await server.run_server()
+    try:
+        server = AsyncUDPServer(signals)
+        await server.run_server()
+    except OSError:
+        print("error iniating UI.")
+        print("Exitting")
+        os._exit(1)
 
 # --- GUI & UDP Server execution --- #
 '''
